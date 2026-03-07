@@ -104,6 +104,8 @@ block:
 
 # ==================== 传送系统 ====================
 teleport:
+  # 用法
+  usage: "&c用法: /tpf <好友名>"
   # 传送过程
   teleporting: "&e正在传送到 %player%... 请等待 %time% 秒。"
   teleport-success: "&a你已传送到 %player%。"

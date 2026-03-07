@@ -104,6 +104,8 @@ block:
 
 # ==================== Teleport System ====================
 teleport:
+  # Usage
+  usage: "&cUsage: /tpf <friend>"
   # Teleport process
   teleporting: "&eTeleporting to %player%... Please wait %time% seconds."
   teleport-success: "&aYou have been teleported to %player%."
