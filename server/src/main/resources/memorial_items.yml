@@ -1,0 +1,45 @@
+memorial_items:
+  friendship_bracelet:
+    name: "友谊手链"
+    description: "象征友谊的手链"
+    cost:
+      coins: 500
+      points: 0
+    icon: "STRING"
+    lore:
+      - "&7象征永恒友谊的手链"
+      - "&e送给好友建立密友关系"
+  
+  bestie_necklace:
+    name: "闺蜜项链"
+    description: "闺蜜专属项链"
+    cost:
+      coins: 1000
+      points: 0
+    icon: "GOLD_NUGGET"
+    lore:
+      - "&d闺蜜专属项链"
+      - "&e送给闺蜜建立闺蜜关系"
+  
+  brother_ring:
+    name: "兄弟戒指"
+    description: "兄弟情义戒指"
+    cost:
+      coins: 1000
+      points: 0
+    icon: "IRON_INGOT"
+    lore:
+      - "&8象征兄弟情义的戒指"
+      - "&e送给兄弟建立兄弟关系"
+  
+  wedding_ring:
+    name: "结婚戒指"
+    description: "永恒爱情的象征"
+    cost:
+      coins: 5000
+      points: 50
+    icon: "DIAMOND"
+    lore:
+      - "&b永恒爱情的象征"
+      - "&e送给伴侣建立伴侣关系"
+      - "&c注意：伴侣关系只能有一个！"

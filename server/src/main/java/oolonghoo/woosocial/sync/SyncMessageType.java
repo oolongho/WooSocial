@@ -13,5 +13,8 @@ public enum SyncMessageType {
     UNBLOCK_PLAYER,
     TELEPORT_REQUEST,
     TELEPORT_ACCEPT,
-    TELEPORT_DENY
+    TELEPORT_DENY,
+    MAIL_NEW,
+    MAIL_CLAIMED,
+    MAIL_DELETED
 }

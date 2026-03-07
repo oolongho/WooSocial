@@ -1,0 +1,70 @@
+gifts:
+  coins:
+    name: "金币"
+    description: "每日免费赠送的金币"
+    intimacy: 1
+    cost:
+      coins: 0
+      points: 0
+    daily-limit: 100
+    icon: "GOLD_INGOT"
+  
+  rose:
+    name: "玫瑰"
+    description: "代表爱意的红玫瑰"
+    intimacy: 10
+    cost:
+      coins: 100
+      points: 0
+    daily-limit: 0
+    icon: "RED_TULIP"
+  
+  tulip:
+    name: "郁金香"
+    description: "优雅的郁金香"
+    intimacy: 25
+    cost:
+      coins: 0
+      points: 10
+    daily-limit: 0
+    icon: "ORANGE_TULIP"
+  
+  lily:
+    name: "百合"
+    description: "纯洁的百合花"
+    intimacy: 50
+    cost:
+      coins: 0
+      points: 25
+    daily-limit: 0
+    icon: "WHITE_TULIP"
+  
+  sunflower:
+    name: "向日葵"
+    description: "阳光的向日葵"
+    intimacy: 100
+    cost:
+      coins: 0
+      points: 50
+    daily-limit: 0
+    icon: "SUNFLOWER"
+  
+  chocolate:
+    name: "巧克力"
+    description: "甜蜜的巧克力"
+    intimacy: 15
+    cost:
+      coins: 200
+      points: 0
+    daily-limit: 5
+    icon: "COCOA_BEANS"
+  
+  cake:
+    name: "蛋糕"
+    description: "美味的蛋糕"
+    intimacy: 30
+    cost:
+      coins: 500
+      points: 5
+    daily-limit: 3
+    icon: "CAKE"

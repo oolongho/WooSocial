@@ -238,3 +238,129 @@ debug:
   module-loaded: "&7[Debug] 模块已加载: %module%"
   database-connected: "&7[Debug] 数据库已连接"
   cache-cleared: "&7[Debug] 缓存已清理"
+
+# ==================== 邮箱系统 ====================
+mail:
+  usage: "&c用法: /mail [send|list|claim|delete|bulk]"
+  send-usage: "&c用法: /mail send <玩家>"
+  claim-usage: "&c用法: /mail claim <邮件ID>"
+  delete-usage: "&c用法: /mail delete <邮件ID>"
+  
+  invalid-item: "&c无效的物品！"
+  too-many-items: "&c物品数量超过限制！最大允许: %max%"
+  receiver-mailbox-full: "&c对方的邮箱已满！"
+  send-success: "&a已成功发送邮件给 %player%！物品: %item%"
+  send-failed: "&c发送邮件失败！"
+  receive-notify: "&e你收到了来自 %player% 的邮件！物品: %item%"
+  
+  not-found: "&c邮件不存在！"
+  already-claimed: "&c该邮件已被领取！"
+  item-error: "&c物品数据错误！"
+  inventory-full: "&c背包已满！请清理后再领取"
+  claim-success: "&a成功领取物品: %item%"
+  claim-failed: "&c领取失败！"
+  
+  delete-unclaimed: "&c请先领取物品后再删除邮件！"
+  delete-success: "&a邮件已删除！"
+  delete-failed: "&c删除失败！"
+  
+  cannot-send-self: "&c不能给自己发送邮件！"
+  no-item-in-hand: "&c请手持要发送的物品！"
+  
+  bulk-disabled: "&c批量发送功能未启用！"
+  bulk-sending: "&e正在向 %count% 位玩家发送邮件..."
+  bulk-success: "&a成功向 %count% 位玩家发送了邮件！"
+  bulk-failed: "&c批量发送失败！"
+  no-receivers: "&c没有可接收的玩家！"
+  
+  new-mail-notify: "&e你有 %count% 封未读邮件！使用 /mail 查看"
+  unread-notify: "&e你有 %count% 封未读邮件！"
+  
+  unread-prefix: "&6[新] "
+  lore-send-time: "&7发送时间: "
+  lore-status: "&7状态: "
+  status-claimed: "&a已领取"
+  status-unclaimed: "&e未领取"
+  click-to-view: "&b点击查看详情"
+  click-to-claim: "&a点击领取物品"
+  shift-click-delete: "&cShift+点击删除"
+  
+  help-header: "&e========== 邮箱帮助 =========="
+  help-list: "&a/mail &7- 打开邮箱"
+  help-send: "&a/mail send <玩家> &7- 发送物品"
+  help-claim: "&a/mail claim <ID> &7- 领取物品"
+  help-delete: "&a/mail delete <ID> &7- 删除邮件"
+  help-bulk: "&a/mail bulk all &7- 批量发送(管理员)"
+
+# ==================== 关系系统 ====================
+relation:
+  usage: "&c用法: /relation [list|propose|accept|remove|info|types]"
+  propose-usage: "&c用法: /relation propose <玩家> <关系类型>"
+  accept-usage: "&c用法: /relation accept <玩家>"
+  remove-usage: "&c用法: /relation remove <玩家>"
+  info-usage: "&c用法: /relation info <玩家>"
+  
+  not-friend: "&c你们还不是好友！"
+  not-found: "&c关系不存在！"
+  type-not-found: "&c关系类型不存在！"
+  intimacy-not-enough: "&c默契度不足！需要: %required%"
+  slots-full: "&c该关系类型槽位已满！"
+  item-not-found: "&c纪念品不存在！"
+  
+  proposal-sent: "&a已向 %player% 发送关系申请！"
+  proposal-received: "&e%player% 想与你建立 %type% 关系！使用 /relation accept %player% 接受"
+  no-proposal: "&c没有待处理的关系申请！"
+  accepted: "&a关系已确立！"
+  accepted-by: "&a%player% 接受了你的关系申请！"
+  update-failed: "&c更新关系失败！"
+  
+  removed: "&c关系已解除！"
+  removed-by: "&c%player% 解除了与你的关系！"
+  remove-failed: "&c解除关系失败！"
+  
+  cannot-self: "&c不能对自己操作！"
+  no-relations: "&7暂无关系记录。"
+  
+  list-header: "&e=== 关系列表 ==="
+  list-entry: "&7%friend% &8- &f%type% &7(默契度: %intimacy%)"
+  
+  info-header: "&e=== 关系信息: %player% ==="
+  info-type: "&7关系类型: &f%type%"
+  info-intimacy: "&7默契度: &f%intimacy% &7(%level%)"
+  info-mutual: "&7双方确认: %mutual%"
+  
+  types-header: "&e=== 关系类型列表 ==="
+  types-entry: "&7%name% &8- &f默契度: %intimacy% &7槽位: %slots%"
+
+# ==================== 赠礼系统 ====================
+gift:
+  usage: "&c用法: /gift [coins|send|shop|list]"
+  coins-usage: "&c用法: /gift coins <玩家> <数量>"
+  send-usage: "&c用法: /gift send <玩家> <礼品> [数量]"
+  
+  not-friend: "&c你们还不是好友！"
+  not-found: "&c礼品不存在！"
+  not-enough-coins: "&c金币不足！需要: %value%"
+  not-enough-points: "&c点券不足！需要: %value%"
+  daily-limit-reached: "&c今日赠送上限已达！剩余: %value%"
+  invalid-amount: "&c无效的数量！"
+  
+  coins-sent: "&a成功向 %player% 赠送 %amount% 金币！默契度 +%intimacy%"
+  coins-received: "&e%player% 向你赠送了 %amount% 金币！"
+  coins-exceed-limit: "&c单次赠送数量超过上限！上限: %limit%"
+  
+  sent: "&a成功向 %player% 赠送 %amount% 个 %gift%！默契度 +%intimacy%"
+  received: "&e%player% 向你赠送了 %amount% 个 %gift%！"
+  
+  item-not-found: "&c纪念品不存在！"
+  item-bought: "&a成功购买纪念品！"
+  
+  cannot-self: "&c不能给自己赠送礼品！"
+  
+  list-header: "&e=== 礼品列表 ==="
+  list-entry: "&7%name% &8- &f默契度: %intimacy% &7价格: %cost%"
+  shop-open: "&e礼品商店已打开！"
+  
+  cost-free: "免费"
+  cost-coins: "%amount% 金币"
+  cost-points: "%amount% 点券"

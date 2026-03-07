@@ -1,0 +1,38 @@
+title: "<dark_gray>关系列表 <gray>{page}/{total_pages}"
+
+layout:
+  - '#1######'
+  - '#1111111#'
+  - '#1111111#'
+  - '#1111111#'
+  - '#########'
+  - '#<#####>#'
+
+icons:
+  '#':
+    material: PINK_STAINED_GLASS_PANE
+    name: ""
+  
+  '1':
+    material: BOOK
+    name: "<yellow>返回"
+    lore:
+      - "<gray>返回主菜单"
+    actions:
+      left: [open_gui:social_main, sound:entity_mule_chest]
+  
+  '<':
+    material: SPECTRAL_ARROW
+    name: "<yellow>上一页"
+    lore:
+      - "<gray>点击翻页"
+    actions:
+      left: [prev_page, sound:entity_mule_chest]
+  
+  '>':
+    material: SPECTRAL_ARROW
+    name: "<yellow>下一页"
+    lore:
+      - "<gray>点击翻页"
+    actions:
+      left: [next_page, sound:entity_mule_chest]

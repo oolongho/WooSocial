@@ -92,6 +92,15 @@ public class PlayerDAO {
     }
     
     /**
+     * 异步通过玩家名获取玩家UUID
+     * @param playerName 玩家名
+     * @return CompletableFuture包含UUID，如果不存在则返回null
+     */
+    public CompletableFuture<UUID> getPlayerUuidByName(String playerName) {
+        return getPlayerDataByName(playerName).thenApply(opt -> opt.map(PlayerData::getUuid).orElse(null));
+    }
+    
+    /**
      * 异步保存或更新玩家数据
      * @param playerData 玩家数据
      * @return CompletableFuture<Boolean> 表示操作是否成功

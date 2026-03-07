@@ -1,0 +1,45 @@
+title: "<dark_gray>关系申请"
+
+layout:
+  - '#########'
+  - '####i####'
+  - '#########'
+  - '#########'
+  - '#########'
+  - '#12######'
+
+icons:
+  '#':
+    material: PURPLE_STAINED_GLASS_PANE
+    name: ""
+  
+  'i':
+    material: PLAYER_HEAD
+    skull_owner: "{proposer_name}"
+    name: "<gold>{proposer_name}"
+    lore:
+      - "<gray>申请关系: <yellow>{relation_name}"
+      - "<gray>所需默契度: <yellow>{required_intimacy}"
+      - "<gray>当前默契度: <yellow>{current_intimacy}"
+      - ""
+      - "<gray>申请时间: <yellow>{proposal_time}"
+  
+  '1':
+    material: LIME_DYE
+    name: "<green>接受申请"
+    lore:
+      - "<gray>接受此关系申请"
+      - ""
+      - "<aqua>点击接受"
+    actions:
+      left: [accept_proposal, sound:entity_mule_chest]
+  
+  '2':
+    material: RED_DYE
+    name: "<red>拒绝申请"
+    lore:
+      - "<gray>拒绝此关系申请"
+      - ""
+      - "<aqua>点击拒绝"
+    actions:
+      left: [deny_proposal, sound:entity_mule_chest]

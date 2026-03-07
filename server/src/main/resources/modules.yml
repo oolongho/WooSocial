@@ -9,7 +9,11 @@ modules:
   
   block:
     enabled: true
+  
+  mail:
+    enabled: true
 
 # 模块依赖说明：
 # - teleport 模块依赖 friend 模块（只能传送给好友）
 # - block 模块独立运行，但会影响 friend 模块的行为
+# - mail 模块独立运行，提供物品邮件功能

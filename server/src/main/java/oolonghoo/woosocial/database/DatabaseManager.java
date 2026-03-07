@@ -157,6 +157,26 @@ public class DatabaseManager {
                     ? getMySQLBlockedTableSQL()
                     : getSQLiteBlockedTableSQL();
             statement.executeUpdate(createBlockedTable);
+            
+            String createMailsTable = databaseType.equals("mysql")
+                    ? getMySQLMailsTableSQL()
+                    : getSQLiteMailsTableSQL();
+            statement.executeUpdate(createMailsTable);
+            
+            String createRelationsTable = databaseType.equals("mysql")
+                    ? getMySQLRelationsTableSQL()
+                    : getSQLiteRelationsTableSQL();
+            statement.executeUpdate(createRelationsTable);
+            
+            String createGiftsTable = databaseType.equals("mysql")
+                    ? getMySQLGiftsTableSQL()
+                    : getSQLiteGiftsTableSQL();
+            statement.executeUpdate(createGiftsTable);
+            
+            String createDailyGiftsTable = databaseType.equals("mysql")
+                    ? getMySQLDailyGiftsTableSQL()
+                    : getSQLiteDailyGiftsTableSQL();
+            statement.executeUpdate(createDailyGiftsTable);
         }
     }
     
@@ -318,6 +338,125 @@ public class DatabaseManager {
                 "`blocked_uuid` TEXT NOT NULL, " +
                 "`block_time` INTEGER NOT NULL DEFAULT 0, " +
                 "UNIQUE (`player_uuid`, `blocked_uuid`));";
+    }
+    
+    private String getMySQLMailsTableSQL() {
+        return "CREATE TABLE IF NOT EXISTS `" + tablePrefix + "mails` (" +
+                "`id` INT AUTO_INCREMENT PRIMARY KEY, " +
+                "`sender_uuid` VARCHAR(36) NOT NULL, " +
+                "`sender_name` VARCHAR(16), " +
+                "`receiver_uuid` VARCHAR(36) NOT NULL, " +
+                "`receiver_name` VARCHAR(16), " +
+                "`item_data` TEXT, " +
+                "`send_time` BIGINT NOT NULL DEFAULT 0, " +
+                "`expire_time` BIGINT NOT NULL DEFAULT 0, " +
+                "`is_read` TINYINT(1) NOT NULL DEFAULT 0, " +
+                "`is_claimed` TINYINT(1) NOT NULL DEFAULT 0, " +
+                "`is_bulk` TINYINT(1) NOT NULL DEFAULT 0, " +
+                "`bulk_id` VARCHAR(36), " +
+                "INDEX `idx_receiver_uuid` (`receiver_uuid`), " +
+                "INDEX `idx_sender_uuid` (`sender_uuid`), " +
+                "INDEX `idx_expire_time` (`expire_time`)" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+    }
+    
+    private String getSQLiteMailsTableSQL() {
+        return "CREATE TABLE IF NOT EXISTS `" + tablePrefix + "mails` (" +
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "`sender_uuid` TEXT NOT NULL, " +
+                "`sender_name` TEXT, " +
+                "`receiver_uuid` TEXT NOT NULL, " +
+                "`receiver_name` TEXT, " +
+                "`item_data` TEXT, " +
+                "`send_time` INTEGER NOT NULL DEFAULT 0, " +
+                "`expire_time` INTEGER NOT NULL DEFAULT 0, " +
+                "`is_read` INTEGER NOT NULL DEFAULT 0, " +
+                "`is_claimed` INTEGER NOT NULL DEFAULT 0, " +
+                "`is_bulk` INTEGER NOT NULL DEFAULT 0, " +
+                "`bulk_id` TEXT);";
+    }
+    
+    private String getMySQLRelationsTableSQL() {
+        return "CREATE TABLE IF NOT EXISTS `" + tablePrefix + "relations` (" +
+                "`id` INT AUTO_INCREMENT PRIMARY KEY, " +
+                "`player_uuid` VARCHAR(36) NOT NULL, " +
+                "`friend_uuid` VARCHAR(36) NOT NULL, " +
+                "`relation_type` VARCHAR(32) NOT NULL DEFAULT 'friend', " +
+                "`intimacy` INT NOT NULL DEFAULT 0, " +
+                "`create_time` BIGINT NOT NULL DEFAULT 0, " +
+                "`update_time` BIGINT NOT NULL DEFAULT 0, " +
+                "`is_mutual` TINYINT(1) NOT NULL DEFAULT 0, " +
+                "`proposal_time` BIGINT NOT NULL DEFAULT 0, " +
+                "UNIQUE KEY `uk_player_friend` (`player_uuid`, `friend_uuid`), " +
+                "INDEX `idx_player_uuid` (`player_uuid`), " +
+                "INDEX `idx_friend_uuid` (`friend_uuid`), " +
+                "INDEX `idx_relation_type` (`relation_type`)" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+    }
+    
+    private String getSQLiteRelationsTableSQL() {
+        return "CREATE TABLE IF NOT EXISTS `" + tablePrefix + "relations` (" +
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "`player_uuid` TEXT NOT NULL, " +
+                "`friend_uuid` TEXT NOT NULL, " +
+                "`relation_type` TEXT NOT NULL DEFAULT 'friend', " +
+                "`intimacy` INTEGER NOT NULL DEFAULT 0, " +
+                "`create_time` INTEGER NOT NULL DEFAULT 0, " +
+                "`update_time` INTEGER NOT NULL DEFAULT 0, " +
+                "`is_mutual` INTEGER NOT NULL DEFAULT 0, " +
+                "`proposal_time` INTEGER NOT NULL DEFAULT 0, " +
+                "UNIQUE (`player_uuid`, `friend_uuid`));";
+    }
+    
+    private String getMySQLGiftsTableSQL() {
+        return "CREATE TABLE IF NOT EXISTS `" + tablePrefix + "gifts` (" +
+                "`id` INT AUTO_INCREMENT PRIMARY KEY, " +
+                "`sender_uuid` VARCHAR(36) NOT NULL, " +
+                "`receiver_uuid` VARCHAR(36) NOT NULL, " +
+                "`gift_id` VARCHAR(32) NOT NULL, " +
+                "`gift_amount` INT NOT NULL DEFAULT 1, " +
+                "`intimacy_gained` INT NOT NULL DEFAULT 0, " +
+                "`send_time` BIGINT NOT NULL DEFAULT 0, " +
+                "INDEX `idx_sender_uuid` (`sender_uuid`), " +
+                "INDEX `idx_receiver_uuid` (`receiver_uuid`), " +
+                "INDEX `idx_send_time` (`send_time`)" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+    }
+    
+    private String getSQLiteGiftsTableSQL() {
+        return "CREATE TABLE IF NOT EXISTS `" + tablePrefix + "gifts` (" +
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "`sender_uuid` TEXT NOT NULL, " +
+                "`receiver_uuid` TEXT NOT NULL, " +
+                "`gift_id` TEXT NOT NULL, " +
+                "`gift_amount` INTEGER NOT NULL DEFAULT 1, " +
+                "`intimacy_gained` INTEGER NOT NULL DEFAULT 0, " +
+                "`send_time` INTEGER NOT NULL DEFAULT 0);";
+    }
+    
+    private String getMySQLDailyGiftsTableSQL() {
+        return "CREATE TABLE IF NOT EXISTS `" + tablePrefix + "daily_gifts` (" +
+                "`id` INT AUTO_INCREMENT PRIMARY KEY, " +
+                "`player_uuid` VARCHAR(36) NOT NULL, " +
+                "`target_uuid` VARCHAR(36) NOT NULL, " +
+                "`date` DATE NOT NULL, " +
+                "`coins_sent` INT NOT NULL DEFAULT 0, " +
+                "`gifts_sent` TEXT, " +
+                "UNIQUE KEY `uk_player_target_date` (`player_uuid`, `target_uuid`, `date`), " +
+                "INDEX `idx_player_uuid` (`player_uuid`), " +
+                "INDEX `idx_date` (`date`)" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+    }
+    
+    private String getSQLiteDailyGiftsTableSQL() {
+        return "CREATE TABLE IF NOT EXISTS `" + tablePrefix + "daily_gifts` (" +
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "`player_uuid` TEXT NOT NULL, " +
+                "`target_uuid` TEXT NOT NULL, " +
+                "`date` TEXT NOT NULL, " +
+                "`coins_sent` INTEGER NOT NULL DEFAULT 0, " +
+                "`gifts_sent` TEXT, " +
+                "UNIQUE (`player_uuid`, `target_uuid`, `date`));";
     }
     
     /**

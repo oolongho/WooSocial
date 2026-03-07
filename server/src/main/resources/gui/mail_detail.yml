@@ -1,0 +1,48 @@
+title: "<dark_gray>邮件详情"
+
+layout:
+  - '#1######'
+  - '####i####'
+  - '#########'
+  - '#########'
+  - '#########'
+  - '#23#####'
+
+icons:
+  '#':
+    material: LIME_STAINED_GLASS_PANE
+    name: ""
+  
+  '1':
+    material: BOOK
+    name: "<yellow>返回"
+    lore:
+      - "<gray>返回邮件列表"
+    actions:
+      left: [open_gui:mail_list, sound:entity_mule_chest]
+  
+  'i':
+    material: CHEST
+    name: "<gold>附件物品"
+    lore:
+      - "<gray>发件人: <yellow>{sender_name}"
+      - "<gray>发送时间: <yellow>{send_time}"
+      - ""
+      - "<aqua>点击物品查看详情"
+  
+  '2':
+    material: "{is_claimed ? GRAY_DYE : LIME_DYE}"
+    name: "{is_claimed ? <gray>已领取 : <green>领取物品}"
+    lore:
+      - "{is_claimed ? <gray>物品已被领取 : <gray>点击领取物品}"
+    actions:
+      left: [claim_mail, sound:entity_mule_chest]
+  
+  '3':
+    material: REDSTONE_BLOCK
+    name: "<red>删除邮件"
+    lore:
+      - "<gray>删除此邮件"
+      - "<red>Shift+点击删除"
+    actions:
+      shift_left: [delete_mail, sound:entity_mule_chest]

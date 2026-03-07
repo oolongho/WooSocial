@@ -134,6 +134,87 @@ public class Perms {
      */
     public static final String GUI_FRIEND = "woosocial.gui.friend";
     
+    // ==================== 邮箱系统权限 ====================
+    
+    /**
+     * 邮箱基础权限
+     */
+    public static final String MAIL = "woosocial.mail";
+    
+    /**
+     * 发送邮件权限
+     */
+    public static final String MAIL_SEND = "woosocial.mail.send";
+    
+    /**
+     * 领取邮件权限
+     */
+    public static final String MAIL_CLAIM = "woosocial.mail.claim";
+    
+    /**
+     * 删除邮件权限
+     */
+    public static final String MAIL_DELETE = "woosocial.mail.delete";
+    
+    /**
+     * 批量发送邮件权限
+     */
+    public static final String MAIL_BULK = "woosocial.mail.bulk";
+    
+    /**
+     * 邮箱管理员权限
+     */
+    public static final String MAIL_ADMIN = "woosocial.mail.admin";
+    
+    // ==================== 关系系统权限 ====================
+    
+    /**
+     * 关系基础权限
+     */
+    public static final String RELATION = "woosocial.relation";
+    
+    /**
+     * 设置关系权限
+     */
+    public static final String RELATION_SET = "woosocial.relation.set";
+    
+    /**
+     * 解除关系权限
+     */
+    public static final String RELATION_REMOVE = "woosocial.relation.remove";
+    
+    /**
+     * 发起关系申请权限
+     */
+    public static final String RELATION_PROPOSE = "woosocial.relation.propose";
+    
+    /**
+     * 接受关系申请权限
+     */
+    public static final String RELATION_ACCEPT = "woosocial.relation.accept";
+    
+    // ==================== 赠礼系统权限 ====================
+    
+    /**
+     * 赠礼基础权限
+     */
+    public static final String GIFT = "woosocial.gift";
+    
+    /**
+     * 赠送金币权限
+     */
+    public static final String GIFT_COINS = "woosocial.gift.coins";
+    
+    /**
+     * 购买礼品权限
+     */
+    public static final String GIFT_SHOP = "woosocial.gift.shop";
+    
+    /**
+     * 无限赠礼权限
+     */
+    public static final String GIFT_UNLIMITED = "woosocial.gift.unlimited";
+    
     // ==================== 私有构造函数 ====================
     
     private Perms() {

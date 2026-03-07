@@ -354,4 +354,16 @@ public class MessageManager {
     public String getRaw(String key) {
         return langConfig.getString(key, key);
     }
+    
+    /**
+     * 转换颜色代码
+     * 将 & 颜色代码转换为实际颜色
+     * 
+     * @param message 包含颜色代码的消息
+     * @return 转换后的消息字符串
+     */
+    public String parseColors(String message) {
+        if (message == null) return "";
+        return SERIALIZER.serialize(SERIALIZER.deserialize(message));
+    }
 }

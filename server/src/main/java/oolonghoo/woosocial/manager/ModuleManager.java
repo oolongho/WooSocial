@@ -4,6 +4,7 @@ import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.config.ConfigLoader;
 import com.oolonghoo.woosocial.module.Module;
 import com.oolonghoo.woosocial.module.friend.FriendModule;
+import com.oolonghoo.woosocial.module.mail.MailModule;
 import com.oolonghoo.woosocial.module.teleport.TeleportModule;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -262,5 +263,14 @@ public class ModuleManager {
      */
     public TeleportModule getTeleportModule() {
         return getModule("teleport", TeleportModule.class);
+    }
+    
+    /**
+     * 获取邮箱模块
+     * 
+     * @return 邮箱模块实例，如果未加载则返回null
+     */
+    public MailModule getMailModule() {
+        return getModule("mail", MailModule.class);
     }
 }

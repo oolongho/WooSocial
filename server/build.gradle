@@ -2,9 +2,19 @@ plugins {
     id 'java'
 }
 
+repositories {
+    maven { url 'https://jitpack.io' }
+    maven { url 'https://repo.essentialsx.net/releases/' }
+}
+
 dependencies {
     compileOnly "io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT"
     compileOnly "me.clip:placeholderapi:2.11.6"
+    
+    // Economy hooks
+    compileOnly "com.github.MilkBowl:VaultAPI:1.7.1"
+    // PlayerPoints is optional - use local jar or download from SpigotMC
+    // compileOnly files("libs/PlayerPoints.jar")
     
     // Database dependencies
     implementation "com.zaxxer:HikariCP:5.1.0"

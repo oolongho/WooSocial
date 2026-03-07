@@ -8,6 +8,8 @@ import com.oolonghoo.woosocial.database.PlayerDAO;
 import com.oolonghoo.woosocial.manager.ConfigManager;
 import com.oolonghoo.woosocial.manager.ModuleManager;
 import com.oolonghoo.woosocial.module.friend.FriendModule;
+import com.oolonghoo.woosocial.module.mail.MailModule;
+import com.oolonghoo.woosocial.module.relation.RelationModule;
 import com.oolonghoo.woosocial.module.teleport.TeleportModule;
 import com.oolonghoo.woosocial.sync.SyncManager;
 import com.oolonghoo.woosocial.sync.SyncMessage;
@@ -236,6 +238,12 @@ public class WooSocial extends JavaPlugin {
         
         // 注册传送模块
         moduleManager.registerModule("teleport", () -> new TeleportModule(this));
+        
+        // 注册邮箱模块
+        moduleManager.registerModule("mail", () -> new MailModule(this));
+        
+        // 注册关系模块
+        moduleManager.registerModule("relation", () -> new RelationModule(this));
     }
     
     /**
@@ -344,6 +352,17 @@ public class WooSocial extends JavaPlugin {
      */
     public FriendDAO getFriendDAO() {
         return friendDAO;
+    }
+    
+    /**
+     * 通过玩家名获取玩家UUID（同步方法，从缓存或在线玩家获取）
+     */
+    public UUID getPlayerUuid(String playerName) {
+        var onlinePlayer = Bukkit.getPlayer(playerName);
+        if (onlinePlayer != null) {
+            return onlinePlayer.getUniqueId();
+        }
+        return playerDAO.getPlayerUuidByName(playerName).join();
     }
     
     /**

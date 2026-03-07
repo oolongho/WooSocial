@@ -1,0 +1,56 @@
+types:
+  friend:
+    display-name: "好友"
+    description: "普通好友关系"
+    required-intimacy: 0
+    max-slots: 50
+    priority: 1
+    icon: "PLAYER_HEAD"
+    is-default: true
+    is-special: false
+    require-item: null
+  
+  close_friend:
+    display-name: "密友"
+    description: "关系亲密的好友"
+    required-intimacy: 100
+    max-slots: 10
+    priority: 2
+    icon: "DIAMOND"
+    is-default: false
+    is-special: false
+    require-item: "friendship_bracelet"
+  
+  bestie:
+    display-name: "闺蜜"
+    description: "最好的朋友"
+    required-intimacy: 500
+    max-slots: 3
+    priority: 3
+    icon: "PINK_DYE"
+    is-default: false
+    is-special: false
+    require-item: "bestie_necklace"
+  
+  brother:
+    display-name: "兄弟"
+    description: "情同手足的兄弟"
+    required-intimacy: 500
+    max-slots: 3
+    priority: 3
+    icon: "IRON_INGOT"
+    is-default: false
+    is-special: false
+    require-item: "brother_ring"
+  
+  partner:
+    display-name: "伴侣"
+    description: "游戏伴侣关系"
+    required-intimacy: 1000
+    max-slots: 1
+    priority: 5
+    icon: "GOLDEN_APPLE"
+    is-default: false
+    is-special: true
+    require-item: "wedding_ring"
+    require-mutual: true

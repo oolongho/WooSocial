@@ -1,54 +1,43 @@
-# WooSocial
+# WooSocial Configuration
 
-settings:
-  debug: false
-  language: zh-CN
-  auto-save-interval: 300
+# ... and more...
 
-# Storage Configuration
-# Player data storage type: sqlite (default) or mysql
-storage:
-  type: sqlite
-  
-  # MySQL Configuration (only needed when type is mysql)
-  mysql:
-    host: localhost
-    port: 3306
-    database: woosocial
-    user: root
-    password: ""
-    pool-size: 10
-    table-prefix: "woosocial_"
+# Mail System Configuration
+mail:
+  enabled: true
+  # Max items per send
+  max-send-count: 10
+  # Mail expire time (days)
+  expire-days: 30
+  # Max mails per player
+  max-mails-per-player: 100
+  # Max item data size (bytes)
+  max-item-size: 32000
+  # Notify on receive
+  notify-on-receive: true
+  # Bulk mail configuration
+  bulk:
+    enabled: true
+    permission: "woosocial.mail.bulk"
 
-# Cross-server Configuration
-cross-server:
+# Relation System Configuration
+relation:
+  enabled: true
+  # Daily free coins to gift
+  daily-free-coins: 100
+  # Daily gift friends limit
+  daily-gift-friends: 5
+  # Intimacy gained per coin
+  coins-intimacy-per-unit: 1
+  # Max intimacy
+  max-intimacy: 10000
+
+# Economy Integration
+economy:
+  enabled: true
+  provider: "Vault"
+
+# PlayerPoints Integration (optional)
+playerpoints:
   enabled: false
-  # Sync mode: auto, bungee, velocity, redis, mysql, disabled
-  mode: auto
-  # Current server name (for displaying friend's server)
-  server-name: "server-1"
-  
-  # Redis Configuration (only needed when mode is redis)
-  redis:
-    enabled: false
-    uri: "redis://localhost:6379"
-    password: ""
-  
-  # MySQL Poll Configuration (only needed when mode is mysql)
-  mysql-poll:
-    interval: 5  # seconds
-
-# Friend System Configuration
-friend:
-  max-friends: 50
-  request-expire-time: 300  # seconds
-  default-notify-online: true
-
-# Teleport System Configuration
-teleport:
-  countdown: 3  # seconds
-  cooldown: 60  # seconds
-  cancel-on-move: true
-  move-threshold: 1.0  # blocks
-  cancel-on-damage: true
-  default-allow-teleport: true
+  provider: "PlayerPoints"

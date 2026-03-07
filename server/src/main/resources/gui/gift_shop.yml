@@ -1,0 +1,22 @@
+title: "<dark_gray>礼品商店"
+
+layout:
+  - '#1######'
+  - '#2345678#'
+  - '#########'
+  - '#########'
+  - '#########'
+  - '#########'
+
+icons:
+  '#':
+    material: YELLOW_STAINED_GLASS_PANE
+    name: ""
+  
+  '1':
+    material: BOOK
+    name: "<yellow>返回"
+    lore:
+      - "<gray>返回关系详情"
+    actions:
+      left: [open_gui:relation_detail, sound:entity_mule_chest]

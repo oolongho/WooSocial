@@ -240,3 +240,129 @@ debug:
   module-loaded: "&7[Debug] Module loaded: %module%"
   database-connected: "&7[Debug] Database connected"
   cache-cleared: "&7[Debug] Cache cleared"
+
+# ==================== Mail System ====================
+mail:
+  usage: "&cUsage: /mail [send|list|claim|delete|bulk]"
+  send-usage: "&cUsage: /mail send <player>"
+  claim-usage: "&cUsage: /mail claim <mail_id>"
+  delete-usage: "&cUsage: /mail delete <mail_id>"
+  
+  invalid-item: "&cInvalid item!"
+  too-many-items: "&cItem count exceeds limit! Max: %max%"
+  receiver-mailbox-full: "&cReceiver's mailbox is full!"
+  send-success: "&aMail sent to %player%! Item: %item%"
+  send-failed: "&cFailed to send mail!"
+  receive-notify: "&eYou received mail from %player%! Item: %item%"
+  
+  not-found: "&cMail not found!"
+  already-claimed: "&cThis mail has already been claimed!"
+  item-error: "&cItem data error!"
+  inventory-full: "&cInventory is full! Please clear space first"
+  claim-success: "&aSuccessfully claimed item: %item%"
+  claim-failed: "&cFailed to claim!"
+  
+  delete-unclaimed: "&cPlease claim the item first before deleting!"
+  delete-success: "&aMail deleted!"
+  delete-failed: "&cFailed to delete!"
+  
+  cannot-send-self: "&cYou cannot send mail to yourself!"
+  no-item-in-hand: "&cPlease hold the item you want to send!"
+  
+  bulk-disabled: "&cBulk mail is disabled!"
+  bulk-sending: "&eSending mail to %count% players..."
+  bulk-success: "&aSuccessfully sent mail to %count% players!"
+  bulk-failed: "&cBulk send failed!"
+  no-receivers: "&cNo receivers available!"
+  
+  new-mail-notify: "&eYou have %count% unread mails! Use /mail to view"
+  unread-notify: "&eYou have %count% unread mails!"
+  
+  unread-prefix: "&6[New] "
+  lore-send-time: "&7Sent: "
+  lore-status: "&7Status: "
+  status-claimed: "&aClaimed"
+  status-unclaimed: "&eUnclaimed"
+  click-to-view: "&bClick to view details"
+  click-to-claim: "&aClick to claim item"
+  shift-click-delete: "&cShift+Click to delete"
+  
+  help-header: "&e========== Mail Help =========="
+  help-list: "&a/mail &7- Open mailbox"
+  help-send: "&a/mail send <player> &7- Send item"
+  help-claim: "&a/mail claim <id> &7- Claim item"
+  help-delete: "&a/mail delete <id> &7- Delete mail"
+  help-bulk: "&a/mail bulk all &7- Bulk send (Admin)"
+
+# ==================== Relation System ====================
+relation:
+  usage: "&cUsage: /relation [list|propose|accept|remove|info|types]"
+  propose-usage: "&cUsage: /relation propose <player> <type>"
+  accept-usage: "&cUsage: /relation accept <player>"
+  remove-usage: "&cUsage: /relation remove <player>"
+  info-usage: "&cUsage: /relation info <player>"
+  
+  not-friend: "&cYou are not friends!"
+  not-found: "&cRelation not found!"
+  type-not-found: "&cRelation type not found!"
+  intimacy-not-enough: "&cNot enough intimacy! Required: %required%"
+  slots-full: "&cThis relation type slots are full!"
+  item-not-found: "&cMemorial item not found!"
+  
+  proposal-sent: "&aRelation proposal sent to %player%!"
+  proposal-received: "&e%player% wants to establish %type% relation with you! Use /relation accept %player% to accept"
+  no-proposal: "&cNo pending relation proposal!"
+  accepted: "&aRelation established!"
+  accepted-by: "&a%player% accepted your relation proposal!"
+  update-failed: "&cFailed to update relation!"
+  
+  removed: "&cRelation removed!"
+  removed-by: "&c%player% removed the relation with you!"
+  remove-failed: "&cFailed to remove relation!"
+  
+  cannot-self: "&cCannot operate on yourself!"
+  no-relations: "&7No relations yet."
+  
+  list-header: "&e=== Relation List ==="
+  list-entry: "&7%friend% &8- &f%type% &7(Intimacy: %intimacy%)"
+  
+  info-header: "&e=== Relation Info: %player% ==="
+  info-type: "&7Type: &f%type%"
+  info-intimacy: "&7Intimacy: &f%intimacy% &7(%level%)"
+  info-mutual: "&7Mutual: %mutual%"
+  
+  types-header: "&e=== Relation Types ==="
+  types-entry: "&7%name% &8- &fIntimacy: %intimacy% &7Slots: %slots%"
+
+# ==================== Gift System ====================
+gift:
+  usage: "&cUsage: /gift [coins|send|shop|list]"
+  coins-usage: "&cUsage: /gift coins <player> <amount>"
+  send-usage: "&cUsage: /gift send <player> <gift> [amount]"
+  
+  not-friend: "&cYou are not friends!"
+  not-found: "&cGift not found!"
+  not-enough-coins: "&cNot enough coins! Required: %value%"
+  not-enough-points: "&cNot enough points! Required: %value%"
+  daily-limit-reached: "&cDaily limit reached! Remaining: %value%"
+  invalid-amount: "&cInvalid amount!"
+  
+  coins-sent: "&aSent %amount% coins to %player%! Intimacy +%intimacy%"
+  coins-received: "&e%player% sent you %amount% coins!"
+  coins-exceed-limit: "&cAmount exceeds limit! Limit: %limit%"
+  
+  sent: "&aSent %amount% %gift% to %player%! Intimacy +%intimacy%"
+  received: "&e%player% sent you %amount% %gift%!"
+  
+  item-not-found: "&cMemorial item not found!"
+  item-bought: "&aMemorial item purchased!"
+  
+  cannot-self: "&cCannot gift to yourself!"
+  
+  list-header: "&e=== Gift List ==="
+  list-entry: "&7%name% &8- &fIntimacy: %intimacy% &7Cost: %cost%"
+  shop-open: "&eGift shop opened!"
+  
+  cost-free: "Free"
+  cost-coins: "%amount% Coins"
+  cost-points: "%amount% Points"

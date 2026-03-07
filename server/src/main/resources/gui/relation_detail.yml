@@ -1,0 +1,64 @@
+title: "<dark_gray>关系详情"
+
+layout:
+  - '#1######'
+  - '####i####'
+  - '#########'
+  - '#########'
+  - '#########'
+  - '#234#####'
+
+icons:
+  '#':
+    material: PINK_STAINED_GLASS_PANE
+    name: ""
+  
+  '1':
+    material: BOOK
+    name: "<yellow>返回"
+    lore:
+      - "<gray>返回关系列表"
+    actions:
+      left: [open_gui:relation_list, sound:entity_mule_chest]
+  
+  'i':
+    material: PLAYER_HEAD
+    skull_owner: "{friend_name}"
+    name: "{relation_color}{friend_name}"
+    lore:
+      - "<gray>关系: <yellow>{relation_name}"
+      - "<gray>默契度: <yellow>{intimacy} <gray>({intimacy_level})"
+      - "<gray>建立时间: <yellow>{create_time}"
+      - ""
+      - "<gray>状态: {is_mutual ? <green>已确认 : <yellow>待确认}"
+  
+  '2':
+    material: GOLD_INGOT
+    name: "<gold>赠送金币"
+    lore:
+      - "<gray>每日免费赠送金币"
+      - "<gray>已赠送: <yellow>{coins_sent}/{daily_limit}"
+      - ""
+      - "<aqua>点击赠送"
+    actions:
+      left: [send_coins, sound:entity_mule_chest]
+  
+  '3':
+    material: CHEST
+    name: "<green>礼品商店"
+    lore:
+      - "<gray>购买礼品赠送"
+      - "<gray>增加默契度"
+      - ""
+      - "<aqua>点击打开"
+    actions:
+      left: [open_gui:gift_shop, sound:entity_mule_chest]
+  
+  '4':
+    material: REDSTONE_BLOCK
+    name: "<red>解除关系"
+    lore:
+      - "<gray>解除与此好友的关系"
+      - "<red>Shift+点击确认"
+    actions:
+      shift_left: [remove_relation, sound:entity_mule_chest]

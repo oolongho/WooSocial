@@ -7,6 +7,8 @@ description: A simple Minecraft social plugin.
 
 softdepend:
   - PlaceholderAPI
+  - Vault
+  - PlayerPoints
 
 commands:
   social:
@@ -25,6 +27,18 @@ commands:
     description: Toggle teleport permission (global or for specific player)
     usage: /tpftoggle [player]
     permission: woosocial.teleport.toggle
+  mail:
+    description: Mail system commands
+    usage: /mail [send|list|claim|delete|bulk]
+    permission: woosocial.mail
+  relation:
+    description: Relation system commands
+    usage: /relation [list|propose|accept|remove|info|types]
+    permission: woosocial.relation
+  gift:
+    description: Gift system commands
+    usage: /gift [coins|send|shop|list]
+    permission: woosocial.gift
 
 permissions:
   woosocial.use:
@@ -104,6 +118,57 @@ permissions:
   woosocial.gui:
     description: Open social menu
     default: true
+  
+  # Mail permissions
+  woosocial.mail:
+    description: Mail base permission
+    default: true
+  woosocial.mail.send:
+    description: Send mail
+    default: true
+  woosocial.mail.claim:
+    description: Claim mail
+    default: true
+  woosocial.mail.delete:
+    description: Delete mail
+    default: true
+  woosocial.mail.bulk:
+    description: Bulk send mail
+    default: op
+  woosocial.mail.admin:
+    description: Mail admin permission
+    default: op
+  
+  # Relation permissions
+  woosocial.relation:
+    description: Relation base permission
+    default: true
+  woosocial.relation.set:
+    description: Set relation
+    default: true
+  woosocial.relation.remove:
+    description: Remove relation
+    default: true
+  woosocial.relation.propose:
+    description: Propose relation
+    default: true
+  woosocial.relation.accept:
+    description: Accept relation proposal
+    default: true
+  
+  # Gift permissions
+  woosocial.gift:
+    description: Gift base permission
+    default: true
+  woosocial.gift.coins:
+    description: Gift coins
+    default: true
+  woosocial.gift.shop:
+    description: Use gift shop
+    default: true
+  woosocial.gift.unlimited:
+    description: Unlimited gifting
+    default: op
   woosocial.gui.friend:
     description: Open friend GUI
     default: true
