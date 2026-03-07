@@ -163,6 +163,49 @@ public class SyncManager {
         broadcast(message);
     }
     
+    public void broadcastRelationPropose(UUID proposerUuid, String proposerName, UUID targetUuid, String relationType) {
+        SyncMessage message = new SyncMessage(SyncMessageType.RELATION_PROPOSE, config.getServerName())
+                .set("proposer_uuid", proposerUuid.toString())
+                .set("proposer_name", proposerName)
+                .set("target_uuid", targetUuid.toString())
+                .set("relation_type", relationType);
+        broadcast(message);
+    }
+    
+    public void broadcastRelationAccept(UUID playerUuid, UUID friendUuid, String relationType) {
+        SyncMessage message = new SyncMessage(SyncMessageType.RELATION_ACCEPT, config.getServerName())
+                .set("player_uuid", playerUuid.toString())
+                .set("friend_uuid", friendUuid.toString())
+                .set("relation_type", relationType);
+        broadcast(message);
+    }
+    
+    public void broadcastRelationRemove(UUID playerUuid, UUID friendUuid) {
+        SyncMessage message = new SyncMessage(SyncMessageType.RELATION_REMOVE, config.getServerName())
+                .set("player_uuid", playerUuid.toString())
+                .set("friend_uuid", friendUuid.toString());
+        broadcast(message);
+    }
+    
+    public void broadcastIntimacyUpdate(UUID playerUuid, UUID friendUuid, int newIntimacy) {
+        SyncMessage message = new SyncMessage(SyncMessageType.RELATION_INTIMACY_UPDATE, config.getServerName())
+                .set("player_uuid", playerUuid.toString())
+                .set("friend_uuid", friendUuid.toString())
+                .set("intimacy", String.valueOf(newIntimacy));
+        broadcast(message);
+    }
+    
+    public void broadcastGiftSend(UUID senderUuid, String senderName, UUID receiverUuid, String giftId, int amount, int intimacyGained) {
+        SyncMessage message = new SyncMessage(SyncMessageType.GIFT_SEND, config.getServerName())
+                .set("sender_uuid", senderUuid.toString())
+                .set("sender_name", senderName)
+                .set("receiver_uuid", receiverUuid.toString())
+                .set("gift_id", giftId)
+                .set("amount", String.valueOf(amount))
+                .set("intimacy_gained", String.valueOf(intimacyGained));
+        broadcast(message);
+    }
+    
     public void handleIncomingMessage(SyncMessage message) {
         if (messageHandler != null) {
             messageHandler.accept(message);

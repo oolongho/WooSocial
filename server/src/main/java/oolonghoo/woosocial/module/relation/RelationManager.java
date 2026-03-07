@@ -263,6 +263,9 @@ public class RelationManager {
                         
                         return dataManager.updateRelation(relation).thenApply(success -> {
                             if (success) {
+                                plugin.getSyncManager().broadcastRelationPropose(
+                                        proposer.getUniqueId(), proposer.getName(),
+                                        targetUuid, finalType.getId());
                                 return new RelationResult(true, "relation.proposal-sent");
                             }
                             return new RelationResult(false, "relation.update-failed");
@@ -327,6 +330,9 @@ public class RelationManager {
                                                 relation, type);
                                         Bukkit.getPluginManager().callEvent(event);
                                         
+                                        plugin.getSyncManager().broadcastRelationAccept(
+                                                playerUuid, proposerUuid, type.getId());
+                                        
                                         return new RelationResult(true, "relation.accepted");
                                     });
                         });
@@ -359,6 +365,8 @@ public class RelationManager {
                                             relation, type,
                                             RelationRemoveEvent.RemoveReason.PLAYER_REMOVE);
                                     Bukkit.getPluginManager().callEvent(event);
+                                    
+                                    plugin.getSyncManager().broadcastRelationRemove(playerUuid, friendUuid);
                                     
                                     return new RelationResult(true, "relation.removed");
                                 }

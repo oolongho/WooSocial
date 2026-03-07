@@ -79,6 +79,10 @@ public class GiftManager {
                                                     giftRecord, coinsGift, intimacyGained);
                                             Bukkit.getPluginManager().callEvent(event);
                                             
+                                            plugin.getSyncManager().broadcastGiftSend(
+                                                    sender.getUniqueId(), sender.getName(),
+                                                    receiverUuid, "coins", amountPerSend, intimacyGained);
+                                            
                                             return new GiftResult(true, "gift.coins-sent", amountPerSend, intimacyGained);
                                         });
                             });
@@ -163,6 +167,10 @@ public class GiftManager {
                                                     receiverUuid, receiverName,
                                                     giftRecord, giftType, intimacyGained);
                                             Bukkit.getPluginManager().callEvent(event);
+                                            
+                                            plugin.getSyncManager().broadcastGiftSend(
+                                                    sender.getUniqueId(), sender.getName(),
+                                                    receiverUuid, finalGiftId, amountPerSend, intimacyGained);
                                             
                                             return new GiftResult(true, "gift.sent", amountPerSend, intimacyGained);
                                         });
