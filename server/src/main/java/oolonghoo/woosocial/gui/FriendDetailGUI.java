@@ -40,7 +40,8 @@ public class FriendDetailGUI extends BaseGUI {
     private static final int NOTIFY_ONLINE_SLOT = 11;
     private static final int ALLOW_TELEPORT_SLOT = 12;
     private static final int FAVORITE_SLOT = 13;
-    private static final int REMOVE_FRIEND_SLOT = 14;
+    private static final int SEND_MAIL_SLOT = 14;
+    private static final int REMOVE_FRIEND_SLOT = 15;
     
     public FriendDetailGUI(WooSocial plugin, Player viewer, UUID friendUuid, String friendName) {
         super(plugin, viewer, "friend_detail");
@@ -111,6 +112,7 @@ public class FriendDetailGUI extends BaseGUI {
         inventory.setItem(NOTIFY_ONLINE_SLOT, createNotifyOnlineButton());
         inventory.setItem(ALLOW_TELEPORT_SLOT, createAllowTeleportButton());
         inventory.setItem(FAVORITE_SLOT, createFavoriteButton());
+        inventory.setItem(SEND_MAIL_SLOT, createSendMailButton());
         inventory.setItem(REMOVE_FRIEND_SLOT, createRemoveFriendButton());
     }
     
@@ -276,6 +278,24 @@ public class FriendDetailGUI extends BaseGUI {
         return item;
     }
     
+    private ItemStack createSendMailButton() {
+        ItemStack item = new ItemStack(Material.WRITABLE_BOOK);
+        var meta = item.getItemMeta();
+        meta.displayName(messageManager.getComponent("gui.button-send-mail"));
+        
+        List<Component> lore = new ArrayList<>();
+        lore.add(messageManager.getComponent("gui.lore-send-mail"));
+        lore.add(Component.empty());
+        lore.add(Component.text("发送邮件给此好友", NamedTextColor.GRAY));
+        lore.add(Component.empty());
+        lore.add(Component.text("点击发送", NamedTextColor.AQUA));
+        
+        meta.lore(lore);
+        item.setItemMeta(meta);
+        
+        return item;
+    }
+    
     private String formatTime(long timestamp) {
         if (timestamp <= 0) {
             return messageManager.get("gui.placeholder-never");
@@ -324,6 +344,10 @@ public class FriendDetailGUI extends BaseGUI {
                 
             case FAVORITE_SLOT:
                 toggleFavorite(player);
+                break;
+                
+            case SEND_MAIL_SLOT:
+                handleSendMail(player);
                 break;
                 
             case REMOVE_FRIEND_SLOT:
@@ -418,6 +442,11 @@ public class FriendDetailGUI extends BaseGUI {
                         messageManager.send(player, "friend.not-friend");
                     }
                 });
+    }
+    
+    private void handleSendMail(Player player) {
+        player.closeInventory();
+        plugin.getModuleManager().getMailModule().getMailManager().openSendMailGUI(player, friendUUID, friendName);
     }
     
     public UUID getViewerUUID() {

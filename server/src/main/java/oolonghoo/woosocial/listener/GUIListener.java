@@ -10,6 +10,9 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.Set;
 
 public class GUIListener implements Listener {
     
@@ -32,14 +35,18 @@ public class GUIListener implements Listener {
             return;
         }
         
-        event.setCancelled(true);
-        
         BaseGUI gui = (BaseGUI) holder;
         int slot = event.getRawSlot();
         
         if (slot < 0 || slot >= inventory.getSize()) {
             return;
         }
+        
+        if (gui.isInputSlot(slot)) {
+            return;
+        }
+        
+        event.setCancelled(true);
         
         int clickType = LEFT_CLICK;
         if (event.isRightClick()) {
@@ -66,7 +73,15 @@ public class GUIListener implements Listener {
         InventoryHolder holder = inventory.getHolder();
         
         if (holder instanceof BaseGUI) {
-            event.setCancelled(true);
+            BaseGUI gui = (BaseGUI) holder;
+            
+            Set<Integer> slots = event.getRawSlots();
+            for (int slot : slots) {
+                if (slot >= 0 && slot < inventory.getSize() && !gui.isInputSlot(slot)) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
         }
     }
     
@@ -80,6 +95,8 @@ public class GUIListener implements Listener {
         InventoryHolder holder = inventory.getHolder();
         
         if (holder instanceof BaseGUI) {
+            BaseGUI gui = (BaseGUI) holder;
+            gui.onClose((Player) event.getPlayer());
         }
     }
 }

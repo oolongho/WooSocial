@@ -277,4 +277,153 @@ public class MailManager {
     public LoadingState getLoadingState() {
         return loadingState;
     }
+    
+    /**
+     * 发送包含多个物品的邮件
+     * 
+     * @param sender 发送者
+     * @param receiverUuid 收件人UUID
+     * @param receiverName 收件人名称
+     * @param items 物品列表
+     * @return 是否成功
+     */
+    public CompletableFuture<Boolean> sendMailWithItems(Player sender, UUID receiverUuid, String receiverName, List<ItemStack> items) {
+        if (items == null || items.isEmpty()) {
+            messageManager.send(sender, "mail.no-item");
+            return CompletableFuture.completedFuture(false);
+        }
+        
+        int currentCount = dataManager.getMailCount(receiverUuid);
+        if (currentCount + items.size() > dataManager.getMaxMailsPerPlayer()) {
+            messageManager.send(sender, "mail.receiver-mailbox-full");
+            return CompletableFuture.completedFuture(false);
+        }
+        
+        List<CompletableFuture<Boolean>> futures = new ArrayList<>();
+        
+        for (ItemStack item : items) {
+            if (item != null && item.getType() != Material.AIR) {
+                int estimatedSize = ItemSerializer.estimateSize(item);
+                if (estimatedSize > dataManager.getMaxItemSize()) {
+                    messageManager.send(sender, "mail.item-too-large");
+                    continue;
+                }
+                
+                ItemStack clonedItem = item.clone();
+                CompletableFuture<Boolean> future = dataManager.sendMail(
+                        sender.getUniqueId(),
+                        sender.getName(),
+                        receiverUuid,
+                        receiverName,
+                        clonedItem
+                ).thenApply(result -> {
+                    if (result.isSuccess()) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                });
+                futures.add(future);
+            }
+        }
+        
+        if (futures.isEmpty()) {
+            messageManager.send(sender, "mail.no-item");
+            return CompletableFuture.completedFuture(false);
+        }
+        
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                .thenApply(v -> {
+                    int successCount = 0;
+                    for (CompletableFuture<Boolean> f : futures) {
+                        try {
+                            if (f.get()) successCount++;
+                        } catch (Exception e) {
+                            // ignore
+                        }
+                    }
+                    
+                    if (successCount > 0) {
+                        messageManager.send(sender, "mail.send-success-multiple",
+                                "count", String.valueOf(successCount),
+                                "player", receiverName);
+                        
+                        Player receiver = Bukkit.getPlayer(receiverUuid);
+                        if (receiver != null && notifyOnReceive) {
+                            messageManager.send(receiver, "mail.receive-notify-multiple",
+                                    "player", sender.getName(),
+                                    "count", String.valueOf(successCount));
+                        }
+                        return true;
+                    }
+                    return false;
+                });
+    }
+    
+    /**
+     * 打开发送邮件 GUI（指定收件人）
+     * 
+     * @param player 发送者
+     * @param receiverUuid 收件人UUID
+     * @param receiverName 收件人名称
+     */
+    public void openSendMailGUI(Player player, UUID receiverUuid, String receiverName) {
+        new com.oolonghoo.woosocial.module.mail.gui.SendMailGUI(plugin, player, receiverUuid, receiverName, loadingState).open(player);
+    }
+    
+    /**
+     * 领取所有未领取的邮件附件
+     * 
+     * @param player 玩家
+     * @return 领取的邮件数量
+     */
+    public CompletableFuture<Integer> claimAllMails(Player player) {
+        UUID playerUuid = player.getUniqueId();
+        List<MailData> mails = dataManager.getMailList(playerUuid);
+        
+        int claimedCount = 0;
+        List<ItemStack> itemsToGive = new ArrayList<>();
+        
+        for (MailData mail : mails) {
+            if (!mail.isClaimed() && mail.getItemData() != null && !mail.getItemData().isEmpty()) {
+                ItemStack item = ItemSerializer.deserialize(mail.getItemData());
+                if (item != null && item.getType() != Material.AIR) {
+                    itemsToGive.add(item);
+                    dataManager.claimMail(playerUuid, mail.getId());
+                    claimedCount++;
+                }
+            }
+        }
+        
+        if (!itemsToGive.isEmpty()) {
+            Map<Integer, ItemStack> leftover = player.getInventory().addItem(itemsToGive.toArray(new ItemStack[0]));
+            for (ItemStack item : leftover.values()) {
+                player.getWorld().dropItem(player.getLocation(), item);
+            }
+        }
+        
+        return CompletableFuture.completedFuture(claimedCount);
+    }
+    
+    /**
+     * 删除所有已读且已领取的邮件
+     * 
+     * @param player 玩家
+     * @return 删除的邮件数量
+     */
+    public CompletableFuture<Integer> deleteReadMails(Player player) {
+        UUID playerUuid = player.getUniqueId();
+        List<MailData> mails = dataManager.getMailList(playerUuid);
+        
+        int deletedCount = 0;
+        
+        for (MailData mail : mails) {
+            if (mail.isRead() && (mail.isClaimed() || mail.getItemData() == null || mail.getItemData().isEmpty())) {
+                dataManager.deleteMail(playerUuid, mail.getId());
+                deletedCount++;
+            }
+        }
+        
+        return CompletableFuture.completedFuture(deletedCount);
+    }
 }

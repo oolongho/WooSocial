@@ -166,6 +166,8 @@ gui:
   button-unblock: "&aUnblock"
   button-accept: "&aAccept"
   button-deny: "&cDeny"
+  button-mail: "&eMail"
+  button-send-mail: "&aSend Mail"
   
   # Button descriptions
   lore-friend-list: "&7View your friends list"
@@ -182,6 +184,8 @@ gui:
   lore-unblock: "&aUnblock this player"
   lore-accept: "&aAccept friend request"
   lore-deny: "&cDeny friend request"
+  lore-mail: "&7View your mails"
+  lore-send-mail: "&7Send mail to this friend"
   
   # Status display
   status-online: "&aOnline"
@@ -283,9 +287,26 @@ mail:
   lore-status: "&7Status: "
   status-claimed: "&aClaimed"
   status-unclaimed: "&eUnclaimed"
+  status-read: "&aRead"
+  status-unread: "&eUnread"
   click-to-view: "&bClick to view details"
   click-to-claim: "&aClick to claim item"
   shift-click-delete: "&cShift+Click to delete"
+  
+  # Send mail
+  send-mail: "&aSend Mail"
+  send-success: "&aSuccessfully sent mail to %player%!"
+  send-success-multiple: "&aSuccessfully sent %count% items to %player%!"
+  send-failed: "&cFailed to send mail!"
+  no-item: "&cPlease put an item to send first!"
+  
+  # Bulk operations
+  claim-all: "&aClaim All"
+  claim-all-success: "&aSuccessfully claimed %count% mail attachments!"
+  no-unclaimed: "&cNo unclaimed mail attachments!"
+  delete-read: "&cClear Read"
+  delete-read-success: "&aSuccessfully deleted %count% read mails!"
+  no-read-to-delete: "&cNo read mails to delete!"
   
   # Loading state messages
   loading: "&eLoading, please wait..."

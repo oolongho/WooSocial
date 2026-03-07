@@ -35,6 +35,18 @@ icons:
       left: [open_gui:friend_requests, sound:entity_mule_chest]
   
   '3':
+    material: CHEST
+    name: "<yellow>邮箱"
+    lore:
+      - "<gray>查看你的邮件"
+      - ""
+      - "<gray>未读邮件: <yellow>{unread_mail_count}"
+      - ""
+      - "<aqua>点击打开邮箱"
+    actions:
+      left: [open_gui:mail_list, sound:entity_mule_chest]
+  
+  '4':
     material: CRAFTING_TABLE
     name: "<aqua>社交设置"
     lore:
@@ -42,7 +54,7 @@ icons:
     actions:
       left: [open_gui:social_settings, sound:entity_mule_chest]
   
-  '4':
+  '5':
     material: BARRIER
     name: "<red>屏蔽列表"
     lore:
@@ -52,7 +64,7 @@ icons:
     actions:
       left: [open_gui:blocked_list, sound:entity_mule_chest]
   
-  '5':
+  '6':
     material: BOOK
     name: "<yellow>帮助"
     lore:
@@ -62,10 +74,11 @@ icons:
       - "<gray>/friend remove <玩家> - 删除好友"
       - "<gray>/tpf <好友> - 传送到好友"
       - "<gray>/tpftoggle - 切换传送权限"
+      - "<gray>/mail - 打开邮箱"
     actions:
       left: [sound:entity_mule_chest]
   
-  '6':
+  '7':
     material: NAME_TAG
     name: "<white>个人信息"
     lore:
@@ -73,13 +86,6 @@ icons:
       - ""
       - "<gray>好友数量: <yellow>{friend_count}"
       - "<gray>屏蔽数量: <yellow>{blocked_count}"
-    actions:
-      left: [sound:entity_mule_chest]
-  
-  '7':
-    material: COMPASS
-    name: "<blue>快速操作"
-    lore:
-      - "<gray>常用快捷操作"
+      - "<gray>未读邮件: <yellow>{unread_mail_count}"
     actions:
       left: [sound:entity_mule_chest]

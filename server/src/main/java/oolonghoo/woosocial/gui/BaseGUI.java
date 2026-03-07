@@ -338,6 +338,13 @@ public abstract class BaseGUI implements InventoryHolder {
         this.totalPages = pages;
     }
     
+    public boolean isInputSlot(int slot) {
+        return false;
+    }
+    
+    public void onClose(Player player) {
+    }
+    
     public static class DynamicContent {
         private final UUID uuid;
         private final String name;

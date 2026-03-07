@@ -2,6 +2,7 @@ package com.oolonghoo.woosocial.gui;
 
 import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.module.friend.FriendDataManager;
+import com.oolonghoo.woosocial.module.mail.MailDataManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
@@ -14,19 +15,22 @@ import java.util.UUID;
 
 public class SocialMainGUI extends BaseGUI {
     
-    private final FriendDataManager dataManager;
+    private final FriendDataManager friendDataManager;
+    private final MailDataManager mailDataManager;
     private final UUID viewerUUID;
     
     private static final int FRIEND_LIST_SLOT = 10;
     private static final int FRIEND_REQUESTS_SLOT = 11;
-    private static final int SOCIAL_SETTINGS_SLOT = 12;
-    private static final int BLOCKED_LIST_SLOT = 13;
-    private static final int HELP_SLOT = 14;
-    private static final int PERSONAL_INFO_SLOT = 15;
+    private static final int MAIL_SLOT = 12;
+    private static final int SOCIAL_SETTINGS_SLOT = 13;
+    private static final int BLOCKED_LIST_SLOT = 14;
+    private static final int HELP_SLOT = 15;
+    private static final int PERSONAL_INFO_SLOT = 16;
     
     public SocialMainGUI(WooSocial plugin, Player viewer) {
         super(plugin, viewer, "social_main");
-        this.dataManager = plugin.getModuleManager().getFriendModule().getDataManager();
+        this.friendDataManager = plugin.getModuleManager().getFriendModule().getDataManager();
+        this.mailDataManager = plugin.getModuleManager().getMailModule().getDataManager();
         this.viewerUUID = viewer.getUniqueId();
         
         setupItems();
@@ -42,6 +46,7 @@ public class SocialMainGUI extends BaseGUI {
         inventory.setItem(BACK_SLOT, createBackButton());
         inventory.setItem(FRIEND_LIST_SLOT, createFriendListButton());
         inventory.setItem(FRIEND_REQUESTS_SLOT, createFriendRequestsButton());
+        inventory.setItem(MAIL_SLOT, createMailButton());
         inventory.setItem(SOCIAL_SETTINGS_SLOT, createSocialSettingsButton());
         inventory.setItem(BLOCKED_LIST_SLOT, createBlockedListButton());
         inventory.setItem(HELP_SLOT, createHelpButton());
@@ -56,7 +61,7 @@ public class SocialMainGUI extends BaseGUI {
         List<Component> lore = new ArrayList<>();
         lore.add(messageManager.getComponent("gui.lore-friend-list"));
         
-        int friendCount = dataManager.getFriendCount(viewerUUID);
+        int friendCount = friendDataManager.getFriendCount(viewerUUID);
         lore.add(Component.empty());
         lore.add(Component.text("好友数量: ", NamedTextColor.GRAY)
                 .append(Component.text(friendCount, NamedTextColor.YELLOW)));
@@ -67,7 +72,7 @@ public class SocialMainGUI extends BaseGUI {
     }
     
     private ItemStack createFriendRequestsButton() {
-        int requestCount = dataManager.getFriendRequestCount(viewerUUID);
+        int requestCount = friendDataManager.getFriendRequestCount(viewerUUID);
         
         ItemStack item;
         if (requestCount > 0) {
@@ -90,6 +95,32 @@ public class SocialMainGUI extends BaseGUI {
         return item;
     }
     
+    private ItemStack createMailButton() {
+        int unreadCount = mailDataManager.getUnreadCount(viewerUUID);
+        
+        ItemStack item;
+        if (unreadCount > 0) {
+            item = new ItemStack(Material.CHEST_MINECART);
+        } else {
+            item = new ItemStack(Material.CHEST);
+        }
+        
+        var meta = item.getItemMeta();
+        meta.displayName(messageManager.getComponent("gui.button-mail"));
+        
+        List<Component> lore = new ArrayList<>();
+        lore.add(messageManager.getComponent("gui.lore-mail"));
+        lore.add(Component.empty());
+        lore.add(Component.text("未读邮件: ", NamedTextColor.GRAY)
+                .append(Component.text(unreadCount, NamedTextColor.YELLOW)));
+        lore.add(Component.empty());
+        lore.add(Component.text("点击打开邮箱", NamedTextColor.AQUA));
+        
+        meta.lore(lore);
+        item.setItemMeta(meta);
+        return item;
+    }
+    
     private ItemStack createSocialSettingsButton() {
         ItemStack item = new ItemStack(Material.CRAFTING_TABLE);
         var meta = item.getItemMeta();
@@ -106,7 +137,7 @@ public class SocialMainGUI extends BaseGUI {
     }
     
     private ItemStack createBlockedListButton() {
-        int blockedCount = dataManager.getBlockedList(viewerUUID).size();
+        int blockedCount = friendDataManager.getBlockedList(viewerUUID).size();
         
         ItemStack item = new ItemStack(Material.BARRIER);
         var meta = item.getItemMeta();
@@ -135,6 +166,7 @@ public class SocialMainGUI extends BaseGUI {
         lore.add(Component.text("/friend remove <玩家> - 删除好友", NamedTextColor.GRAY));
         lore.add(Component.text("/tpf <好友> - 传送到好友", NamedTextColor.GRAY));
         lore.add(Component.text("/tpftoggle - 切换传送权限", NamedTextColor.GRAY));
+        lore.add(Component.text("/mail - 打开邮箱", NamedTextColor.GRAY));
         
         meta.lore(lore);
         item.setItemMeta(meta);
@@ -142,8 +174,9 @@ public class SocialMainGUI extends BaseGUI {
     }
     
     private ItemStack createPersonalInfoButton() {
-        int friendCount = dataManager.getFriendCount(viewerUUID);
-        int blockedCount = dataManager.getBlockedList(viewerUUID).size();
+        int friendCount = friendDataManager.getFriendCount(viewerUUID);
+        int blockedCount = friendDataManager.getBlockedList(viewerUUID).size();
+        int unreadMail = mailDataManager.getUnreadCount(viewerUUID);
         
         ItemStack item = new ItemStack(Material.NAME_TAG);
         var meta = item.getItemMeta();
@@ -156,6 +189,8 @@ public class SocialMainGUI extends BaseGUI {
                 .append(Component.text(friendCount, NamedTextColor.YELLOW)));
         lore.add(Component.text("屏蔽数量: ", NamedTextColor.GRAY)
                 .append(Component.text(blockedCount, NamedTextColor.YELLOW)));
+        lore.add(Component.text("未读邮件: ", NamedTextColor.GRAY)
+                .append(Component.text(unreadMail, NamedTextColor.YELLOW)));
         
         meta.lore(lore);
         item.setItemMeta(meta);
@@ -180,6 +215,10 @@ public class SocialMainGUI extends BaseGUI {
                 
             case FRIEND_REQUESTS_SLOT:
                 new FriendRequestsGUI(plugin, player).open(player);
+                break;
+                
+            case MAIL_SLOT:
+                plugin.getModuleManager().getMailModule().getMailManager().openMailListGUI(player, 1);
                 break;
                 
             case SOCIAL_SETTINGS_SLOT:
