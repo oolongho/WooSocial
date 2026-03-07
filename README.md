@@ -1,6 +1,6 @@
 # WooSocial
 
-🍵一款简洁、多功能的 Minecraft 社交插件。
+🍵一款简洁、多功能的 Minecraft 社交插件
 
 ## 特色
 

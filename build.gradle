@@ -20,12 +20,15 @@ dependencies {
     compileOnly "io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT"
     compileOnly "me.clip:placeholderapi:2.11.6"
     
-    // 数据库相关依赖
+    // Database dependencies
     implementation "com.zaxxer:HikariCP:5.1.0"
     implementation "org.xerial:sqlite-jdbc:3.45.1.0"
     
-    // Redis支持（可选）
-    compileOnly "io.lettuce:lettuce-core:6.3.0.RELEASE"
+    // Redis support (optional, shaded)
+    implementation "io.lettuce:lettuce-core:6.3.0.RELEASE"
+    
+    // JSON support
+    implementation "com.google.code.gson:gson:2.10.1"
 }
 
 tasks.withType(JavaCompile).configureEach {
