@@ -190,12 +190,10 @@ gui:
   status-denied: "&cDenied"
   
   # Detail display
-  lore-status: "&7Status: %status%"
-  lore-server: "&7Server: %server%"
-  lore-notify-online-status: "&7Online Notify: %status%"
-  lore-allow-teleport-status: "&7Allow Teleport: %status%"
-  lore-last-online: "&7Last Online: %time%"
-  lore-friends-since: "&7Friends Since: %time%"
+  lore-status: "&7Status: "
+  lore-server: "&7Server: "
+  lore-last-online: "&7Last Online: "
+  lore-friends-since: "&7Friends Since: "
   
   # Placeholders
   placeholder-searching: "Searching..."

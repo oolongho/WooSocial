@@ -188,12 +188,10 @@ gui:
   status-denied: "&c禁止"
   
   # 详细信息显示
-  lore-status: "&7状态: %status%"
-  lore-server: "&7服务器: %server%"
-  lore-notify-online-status: "&7上线提醒: %status%"
-  lore-allow-teleport-status: "&7允许传送: %status%"
-  lore-last-online: "&7最后在线: %time%"
-  lore-friends-since: "&7好友时间: %time%"
+  lore-status: "&7状态: "
+  lore-server: "&7服务器: "
+  lore-last-online: "&7最后在线: "
+  lore-friends-since: "&7好友时间: "
   
   # 占位符
   placeholder-searching: "搜索中..."

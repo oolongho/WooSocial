@@ -27,6 +27,13 @@ public class FriendDetailGUI extends BaseGUI {
     private final UUID viewerUUID;
     private final UUID friendUUID;
     private final String friendName;
+    private boolean isOnline;
+    private boolean isFavorite;
+    private boolean notifyOnline;
+    private boolean allowTeleport;
+    private String serverName;
+    private String lastOnline;
+    private String friendSince;
     
     private static final int PLAYER_HEAD_SLOT = 4;
     private static final int TELEPORT_SLOT = 10;
@@ -44,11 +51,55 @@ public class FriendDetailGUI extends BaseGUI {
         this.friendUUID = friendUuid;
         this.friendName = friendName;
         
+        loadFriendData();
         setupItems();
+    }
+    
+    private void loadFriendData() {
+        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(friendUUID);
+        isOnline = offlinePlayer.isOnline();
+        isFavorite = friendDataManager.isFavorite(viewerUUID, friendUUID);
+        notifyOnline = friendDataManager.isNotifyOnlineForFriend(viewerUUID, friendUUID);
+        allowTeleport = teleportDataManager.isAllowTeleport(viewerUUID, friendUUID);
+        
+        if (isOnline) {
+            Player onlinePlayer = offlinePlayer.getPlayer();
+            if (onlinePlayer != null) {
+                serverName = onlinePlayer.getServer().getName();
+            } else {
+                serverName = "未知";
+            }
+            lastOnline = "在线";
+        } else {
+            serverName = null;
+            PlayerData friendPlayerData = friendDataManager.getPlayerData(friendUUID);
+            if (friendPlayerData != null && friendPlayerData.getLastOnlineTime() > 0) {
+                lastOnline = formatTime(friendPlayerData.getLastOnlineTime());
+            } else {
+                lastOnline = messageManager.get("gui.placeholder-never");
+            }
+        }
+        
+        FriendData fd = friendDataManager.getFriendData(viewerUUID, friendUUID);
+        if (fd != null) {
+            friendSince = formatTime(fd.getAddTime());
+        } else {
+            friendSince = messageManager.get("gui.placeholder-never");
+        }
     }
     
     @Override
     protected void setupPlaceholders() {
+        setPlaceholder("friend_name", friendName);
+        setPlaceholder("friend_uuid", friendUUID.toString());
+        setCondition("is_online", isOnline);
+        setCondition("is_favorite", isFavorite);
+        setCondition("notify_online", notifyOnline);
+        setCondition("allow_teleport", allowTeleport);
+        setPlaceholder("server", serverName != null ? serverName : "");
+        setPlaceholder("last_online", lastOnline);
+        setPlaceholder("friend_since", friendSince);
+        setPlaceholder("status", isOnline ? "在线" : "离线");
     }
     
     private void setupItems() {
@@ -65,7 +116,6 @@ public class FriendDetailGUI extends BaseGUI {
     
     private ItemStack createPlayerInfoItem() {
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(friendUUID);
-        boolean isOnline = offlinePlayer.isOnline();
         
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         var meta = (org.bukkit.inventory.meta.SkullMeta) head.getItemMeta();
@@ -83,28 +133,21 @@ public class FriendDetailGUI extends BaseGUI {
             lore.add(messageManager.getComponent("gui.lore-status")
                     .append(messageManager.getComponent("gui.status-online")));
             
-            Player onlinePlayer = offlinePlayer.getPlayer();
-            if (onlinePlayer != null) {
+            if (serverName != null) {
                 lore.add(messageManager.getComponent("gui.lore-server")
-                        .append(Component.text(onlinePlayer.getServer().getName(), NamedTextColor.YELLOW)));
+                        .append(Component.text(serverName, NamedTextColor.YELLOW)));
             }
         } else {
             lore.add(messageManager.getComponent("gui.lore-status")
                     .append(messageManager.getComponent("gui.status-offline")));
             
-            PlayerData friendPlayerData = friendDataManager.getPlayerData(friendUUID);
-            if (friendPlayerData != null && friendPlayerData.getLastOnlineTime() > 0) {
-                lore.add(messageManager.getComponent("gui.lore-last-online")
-                        .append(Component.text(formatTime(friendPlayerData.getLastOnlineTime()), NamedTextColor.YELLOW)));
-            }
+            lore.add(messageManager.getComponent("gui.lore-last-online")
+                    .append(Component.text(lastOnline, NamedTextColor.YELLOW)));
         }
         
         lore.add(Component.empty());
-        FriendData fd = friendDataManager.getFriendData(viewerUUID, friendUUID);
-        if (fd != null) {
-            lore.add(messageManager.getComponent("gui.lore-friends-since")
-                    .append(Component.text(formatTime(fd.getAddTime()), NamedTextColor.YELLOW)));
-        }
+        lore.add(messageManager.getComponent("gui.lore-friends-since")
+                .append(Component.text(friendSince, NamedTextColor.YELLOW)));
         
         meta.lore(lore);
         head.setItemMeta(meta);
@@ -113,9 +156,6 @@ public class FriendDetailGUI extends BaseGUI {
     }
     
     private ItemStack createTeleportButton() {
-        OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(friendUUID);
-        boolean isOnline = offlinePlayer.isOnline();
-        
         ItemStack item;
         if (isOnline) {
             item = new ItemStack(Material.ENDER_PEARL);
@@ -141,8 +181,6 @@ public class FriendDetailGUI extends BaseGUI {
     }
     
     private ItemStack createNotifyOnlineButton() {
-        boolean notifyOnline = isNotifyOnlineForFriend();
-        
         ItemStack item = new ItemStack(Material.BELL);
         var meta = item.getItemMeta();
         meta.displayName(messageManager.getComponent("gui.button-notify-online"));
@@ -166,8 +204,6 @@ public class FriendDetailGUI extends BaseGUI {
     }
     
     private ItemStack createAllowTeleportButton() {
-        boolean allowTeleport = isAllowTeleportForFriend();
-        
         ItemStack item = new ItemStack(Material.RECOVERY_COMPASS);
         var meta = item.getItemMeta();
         meta.displayName(messageManager.getComponent("gui.button-allow-teleport"));
@@ -191,8 +227,6 @@ public class FriendDetailGUI extends BaseGUI {
     }
     
     private ItemStack createFavoriteButton() {
-        boolean isFavorite = isFavoriteFriend();
-        
         ItemStack item;
         if (isFavorite) {
             item = new ItemStack(Material.GOLD_BLOCK);
@@ -242,18 +276,6 @@ public class FriendDetailGUI extends BaseGUI {
         return item;
     }
     
-    private boolean isNotifyOnlineForFriend() {
-        return friendDataManager.isNotifyOnlineForFriend(viewerUUID, friendUUID);
-    }
-    
-    private boolean isAllowTeleportForFriend() {
-        return teleportDataManager.isAllowTeleport(viewerUUID, friendUUID);
-    }
-    
-    private boolean isFavoriteFriend() {
-        return friendDataManager.isFavorite(viewerUUID, friendUUID);
-    }
-    
     private String formatTime(long timestamp) {
         if (timestamp <= 0) {
             return messageManager.get("gui.placeholder-never");
@@ -277,6 +299,7 @@ public class FriendDetailGUI extends BaseGUI {
     
     @Override
     public void refresh() {
+        loadFriendData();
         setupItems();
     }
     
@@ -329,7 +352,7 @@ public class FriendDetailGUI extends BaseGUI {
     }
     
     private void toggleNotifyOnline(Player player) {
-        boolean currentState = isNotifyOnlineForFriend();
+        boolean currentState = notifyOnline;
         friendDataManager.setNotifyOnlineForFriend(viewerUUID, friendUUID, !currentState)
                 .thenAccept(success -> {
                     if (success) {
@@ -347,7 +370,7 @@ public class FriendDetailGUI extends BaseGUI {
     }
     
     private void toggleAllowTeleport(Player player) {
-        boolean currentState = isAllowTeleportForFriend();
+        boolean currentState = allowTeleport;
         teleportDataManager.setAllowTeleport(viewerUUID, friendUUID, !currentState)
                 .thenAccept(success -> {
                     if (success) {
@@ -365,7 +388,7 @@ public class FriendDetailGUI extends BaseGUI {
     }
     
     private void toggleFavorite(Player player) {
-        boolean currentState = isFavoriteFriend();
+        boolean currentState = isFavorite;
         friendDataManager.setFavorite(viewerUUID, friendUUID, !currentState)
                 .thenAccept(success -> {
                     if (success) {
