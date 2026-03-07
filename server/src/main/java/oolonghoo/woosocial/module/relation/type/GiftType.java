@@ -11,6 +11,7 @@ public class GiftType {
     private int costCoins;
     private int costPoints;
     private int dailyLimit;
+    private int amountPerSend;
     private Material icon;
     
     public GiftType(String id) {
@@ -21,6 +22,7 @@ public class GiftType {
         this.costCoins = 0;
         this.costPoints = 0;
         this.dailyLimit = 0;
+        this.amountPerSend = 1;
         this.icon = Material.GOLD_INGOT;
     }
     
@@ -76,6 +78,14 @@ public class GiftType {
         this.dailyLimit = dailyLimit;
     }
     
+    public int getAmountPerSend() {
+        return amountPerSend;
+    }
+    
+    public void setAmountPerSend(int amountPerSend) {
+        this.amountPerSend = Math.max(1, amountPerSend);
+    }
+    
     public Material getIcon() {
         return icon;
     }
@@ -92,6 +102,10 @@ public class GiftType {
         return dailyLimit > 0;
     }
     
+    public boolean isCoinsGift() {
+        return "coins".equalsIgnoreCase(id);
+    }
+    
     @Override
     public String toString() {
         return "GiftType{" +
@@ -100,6 +114,8 @@ public class GiftType {
                 ", intimacy=" + intimacy +
                 ", costCoins=" + costCoins +
                 ", costPoints=" + costPoints +
+                ", dailyLimit=" + dailyLimit +
+                ", amountPerSend=" + amountPerSend +
                 '}';
     }
     

@@ -38,6 +38,7 @@ public class GiftConfig extends ConfigLoader {
             gift.setDescription(giftSection.getString("description", ""));
             gift.setIntimacy(giftSection.getInt("intimacy", 1));
             gift.setDailyLimit(giftSection.getInt("daily-limit", 0));
+            gift.setAmountPerSend(giftSection.getInt("amount-per-send", 1));
             
             ConfigurationSection costSection = giftSection.getConfigurationSection("cost");
             if (costSection != null) {

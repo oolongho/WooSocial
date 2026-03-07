@@ -1,3 +1,9 @@
+# 礼物配置
+# daily-limit: 每日赠送次数限制 (0 = 无限制)
+# amount-per-send: 每次赠送的数量 (仅金币礼物有效)
+# intimacy: 每次赠送增加的亲密度
+# cost: 每次赠送的花费
+
 gifts:
   coins:
     name: "金币"
@@ -6,7 +12,8 @@ gifts:
     cost:
       coins: 0
       points: 0
-    daily-limit: 100
+    daily-limit: 10
+    amount-per-send: 100
     icon: "GOLD_INGOT"
   
   rose:

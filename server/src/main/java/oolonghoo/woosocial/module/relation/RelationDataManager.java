@@ -144,6 +144,20 @@ public class RelationDataManager {
         });
     }
     
+    public DailyGiftData getDailyGiftDataSync(UUID playerUuid, UUID targetUuid) {
+        String today = LocalDate.now().format(DATE_FORMATTER);
+        
+        Map<UUID, DailyGiftData> playerDaily = dailyGiftCache.get(playerUuid);
+        if (playerDaily != null) {
+            DailyGiftData cached = playerDaily.get(targetUuid);
+            if (cached != null && cached.getDate().equals(today)) {
+                return cached;
+            }
+        }
+        
+        return null;
+    }
+    
     public CompletableFuture<Boolean> saveDailyGiftData(DailyGiftData data) {
         return relationDAO.saveDailyGiftData(data);
     }

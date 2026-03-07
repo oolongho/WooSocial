@@ -76,7 +76,7 @@ public class GiftCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         
-        if (args.length < 3) {
+        if (args.length < 2) {
             messageManager.send(player, "gift.coins-usage");
             return true;
         }
@@ -94,37 +94,34 @@ public class GiftCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         
-        int amount;
-        try {
-            amount = Integer.parseInt(args[2]);
-            if (amount <= 0) {
-                messageManager.send(player, "gift.invalid-amount");
-                return true;
-            }
-        } catch (NumberFormatException e) {
-            messageManager.send(player, "gift.invalid-amount");
+        GiftType coinsGift = relationManager.getGiftType("coins");
+        if (coinsGift == null) {
+            messageManager.send(player, "gift.not-found");
             return true;
         }
         
-        int dailyLimit = relationManager.getDailyFreeCoins();
-        if (amount > dailyLimit) {
-            messageManager.send(player, "gift.coins-exceed-limit", "{limit}", String.valueOf(dailyLimit));
-            return true;
+        int amountPerSend = coinsGift.getAmountPerSend();
+        int remaining = giftManager.getRemainingDailyLimit(player, target.getUniqueId(), "coins");
+        
+        if (remaining == -1) {
+            messageManager.send(player, "gift.remaining-daily", "count", "∞");
+        } else {
+            messageManager.send(player, "gift.remaining-daily", "count", String.valueOf(remaining));
         }
         
-        giftManager.sendCoins(player, target.getUniqueId(), amount).thenAccept(result -> {
+        giftManager.sendCoins(player, target.getUniqueId()).thenAccept(result -> {
             plugin.getServer().getScheduler().runTask(plugin, () -> {
                 if (result.isSuccess()) {
                     messageManager.send(player, result.getMessageKey(),
-                            "{amount}", String.valueOf(amount),
-                            "{player}", target.getName(),
-                            "{intimacy}", String.valueOf(result.getValue()));
+                            "amount", String.valueOf(result.getValue()),
+                            "player", target.getName(),
+                            "intimacy", String.valueOf(result.getIntimacyGained()));
                     messageManager.send(target, "gift.coins-received",
-                            "{amount}", String.valueOf(amount),
-                            "{player}", player.getName());
+                            "amount", String.valueOf(result.getValue()),
+                            "player", player.getName());
                 } else {
                     messageManager.send(player, result.getMessageKey(), 
-                            "{value}", String.valueOf(result.getValue()));
+                            "value", String.valueOf(result.getValue()));
                 }
             });
         });
@@ -163,38 +160,19 @@ public class GiftCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         
-        final int finalAmount;
-        if (args.length >= 4) {
-            try {
-                int parsedAmount = Integer.parseInt(args[3]);
-                if (parsedAmount <= 0) {
-                    messageManager.send(player, "gift.invalid-amount");
-                    return true;
-                }
-                finalAmount = parsedAmount;
-            } catch (NumberFormatException e) {
-                messageManager.send(player, "gift.invalid-amount");
-                return true;
-            }
-        } else {
-            finalAmount = 1;
-        }
-        
-        giftManager.sendGift(player, target.getUniqueId(), giftId, finalAmount).thenAccept(result -> {
+        giftManager.sendGift(player, target.getUniqueId(), giftId).thenAccept(result -> {
             plugin.getServer().getScheduler().runTask(plugin, () -> {
                 if (result.isSuccess()) {
                     messageManager.send(player, result.getMessageKey(),
-                            "{gift}", giftType.getName(),
-                            "{amount}", String.valueOf(finalAmount),
-                            "{player}", target.getName(),
-                            "{intimacy}", String.valueOf(result.getValue()));
+                            "gift", giftType.getName(),
+                            "player", target.getName(),
+                            "intimacy", String.valueOf(result.getIntimacyGained()));
                     messageManager.send(target, "gift.received",
-                            "{gift}", giftType.getName(),
-                            "{amount}", String.valueOf(finalAmount),
-                            "{player}", player.getName());
+                            "gift", giftType.getName(),
+                            "player", player.getName());
                 } else {
                     messageManager.send(player, result.getMessageKey(),
-                            "{value}", String.valueOf(result.getValue()));
+                            "value", String.valueOf(result.getValue()));
                 }
             });
         });
@@ -232,11 +210,20 @@ public class GiftCommand implements CommandExecutor, TabCompleter {
                 cost = "免费";
             }
             
+            String limitInfo = "";
+            if (gift.hasDailyLimit()) {
+                limitInfo = " &7(每日" + gift.getDailyLimit() + "次)";
+            }
+            
+            if (gift.isCoinsGift()) {
+                limitInfo = " &7(每次" + gift.getAmountPerSend() + "金币)";
+            }
+            
             String info = messageManager.getRaw("gift.list-entry")
                     .replace("{name}", gift.getName())
                     .replace("{id}", gift.getId())
                     .replace("{intimacy}", String.valueOf(gift.getIntimacy()))
-                    .replace("{cost}", cost);
+                    .replace("{cost}", cost) + limitInfo;
             player.sendMessage(messageManager.parseColors(info));
         }
         

@@ -25,7 +25,15 @@ public class GiftManager {
         this.relationManager = relationManager;
     }
     
-    public CompletableFuture<GiftResult> sendCoins(Player sender, UUID receiverUuid, int amount) {
+    public CompletableFuture<GiftResult> sendCoins(Player sender, UUID receiverUuid) {
+        GiftType coinsGift = relationManager.getGiftType("coins");
+        if (coinsGift == null) {
+            return CompletableFuture.completedFuture(
+                    new GiftResult(false, "gift.not-found", 0));
+        }
+        
+        final int amountPerSend = coinsGift.getAmountPerSend();
+        
         return dataManager.getRelation(sender.getUniqueId(), receiverUuid)
                 .thenCompose(optRelation -> {
                     if (optRelation.isEmpty()) {
@@ -37,25 +45,25 @@ public class GiftManager {
                     
                     return dataManager.getDailyGiftData(sender.getUniqueId(), receiverUuid)
                             .thenCompose(dailyData -> {
-                                int dailyLimit = relationManager.getDailyFreeCoins();
-                                int alreadySent = dailyData.getCoinsSent();
-                                
                                 boolean hasUnlimited = sender.hasPermission(Perms.GIFT_UNLIMITED);
                                 
-                                if (!hasUnlimited && alreadySent + amount > dailyLimit) {
-                                    int remaining = Math.max(0, dailyLimit - alreadySent);
-                                    return CompletableFuture.completedFuture(
-                                            new GiftResult(false, "gift.daily-limit-reached", remaining));
+                                if (coinsGift.hasDailyLimit() && !hasUnlimited) {
+                                    int alreadySent = dailyData.getGiftCount("coins");
+                                    if (alreadySent >= coinsGift.getDailyLimit()) {
+                                        int remaining = coinsGift.getDailyLimit() - alreadySent;
+                                        return CompletableFuture.completedFuture(
+                                                new GiftResult(false, "gift.daily-limit-reached", Math.max(0, remaining)));
+                                    }
                                 }
                                 
-                                int intimacyGained = amount * relationManager.getCoinsIntimacyPerUnit();
+                                int intimacyGained = coinsGift.getIntimacy();
                                 int newIntimacy = Math.min(relation.getIntimacy() + intimacyGained, 
                                         relationManager.getMaxIntimacy());
                                 relation.setIntimacy(newIntimacy);
                                 
-                                dailyData.addCoinsSent(amount);
+                                dailyData.addGiftSent("coins", 1);
                                 
-                                GiftData giftRecord = new GiftData(sender.getUniqueId(), receiverUuid, "coins", amount);
+                                GiftData giftRecord = new GiftData(sender.getUniqueId(), receiverUuid, "coins", amountPerSend);
                                 giftRecord.setIntimacyGained(intimacyGained);
                                 giftRecord.setSenderName(sender.getName());
                                 
@@ -63,33 +71,36 @@ public class GiftManager {
                                         .thenCompose(v -> dataManager.saveDailyGiftData(dailyData))
                                         .thenCompose(v -> dataManager.createGiftRecord(giftRecord))
                                         .thenApply(v -> {
-                                            // 触发赠礼事件（不可取消）
                                             String receiverName = Bukkit.getOfflinePlayer(receiverUuid).getName();
                                             if (receiverName == null) receiverName = "Unknown";
                                             GiftSendEvent event = new GiftSendEvent(
                                                     sender.getUniqueId(), sender.getName(),
                                                     receiverUuid, receiverName,
-                                                    giftRecord, null, intimacyGained);
+                                                    giftRecord, coinsGift, intimacyGained);
                                             Bukkit.getPluginManager().callEvent(event);
                                             
-                                            return new GiftResult(true, "gift.coins-sent", intimacyGained);
+                                            return new GiftResult(true, "gift.coins-sent", amountPerSend, intimacyGained);
                                         });
                             });
                 });
     }
     
-    public CompletableFuture<GiftResult> sendGift(Player sender, UUID receiverUuid, String giftId, int amount) {
+    public CompletableFuture<GiftResult> sendGift(Player sender, UUID receiverUuid, String giftId) {
         GiftType giftType = relationManager.getGiftType(giftId);
         if (giftType == null) {
             return CompletableFuture.completedFuture(
                     new GiftResult(false, "gift.not-found", 0));
         }
         
-        final int finalAmount = Math.max(1, amount);
-        final String finalGiftId = giftId;
+        if (giftType.isCoinsGift()) {
+            return sendCoins(sender, receiverUuid);
+        }
         
-        int totalCostCoins = giftType.getCostCoins() * finalAmount;
-        int totalCostPoints = giftType.getCostPoints() * finalAmount;
+        final String finalGiftId = giftId;
+        final int amountPerSend = giftType.getAmountPerSend();
+        
+        int totalCostCoins = giftType.getCostCoins();
+        int totalCostPoints = giftType.getCostPoints();
         
         if (totalCostCoins > 0 && !relationManager.hasEnoughCoins(sender, totalCostCoins)) {
             return CompletableFuture.completedFuture(
@@ -116,10 +127,10 @@ public class GiftManager {
                                 
                                 if (giftType.hasDailyLimit() && !hasUnlimited) {
                                     int alreadySent = dailyData.getGiftCount(finalGiftId);
-                                    if (alreadySent + finalAmount > giftType.getDailyLimit()) {
-                                        int remaining = Math.max(0, giftType.getDailyLimit() - alreadySent);
+                                    if (alreadySent >= giftType.getDailyLimit()) {
+                                        int remaining = giftType.getDailyLimit() - alreadySent;
                                         return CompletableFuture.completedFuture(
-                                                new GiftResult(false, "gift.daily-limit-reached", remaining));
+                                                new GiftResult(false, "gift.daily-limit-reached", Math.max(0, remaining)));
                                     }
                                 }
                                 
@@ -130,14 +141,14 @@ public class GiftManager {
                                     relationManager.withdrawPoints(sender, totalCostPoints);
                                 }
                                 
-                                int intimacyGained = giftType.getIntimacy() * finalAmount;
+                                int intimacyGained = giftType.getIntimacy();
                                 int newIntimacy = Math.min(relation.getIntimacy() + intimacyGained,
                                         relationManager.getMaxIntimacy());
                                 relation.setIntimacy(newIntimacy);
                                 
-                                dailyData.addGiftSent(finalGiftId, finalAmount);
+                                dailyData.addGiftSent(finalGiftId, 1);
                                 
-                                GiftData giftRecord = new GiftData(sender.getUniqueId(), receiverUuid, finalGiftId, finalAmount);
+                                GiftData giftRecord = new GiftData(sender.getUniqueId(), receiverUuid, finalGiftId, amountPerSend);
                                 giftRecord.setIntimacyGained(intimacyGained);
                                 giftRecord.setSenderName(sender.getName());
                                 
@@ -145,7 +156,6 @@ public class GiftManager {
                                         .thenCompose(v -> dataManager.saveDailyGiftData(dailyData))
                                         .thenCompose(v -> dataManager.createGiftRecord(giftRecord))
                                         .thenApply(v -> {
-                                            // 触发赠礼事件（不可取消）
                                             String receiverName = Bukkit.getOfflinePlayer(receiverUuid).getName();
                                             if (receiverName == null) receiverName = "Unknown";
                                             GiftSendEvent event = new GiftSendEvent(
@@ -154,10 +164,28 @@ public class GiftManager {
                                                     giftRecord, giftType, intimacyGained);
                                             Bukkit.getPluginManager().callEvent(event);
                                             
-                                            return new GiftResult(true, "gift.sent", intimacyGained);
+                                            return new GiftResult(true, "gift.sent", amountPerSend, intimacyGained);
                                         });
                             });
                 });
+    }
+    
+    public int getRemainingDailyLimit(Player player, UUID targetUuid, String giftId) {
+        GiftType giftType = relationManager.getGiftType(giftId);
+        if (giftType == null || !giftType.hasDailyLimit()) {
+            return -1;
+        }
+        
+        if (player.hasPermission(Perms.GIFT_UNLIMITED)) {
+            return -1;
+        }
+        
+        DailyGiftData dailyData = dataManager.getDailyGiftDataSync(player.getUniqueId(), targetUuid);
+        if (dailyData == null) {
+            return giftType.getDailyLimit();
+        }
+        
+        return Math.max(0, giftType.getDailyLimit() - dailyData.getGiftCount(giftId));
     }
     
     public CompletableFuture<GiftResult> buyMemorialItem(Player buyer, String itemId) {
@@ -195,11 +223,17 @@ public class GiftManager {
         private final boolean success;
         private final String messageKey;
         private final int value;
+        private final int intimacyGained;
         
         public GiftResult(boolean success, String messageKey, int value) {
+            this(success, messageKey, value, 0);
+        }
+        
+        public GiftResult(boolean success, String messageKey, int value, int intimacyGained) {
             this.success = success;
             this.messageKey = messageKey;
             this.value = value;
+            this.intimacyGained = intimacyGained;
         }
         
         public boolean isSuccess() {
@@ -212,6 +246,10 @@ public class GiftManager {
         
         public int getValue() {
             return value;
+        }
+        
+        public int getIntimacyGained() {
+            return intimacyGained;
         }
     }
 }
