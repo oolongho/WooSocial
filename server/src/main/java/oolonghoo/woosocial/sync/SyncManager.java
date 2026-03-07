@@ -5,8 +5,7 @@ import com.oolonghoo.woosocial.sync.handler.BungeeSyncHandler;
 import com.oolonghoo.woosocial.sync.handler.MySQLSyncHandler;
 import com.oolonghoo.woosocial.sync.handler.RedisSyncHandler;
 import com.oolonghoo.woosocial.sync.handler.SyncHandler;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import com.oolonghoo.woosocial.sync.handler.VelocitySyncHandler;
 
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -70,10 +69,7 @@ public class SyncManager {
     private SyncHandler createHandler(SyncMode mode) {
         return switch (mode) {
             case BUNGEE -> new BungeeSyncHandler(plugin, this);
-            case VELOCITY -> {
-                plugin.getLogger().warning("[Sync] Velocity 同步暂未实现，将使用 MySQL 轮询");
-                yield new MySQLSyncHandler(plugin, this);
-            }
+            case VELOCITY -> new VelocitySyncHandler(plugin, this);
             case REDIS -> {
                 if (config.isRedisEnabled()) {
                     yield new RedisSyncHandler(plugin, this);

@@ -8,14 +8,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
 
 public class VelocitySyncHandler implements SyncHandler, PluginMessageListener {
     
     private static final String CHANNEL_NAME = "woosocial:sync";
-    private static final String VELOCITY_CHANNEL = "velocity:main";
     
     private final WooSocial plugin;
     private final SyncManager syncManager;
@@ -68,17 +65,7 @@ public class VelocitySyncHandler implements SyncHandler, PluginMessageListener {
                 }
                 
                 byte[] messageData = message.toBytes();
-                
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                DataOutputStream out = new DataOutputStream(stream);
-                
-                out.writeUTF("Forward");
-                out.writeUTF("ALL");
-                out.writeUTF(CHANNEL_NAME);
-                out.writeShort(messageData.length);
-                out.write(messageData);
-                
-                player.sendPluginMessage(plugin, VELOCITY_CHANNEL, stream.toByteArray());
+                player.sendPluginMessage(plugin, CHANNEL_NAME, messageData);
             } catch (Exception e) {
                 plugin.getLogger().warning("[Sync] 发送消息失败: " + e.getMessage());
             }
@@ -93,18 +80,7 @@ public class VelocitySyncHandler implements SyncHandler, PluginMessageListener {
         
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
-                
-                String subChannel = in.readUTF();
-                if (!subChannel.equals(CHANNEL_NAME)) {
-                    return;
-                }
-                
-                short dataLength = in.readShort();
-                byte[] data = new byte[dataLength];
-                in.readFully(data);
-                
-                SyncMessage syncMessage = SyncMessage.fromBytes(data);
+                SyncMessage syncMessage = SyncMessage.fromBytes(message);
                 if (syncMessage != null && !syncMessage.getSourceServer().equals(syncManager.getServerName())) {
                     syncManager.handleIncomingMessage(syncMessage);
                 }
