@@ -41,7 +41,9 @@ public class FriendDetailGUI extends BaseGUI {
     private static final int ALLOW_TELEPORT_SLOT = 12;
     private static final int FAVORITE_SLOT = 13;
     private static final int SEND_MAIL_SLOT = 14;
-    private static final int REMOVE_FRIEND_SLOT = 15;
+    private static final int GIFT_SLOT = 15;
+    private static final int RELATION_SLOT = 16;
+    private static final int REMOVE_FRIEND_SLOT = 17;
     
     public FriendDetailGUI(WooSocial plugin, Player viewer, UUID friendUuid, String friendName) {
         super(plugin, viewer, "friend_detail");
@@ -113,6 +115,8 @@ public class FriendDetailGUI extends BaseGUI {
         inventory.setItem(ALLOW_TELEPORT_SLOT, createAllowTeleportButton());
         inventory.setItem(FAVORITE_SLOT, createFavoriteButton());
         inventory.setItem(SEND_MAIL_SLOT, createSendMailButton());
+        inventory.setItem(GIFT_SLOT, createGiftButton());
+        inventory.setItem(RELATION_SLOT, createRelationButton());
         inventory.setItem(REMOVE_FRIEND_SLOT, createRemoveFriendButton());
     }
     
@@ -296,6 +300,38 @@ public class FriendDetailGUI extends BaseGUI {
         return item;
     }
     
+    private ItemStack createGiftButton() {
+        ItemStack item = new ItemStack(Material.GOLD_INGOT);
+        var meta = item.getItemMeta();
+        meta.displayName(Component.text("赠送礼物", NamedTextColor.GOLD));
+        
+        List<Component> lore = new ArrayList<>();
+        lore.add(Component.text("赠送礼物增加亲密度", NamedTextColor.GRAY));
+        lore.add(Component.empty());
+        lore.add(Component.text("点击选择礼物", NamedTextColor.AQUA));
+        
+        meta.lore(lore);
+        item.setItemMeta(meta);
+        
+        return item;
+    }
+    
+    private ItemStack createRelationButton() {
+        ItemStack item = new ItemStack(Material.ROSE_BUSH);
+        var meta = item.getItemMeta();
+        meta.displayName(Component.text("查看关系", NamedTextColor.LIGHT_PURPLE));
+        
+        List<Component> lore = new ArrayList<>();
+        lore.add(Component.text("查看与TA的关系详情", NamedTextColor.GRAY));
+        lore.add(Component.empty());
+        lore.add(Component.text("点击查看", NamedTextColor.AQUA));
+        
+        meta.lore(lore);
+        item.setItemMeta(meta);
+        
+        return item;
+    }
+    
     private String formatTime(long timestamp) {
         if (timestamp <= 0) {
             return messageManager.get("gui.placeholder-never");
@@ -348,6 +384,14 @@ public class FriendDetailGUI extends BaseGUI {
                 
             case SEND_MAIL_SLOT:
                 handleSendMail(player);
+                break;
+                
+            case GIFT_SLOT:
+                new GiftShopGUI(plugin, player, friendUUID, friendName).open(player);
+                break;
+                
+            case RELATION_SLOT:
+                new RelationDetailGUI(plugin, player, friendUUID, friendName).open(player);
                 break;
                 
             case REMOVE_FRIEND_SLOT:

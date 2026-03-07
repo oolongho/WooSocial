@@ -1,10 +1,10 @@
-title: "<dark_gray>礼物商店 - 赠送给 {receiver_name}"
+title: "<dark_gray>收到的礼物"
 
 layout:
   - '#1######'
-  - '#rrrrrrr#'
-  - '#rrrrrrr#'
-  - '#rrrrrrr#'
+  - '#ggggggg#'
+  - '#ggggggg#'
+  - '#ggggggg#'
   - '#########'
   - '#<#####>#'
 
@@ -17,9 +17,9 @@ icons:
     material: BOOK
     name: "<yellow>返回"
     lore:
-      - "<gray>返回好友详情"
+      - "<gray>返回社交菜单"
     actions:
-      left: [open_gui:friend_detail, sound:entity_mule_chest]
+      left: [open_gui:social_main, sound:entity_mule_chest]
   
   '<':
     material: SPECTRAL_ARROW

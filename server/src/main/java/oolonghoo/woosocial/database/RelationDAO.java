@@ -292,6 +292,31 @@ public class RelationDAO {
         });
     }
     
+    public CompletableFuture<List<GiftData>> getReceivedGifts(UUID receiverUuid, int limit) {
+        return CompletableFuture.supplyAsync(() -> {
+            String sql = "SELECT * FROM `" + tablePrefix + "gifts` " +
+                    "WHERE `receiver_uuid` = ? " +
+                    "ORDER BY `send_time` DESC LIMIT ?";
+            List<GiftData> gifts = new ArrayList<>();
+            
+            try (Connection connection = databaseManager.getConnection();
+                 PreparedStatement statement = connection.prepareStatement(sql)) {
+                
+                statement.setString(1, receiverUuid.toString());
+                statement.setInt(2, limit);
+                
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    while (resultSet.next()) {
+                        gifts.add(mapResultSetToGiftData(resultSet));
+                    }
+                }
+            } catch (SQLException e) {
+                plugin.getLogger().log(Level.SEVERE, "获取收到的礼物列表失败", e);
+            }
+            return gifts;
+        });
+    }
+    
     public CompletableFuture<Optional<DailyGiftData>> getDailyGiftData(UUID playerUuid, UUID targetUuid, String date) {
         return CompletableFuture.supplyAsync(() -> {
             String sql = "SELECT * FROM `" + tablePrefix + "daily_gifts` " +

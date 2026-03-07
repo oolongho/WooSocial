@@ -166,6 +166,19 @@ public class RelationDataManager {
         return relationDAO.getGiftHistory(senderUuid, receiverUuid, limit);
     }
     
+    public CompletableFuture<List<GiftData>> getReceivedGifts(UUID receiverUuid, int limit) {
+        return relationDAO.getReceivedGifts(receiverUuid, limit);
+    }
+    
+    public CompletableFuture<Boolean> removeRelation(UUID playerUuid, UUID friendUuid) {
+        return relationDAO.deleteRelation(playerUuid, friendUuid).thenApply(success -> {
+            if (success) {
+                uncacheRelation(playerUuid, friendUuid);
+            }
+            return success;
+        });
+    }
+    
     private void cacheRelation(RelationData relation) {
         Map<UUID, RelationData> playerRelations = relationCache.get(relation.getPlayerUuid());
         if (playerRelations == null) {

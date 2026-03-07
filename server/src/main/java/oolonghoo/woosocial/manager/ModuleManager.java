@@ -273,4 +273,13 @@ public class ModuleManager {
     public MailModule getMailModule() {
         return getModule("mail", MailModule.class);
     }
+    
+    /**
+     * 获取关系模块
+     * 
+     * @return 关系模块实例，如果未加载则返回null
+     */
+    public com.oolonghoo.woosocial.module.relation.RelationModule getRelationModule() {
+        return getModule("relation", com.oolonghoo.woosocial.module.relation.RelationModule.class);
+    }
 }

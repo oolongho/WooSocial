@@ -3,6 +3,7 @@ package com.oolonghoo.woosocial.gui;
 import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.module.friend.FriendDataManager;
 import com.oolonghoo.woosocial.module.mail.MailDataManager;
+import com.oolonghoo.woosocial.module.relation.RelationDataManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
@@ -17,20 +18,24 @@ public class SocialMainGUI extends BaseGUI {
     
     private final FriendDataManager friendDataManager;
     private final MailDataManager mailDataManager;
+    private final RelationDataManager relationDataManager;
     private final UUID viewerUUID;
     
     private static final int FRIEND_LIST_SLOT = 10;
     private static final int FRIEND_REQUESTS_SLOT = 11;
     private static final int MAIL_SLOT = 12;
-    private static final int SOCIAL_SETTINGS_SLOT = 13;
-    private static final int BLOCKED_LIST_SLOT = 14;
-    private static final int HELP_SLOT = 15;
-    private static final int PERSONAL_INFO_SLOT = 16;
+    private static final int RELATION_LIST_SLOT = 13;
+    private static final int GIFT_HISTORY_SLOT = 14;
+    private static final int SOCIAL_SETTINGS_SLOT = 15;
+    private static final int BLOCKED_LIST_SLOT = 16;
+    private static final int HELP_SLOT = 19;
+    private static final int PERSONAL_INFO_SLOT = 20;
     
     public SocialMainGUI(WooSocial plugin, Player viewer) {
         super(plugin, viewer, "social_main");
         this.friendDataManager = plugin.getModuleManager().getFriendModule().getDataManager();
         this.mailDataManager = plugin.getModuleManager().getMailModule().getDataManager();
+        this.relationDataManager = plugin.getModuleManager().getRelationModule().getDataManager();
         this.viewerUUID = viewer.getUniqueId();
         
         setupItems();
@@ -47,6 +52,8 @@ public class SocialMainGUI extends BaseGUI {
         inventory.setItem(FRIEND_LIST_SLOT, createFriendListButton());
         inventory.setItem(FRIEND_REQUESTS_SLOT, createFriendRequestsButton());
         inventory.setItem(MAIL_SLOT, createMailButton());
+        inventory.setItem(RELATION_LIST_SLOT, createRelationListButton());
+        inventory.setItem(GIFT_HISTORY_SLOT, createGiftHistoryButton());
         inventory.setItem(SOCIAL_SETTINGS_SLOT, createSocialSettingsButton());
         inventory.setItem(BLOCKED_LIST_SLOT, createBlockedListButton());
         inventory.setItem(HELP_SLOT, createHelpButton());
@@ -121,6 +128,36 @@ public class SocialMainGUI extends BaseGUI {
         return item;
     }
     
+    private ItemStack createRelationListButton() {
+        ItemStack item = new ItemStack(Material.ROSE_BUSH);
+        var meta = item.getItemMeta();
+        meta.displayName(Component.text("我的关系", NamedTextColor.LIGHT_PURPLE));
+        
+        List<Component> lore = new ArrayList<>();
+        lore.add(Component.text("查看和管理好友关系", NamedTextColor.GRAY));
+        lore.add(Component.empty());
+        lore.add(Component.text("点击查看", NamedTextColor.AQUA));
+        
+        meta.lore(lore);
+        item.setItemMeta(meta);
+        return item;
+    }
+    
+    private ItemStack createGiftHistoryButton() {
+        ItemStack item = new ItemStack(Material.GOLD_INGOT);
+        var meta = item.getItemMeta();
+        meta.displayName(Component.text("礼物记录", NamedTextColor.GOLD));
+        
+        List<Component> lore = new ArrayList<>();
+        lore.add(Component.text("查看收到的礼物", NamedTextColor.GRAY));
+        lore.add(Component.empty());
+        lore.add(Component.text("点击查看", NamedTextColor.AQUA));
+        
+        meta.lore(lore);
+        item.setItemMeta(meta);
+        return item;
+    }
+    
     private ItemStack createSocialSettingsButton() {
         ItemStack item = new ItemStack(Material.CRAFTING_TABLE);
         var meta = item.getItemMeta();
@@ -167,6 +204,8 @@ public class SocialMainGUI extends BaseGUI {
         lore.add(Component.text("/tpf <好友> - 传送到好友", NamedTextColor.GRAY));
         lore.add(Component.text("/tpftoggle - 切换传送权限", NamedTextColor.GRAY));
         lore.add(Component.text("/mail - 打开邮箱", NamedTextColor.GRAY));
+        lore.add(Component.text("/gift - 赠送礼物", NamedTextColor.GRAY));
+        lore.add(Component.text("/relation - 关系管理", NamedTextColor.GRAY));
         
         meta.lore(lore);
         item.setItemMeta(meta);
@@ -219,6 +258,14 @@ public class SocialMainGUI extends BaseGUI {
                 
             case MAIL_SLOT:
                 plugin.getModuleManager().getMailModule().getMailManager().openMailListGUI(player, 1);
+                break;
+                
+            case RELATION_LIST_SLOT:
+                new RelationListGUI(plugin, player).open(player);
+                break;
+                
+            case GIFT_HISTORY_SLOT:
+                new GiftHistoryGUI(plugin, player).open(player);
                 break;
                 
             case SOCIAL_SETTINGS_SLOT:
