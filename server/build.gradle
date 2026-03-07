@@ -16,6 +16,9 @@ dependencies {
     // PlayerPoints is optional - use local jar or download from SpigotMC
     // compileOnly files("libs/PlayerPoints.jar")
     
+    // WooEco - local economy plugin
+    compileOnly files("../oolongho/WooEco/build/libs/WooEco-1.1.5.jar")
+    
     // Database dependencies
     implementation "com.zaxxer:HikariCP:5.1.0"
     implementation "org.xerial:sqlite-jdbc:3.45.1.0"

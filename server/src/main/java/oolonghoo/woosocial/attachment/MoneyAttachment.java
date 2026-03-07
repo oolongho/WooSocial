@@ -1,7 +1,8 @@
 package com.oolonghoo.woosocial.attachment;
 
 import com.oolonghoo.woosocial.WooSocial;
-import com.oolonghoo.woosocial.hook.VaultHook;
+import com.oolonghoo.woosocial.hook.EconomyHook;
+import com.oolonghoo.woosocial.module.relation.RelationManager;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.bukkit.Bukkit;
@@ -13,29 +14,14 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * 金币附件实现
- * 存储金币金额，领取时通过Vault存入玩家账户
- * 
- * @author oolongho
- * @version 1.0.0
- */
 public class MoneyAttachment implements IAttachment {
     
     private double amount;
     
-    /**
-     * 默认构造函数
-     */
     public MoneyAttachment() {
         this.amount = 0;
     }
     
-    /**
-     * 创建金币附件
-     * 
-     * @param amount 金币数量
-     */
     public MoneyAttachment(double amount) {
         this.amount = amount;
     }
@@ -46,14 +32,12 @@ public class MoneyAttachment implements IAttachment {
             return false;
         }
         
-        // 获取VaultHook实例
-        VaultHook vaultHook = getVaultHook();
-        if (vaultHook == null || !vaultHook.isEnabled()) {
+        EconomyHook economyHook = getEconomyHook();
+        if (economyHook == null || !economyHook.isEnabled()) {
             return false;
         }
         
-        // 存入金币
-        return vaultHook.deposit(player, amount);
+        return economyHook.deposit(player, amount);
     }
     
     @Override
@@ -76,7 +60,6 @@ public class MoneyAttachment implements IAttachment {
             this.amount = obj.get("amount").getAsDouble();
             return this;
         } catch (Exception e) {
-            // 解析失败
         }
         
         return null;
@@ -118,50 +101,32 @@ public class MoneyAttachment implements IAttachment {
         return "§6" + formatAmount();
     }
     
-    /**
-     * 格式化金额显示
-     * 
-     * @return 格式化后的金额字符串
-     */
     private String formatAmount() {
-        VaultHook vaultHook = getVaultHook();
-        if (vaultHook != null && vaultHook.isEnabled()) {
-            return vaultHook.format(amount);
+        EconomyHook economyHook = getEconomyHook();
+        if (economyHook != null && economyHook.isEnabled()) {
+            return economyHook.format(amount);
         }
         return String.format("%.2f 金币", amount);
     }
     
-    /**
-     * 获取VaultHook实例
-     * 
-     * @return VaultHook实例，可能为null
-     */
-    private VaultHook getVaultHook() {
+    private EconomyHook getEconomyHook() {
         WooSocial plugin = (WooSocial) Bukkit.getPluginManager().getPlugin("WooSocial");
         if (plugin == null) {
             return null;
         }
         
-        // 通过模块管理器获取经济Hook
-        // 注意：这里需要根据实际项目的Hook管理方式调整
-        // 暂时返回null，实际使用时需要从插件获取
-        return null;
+        RelationManager relationManager = plugin.getRelationModule().getRelationManager();
+        if (relationManager == null) {
+            return null;
+        }
+        
+        return relationManager.getPrimaryEconomyHook();
     }
     
-    /**
-     * 获取金币数量
-     * 
-     * @return 金币数量
-     */
     public double getAmount() {
         return amount;
     }
     
-    /**
-     * 设置金币数量
-     * 
-     * @param amount 金币数量
-     */
     public void setAmount(double amount) {
         this.amount = amount;
     }

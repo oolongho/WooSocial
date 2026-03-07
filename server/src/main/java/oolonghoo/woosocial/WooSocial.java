@@ -389,6 +389,20 @@ public class WooSocial extends JavaPlugin {
         return moduleManager;
     }
     
+    /**
+     * 获取关系模块
+     */
+    public com.oolonghoo.woosocial.module.relation.RelationModule getRelationModule() {
+        return (com.oolonghoo.woosocial.module.relation.RelationModule) moduleManager.getModule("relation");
+    }
+    
+    /**
+     * 获取邮箱模块
+     */
+    public com.oolonghoo.woosocial.module.mail.MailModule getMailModule() {
+        return (com.oolonghoo.woosocial.module.mail.MailModule) moduleManager.getModule("mail");
+    }
+    
     public com.oolonghoo.woosocial.gui.config.GUIConfigManager getGuiConfigManager() {
         return guiConfigManager;
     }

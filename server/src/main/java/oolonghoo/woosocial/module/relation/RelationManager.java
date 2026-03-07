@@ -7,6 +7,7 @@ import com.oolonghoo.woosocial.config.RelationTypeConfig;
 import com.oolonghoo.woosocial.hook.EconomyHook;
 import com.oolonghoo.woosocial.hook.PlayerPointsHook;
 import com.oolonghoo.woosocial.hook.VaultHook;
+import com.oolonghoo.woosocial.hook.WooEcoHook;
 import com.oolonghoo.woosocial.manager.ConfigManager;
 import com.oolonghoo.woosocial.model.RelationData;
 import com.oolonghoo.woosocial.module.relation.type.GiftType;
@@ -31,8 +32,10 @@ public class RelationManager {
     private MemorialItemConfig memorialItemConfig;
     private RelationTypeConfig relationTypeConfig;
     
+    private WooEcoHook wooEcoHook;
     private VaultHook vaultHook;
     private PlayerPointsHook playerPointsHook;
+    private EconomyHook primaryEconomyHook;
     
     private int dailyFreeCoins;
     private int maxIntimacy;
@@ -62,9 +65,18 @@ public class RelationManager {
     }
     
     private void setupEconomy() {
-        vaultHook = new VaultHook(plugin);
-        if (!vaultHook.setup()) {
-            plugin.getLogger().warning("Vault 经济系统连接失败，部分功能将不可用");
+        wooEcoHook = new WooEcoHook();
+        if (wooEcoHook.setup()) {
+            primaryEconomyHook = wooEcoHook;
+            plugin.getLogger().info("已连接 WooEco 经济系统（直接API模式）");
+        } else {
+            vaultHook = new VaultHook(plugin);
+            if (vaultHook.setup()) {
+                primaryEconomyHook = vaultHook;
+            } else {
+                plugin.getLogger().warning("未找到经济系统提供者，部分功能将不可用");
+                plugin.getLogger().info("提示：请安装 WooEco 或 EssentialsX+CMI 等经济插件");
+            }
         }
         
         playerPointsHook = new PlayerPointsHook(plugin);
@@ -113,7 +125,7 @@ public class RelationManager {
     }
     
     public boolean hasEnoughCoins(Player player, int amount) {
-        return vaultHook.isEnabled() && vaultHook.has(player, amount);
+        return primaryEconomyHook != null && primaryEconomyHook.has(player, amount);
     }
     
     public boolean hasEnoughPoints(Player player, int amount) {
@@ -121,7 +133,7 @@ public class RelationManager {
     }
     
     public boolean withdrawCoins(Player player, int amount) {
-        return vaultHook.isEnabled() && vaultHook.withdraw(player, amount);
+        return primaryEconomyHook != null && primaryEconomyHook.withdraw(player, amount);
     }
     
     public boolean withdrawPoints(Player player, int amount) {
@@ -129,14 +141,22 @@ public class RelationManager {
     }
     
     public boolean depositCoins(Player player, int amount) {
-        return vaultHook.isEnabled() && vaultHook.deposit(player, amount);
+        return primaryEconomyHook != null && primaryEconomyHook.deposit(player, amount);
     }
     
     public String formatCoins(int amount) {
-        return vaultHook.isEnabled() ? vaultHook.format(amount) : String.valueOf(amount);
+        return primaryEconomyHook != null ? primaryEconomyHook.format(amount) : String.valueOf(amount);
     }
     
-    public EconomyHook getVaultHook() {
+    public EconomyHook getPrimaryEconomyHook() {
+        return primaryEconomyHook;
+    }
+    
+    public WooEcoHook getWooEcoHook() {
+        return wooEcoHook;
+    }
+    
+    public VaultHook getVaultHook() {
         return vaultHook;
     }
     
@@ -144,12 +164,24 @@ public class RelationManager {
         return playerPointsHook;
     }
     
+    public boolean isEconomyEnabled() {
+        return primaryEconomyHook != null && primaryEconomyHook.isEnabled();
+    }
+    
+    public boolean isWooEcoEnabled() {
+        return wooEcoHook != null && wooEcoHook.isEnabled();
+    }
+    
     public boolean isVaultEnabled() {
-        return vaultHook.isEnabled();
+        return vaultHook != null && vaultHook.isEnabled();
     }
     
     public boolean isPlayerPointsEnabled() {
         return playerPointsHook.isEnabled();
+    }
+    
+    public String getEconomyProviderName() {
+        return primaryEconomyHook != null ? primaryEconomyHook.getName() : "None";
     }
     
     public int getDailyFreeCoins() {
