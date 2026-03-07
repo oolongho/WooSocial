@@ -1,0 +1,17 @@
+package com.oolonghoo.woosocial.sync;
+
+public enum SyncMessageType {
+    FRIEND_REQUEST,
+    FRIEND_ACCEPT,
+    FRIEND_DENY,
+    FRIEND_REMOVE,
+    PLAYER_ONLINE,
+    PLAYER_OFFLINE,
+    PLAYER_SWITCH_SERVER,
+    NOTIFY_ONLINE,
+    BLOCK_PLAYER,
+    UNBLOCK_PLAYER,
+    TELEPORT_REQUEST,
+    TELEPORT_ACCEPT,
+    TELEPORT_DENY
+}
