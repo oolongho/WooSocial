@@ -3,6 +3,7 @@ package com.oolonghoo.woosocial.module.mail.gui;
 import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.config.MessageManager;
 import com.oolonghoo.woosocial.gui.BaseGUI;
+import com.oolonghoo.woosocial.gui.LoadingState;
 import com.oolonghoo.woosocial.model.MailData;
 import com.oolonghoo.woosocial.util.ItemSerializer;
 import net.kyori.adventure.text.Component;
@@ -24,15 +25,17 @@ public class MailDetailGUI extends BaseGUI {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     
     private final MailData mail;
+    private final LoadingState loadingState;
     
     private static final int BACK_SLOT = 0;
     private static final int ITEM_SLOT = 4;
     private static final int CLAIM_SLOT = 47;
     private static final int DELETE_SLOT = 48;
     
-    public MailDetailGUI(WooSocial plugin, Player viewer, MailData mail) {
+    public MailDetailGUI(WooSocial plugin, Player viewer, MailData mail, LoadingState loadingState) {
         super(plugin, viewer, "mail_detail");
         this.mail = mail;
+        this.loadingState = loadingState;
         
         setupItems();
     }
@@ -116,6 +119,12 @@ public class MailDetailGUI extends BaseGUI {
     
     @Override
     public void handleClick(int slot, Player player, int clickType) {
+        // 检查是否处于处理中状态
+        if (loadingState.isLoading(player.getUniqueId())) {
+            messageManager.send(player, "mail.processing");
+            return;
+        }
+        
         if (slot == BACK_SLOT) {
             plugin.getModuleManager().getMailModule().getMailManager().openMailListGUI(player, 1);
             return;
@@ -123,6 +132,8 @@ public class MailDetailGUI extends BaseGUI {
         
         if (slot == CLAIM_SLOT) {
             if (!mail.isClaimed()) {
+                // 设置处理中状态
+                loadingState.setLoading(player.getUniqueId(), true);
                 player.closeInventory();
                 plugin.getModuleManager().getMailModule().getMailManager().claimMail(player, mail.getId());
             }

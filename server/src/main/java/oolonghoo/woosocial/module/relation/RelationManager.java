@@ -12,6 +12,10 @@ import com.oolonghoo.woosocial.model.RelationData;
 import com.oolonghoo.woosocial.module.relation.type.GiftType;
 import com.oolonghoo.woosocial.module.relation.type.MemorialItem;
 import com.oolonghoo.woosocial.module.relation.type.RelationType;
+import oolonghoo.woosocial.event.RelationProposeEvent;
+import oolonghoo.woosocial.event.RelationAcceptEvent;
+import oolonghoo.woosocial.event.RelationRemoveEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -177,6 +181,8 @@ public class RelationManager {
     }
     
     public CompletableFuture<RelationResult> proposeRelation(Player proposer, UUID targetUuid, RelationType type) {
+        final RelationType originalType = type;
+        
         return dataManager.getRelation(proposer.getUniqueId(), targetUuid)
                 .thenCompose(optRelation -> {
                     if (optRelation.isEmpty()) {
@@ -186,26 +192,41 @@ public class RelationManager {
                     
                     RelationData relation = optRelation.get();
                     
-                    if (relation.getIntimacy() < type.getRequiredIntimacy()) {
+                    if (relation.getIntimacy() < originalType.getRequiredIntimacy()) {
                         return CompletableFuture.completedFuture(
                                 new RelationResult(false, "relation.intimacy-not-enough"));
                     }
                     
-                    if (type.requiresItem()) {
-                        MemorialItem item = getMemorialItem(type.getRequireItem());
+                    if (originalType.requiresItem()) {
+                        MemorialItem item = getMemorialItem(originalType.getRequireItem());
                         if (item == null) {
                             return CompletableFuture.completedFuture(
                                     new RelationResult(false, "relation.item-not-found"));
                         }
                     }
                     
-                    return canSetRelation(proposer.getUniqueId(), type).thenCompose(canSet -> {
+                    return canSetRelation(proposer.getUniqueId(), originalType).thenCompose(canSet -> {
                         if (!canSet) {
                             return CompletableFuture.completedFuture(
                                     new RelationResult(false, "relation.slots-full"));
                         }
                         
-                        relation.setRelationType(type.getId());
+                        String targetName = Bukkit.getOfflinePlayer(targetUuid).getName();
+                        if (targetName == null) {
+                            targetName = "Unknown";
+                        }
+                        RelationProposeEvent event = new RelationProposeEvent(
+                                proposer.getUniqueId(), proposer.getName(),
+                                targetUuid, targetName, originalType);
+                        Bukkit.getPluginManager().callEvent(event);
+                        if (event.isCancelled()) {
+                            return CompletableFuture.completedFuture(
+                                    new RelationResult(false, event.getCancelReason()));
+                        }
+                        
+                        final RelationType finalType = event.getRelationType();
+                        
+                        relation.setRelationType(finalType.getId());
                         relation.setProposalTime(System.currentTimeMillis());
                         
                         return dataManager.updateRelation(relation).thenApply(success -> {
@@ -262,19 +283,55 @@ public class RelationManager {
                                             return dataManager.updateRelation(reverse);
                                         }
                                         return CompletableFuture.completedFuture(true);
-                                    }).thenApply(v -> new RelationResult(true, "relation.accepted"));
+                                    }).thenApply(v -> {
+                                        // 触发关系确认事件（不可取消）
+                                        String accepterName = Bukkit.getOfflinePlayer(playerUuid).getName();
+                                        String proposerName = Bukkit.getOfflinePlayer(proposerUuid).getName();
+                                        if (accepterName == null) accepterName = "Unknown";
+                                        if (proposerName == null) proposerName = "Unknown";
+                                        RelationAcceptEvent event = new RelationAcceptEvent(
+                                                playerUuid, accepterName,
+                                                proposerUuid, proposerName,
+                                                relation, type);
+                                        Bukkit.getPluginManager().callEvent(event);
+                                        
+                                        return new RelationResult(true, "relation.accepted");
+                                    });
                         });
                     });
                 });
     }
     
     public CompletableFuture<RelationResult> removeRelation(UUID playerUuid, UUID friendUuid) {
-        return dataManager.deleteRelationBoth(playerUuid, friendUuid)
-                .thenApply(success -> {
-                    if (success) {
-                        return new RelationResult(true, "relation.removed");
+        return dataManager.getRelation(playerUuid, friendUuid)
+                .thenCompose(optRelation -> {
+                    if (optRelation.isEmpty()) {
+                        return CompletableFuture.completedFuture(
+                                new RelationResult(false, "relation.not-found"));
                     }
-                    return new RelationResult(false, "relation.remove-failed");
+                    
+                    RelationData relation = optRelation.get();
+                    RelationType type = getRelationType(relation.getRelationType());
+                    
+                    return dataManager.deleteRelationBoth(playerUuid, friendUuid)
+                            .thenApply(success -> {
+                                if (success) {
+                                    // 触发关系解除事件（不可取消）
+                                    String initiatorName = Bukkit.getOfflinePlayer(playerUuid).getName();
+                                    String targetName = Bukkit.getOfflinePlayer(friendUuid).getName();
+                                    if (initiatorName == null) initiatorName = "Unknown";
+                                    if (targetName == null) targetName = "Unknown";
+                                    RelationRemoveEvent event = new RelationRemoveEvent(
+                                            playerUuid, initiatorName,
+                                            friendUuid, targetName,
+                                            relation, type,
+                                            RelationRemoveEvent.RemoveReason.PLAYER_REMOVE);
+                                    Bukkit.getPluginManager().callEvent(event);
+                                    
+                                    return new RelationResult(true, "relation.removed");
+                                }
+                                return new RelationResult(false, "relation.remove-failed");
+                            });
                 });
     }
     

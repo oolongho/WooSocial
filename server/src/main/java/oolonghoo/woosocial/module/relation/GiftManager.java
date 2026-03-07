@@ -6,6 +6,8 @@ import com.oolonghoo.woosocial.model.DailyGiftData;
 import com.oolonghoo.woosocial.model.GiftData;
 import com.oolonghoo.woosocial.model.RelationData;
 import com.oolonghoo.woosocial.module.relation.type.GiftType;
+import oolonghoo.woosocial.event.GiftSendEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -60,7 +62,18 @@ public class GiftManager {
                                 return dataManager.updateRelation(relation)
                                         .thenCompose(v -> dataManager.saveDailyGiftData(dailyData))
                                         .thenCompose(v -> dataManager.createGiftRecord(giftRecord))
-                                        .thenApply(v -> new GiftResult(true, "gift.coins-sent", intimacyGained));
+                                        .thenApply(v -> {
+                                            // 触发赠礼事件（不可取消）
+                                            String receiverName = Bukkit.getOfflinePlayer(receiverUuid).getName();
+                                            if (receiverName == null) receiverName = "Unknown";
+                                            GiftSendEvent event = new GiftSendEvent(
+                                                    sender.getUniqueId(), sender.getName(),
+                                                    receiverUuid, receiverName,
+                                                    giftRecord, null, intimacyGained);
+                                            Bukkit.getPluginManager().callEvent(event);
+                                            
+                                            return new GiftResult(true, "gift.coins-sent", intimacyGained);
+                                        });
                             });
                 });
     }
@@ -131,7 +144,18 @@ public class GiftManager {
                                 return dataManager.updateRelation(relation)
                                         .thenCompose(v -> dataManager.saveDailyGiftData(dailyData))
                                         .thenCompose(v -> dataManager.createGiftRecord(giftRecord))
-                                        .thenApply(v -> new GiftResult(true, "gift.sent", intimacyGained));
+                                        .thenApply(v -> {
+                                            // 触发赠礼事件（不可取消）
+                                            String receiverName = Bukkit.getOfflinePlayer(receiverUuid).getName();
+                                            if (receiverName == null) receiverName = "Unknown";
+                                            GiftSendEvent event = new GiftSendEvent(
+                                                    sender.getUniqueId(), sender.getName(),
+                                                    receiverUuid, receiverName,
+                                                    giftRecord, giftType, intimacyGained);
+                                            Bukkit.getPluginManager().callEvent(event);
+                                            
+                                            return new GiftResult(true, "gift.sent", intimacyGained);
+                                        });
                             });
                 });
     }

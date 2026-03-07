@@ -287,12 +287,34 @@ mail:
   click-to-claim: "&aClick to claim item"
   shift-click-delete: "&cShift+Click to delete"
   
+  # Loading state messages
+  loading: "&eLoading, please wait..."
+  processing: "&eProcessing, please wait..."
+  
   help-header: "&e========== Mail Help =========="
   help-list: "&a/mail &7- Open mailbox"
   help-send: "&a/mail send <player> &7- Send item"
   help-claim: "&a/mail claim <id> &7- Claim item"
   help-delete: "&a/mail delete <id> &7- Delete mail"
   help-bulk: "&a/mail bulk all &7- Bulk send (Admin)"
+  help-sendall: "&a/mail sendall &7- Send to all players (Admin)"
+  help-sendonline: "&a/mail sendonline &7- Send to online players (Admin)"
+  
+  # System mail
+  system:
+    sending-all: "&eSending system mail to all players..."
+    sending-online: "&eSending system mail to online players..."
+    sendall-success: "&aSuccessfully sent system mail to %count%/%total% players!"
+    sendall-failed: "&cFailed to send system mail!"
+    sendonline-success: "&aSuccessfully sent system mail to %count%/%total% online players!"
+    sendonline-failed: "&cFailed to send system mail!"
+    send-success: "&aSuccessfully sent system mail to %count%/%total% players!"
+    send-failed: "&cFailed to send system mail!"
+    receive-notify: "&eYou received a system mail! Item: %item%"
+    no-targets: "&cNo target players specified!"
+    no-valid-targets: "&cNo valid target players!"
+    players-not-found: "&cPlayers not found: %players%"
+    console-item-required: "&cConsole execution requires item parameter!"
 
 # ==================== Relation System ====================
 relation:

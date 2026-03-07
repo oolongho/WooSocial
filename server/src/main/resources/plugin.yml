@@ -138,6 +138,12 @@ permissions:
   woosocial.mail.admin:
     description: Mail admin permission
     default: op
+  woosocial.mail.sendall:
+    description: Send system mail to all players
+    default: op
+  woosocial.mail.sendonline:
+    description: Send system mail to online players
+    default: op
   
   # Relation permissions
   woosocial.relation:

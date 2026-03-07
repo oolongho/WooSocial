@@ -166,6 +166,21 @@ public class Perms {
      */
     public static final String MAIL_ADMIN = "woosocial.mail.admin";
     
+    /**
+     * 定时邮件权限
+     */
+    public static final String MAIL_SCHEDULE = "woosocial.mail.schedule";
+    
+    /**
+     * 发送系统邮件给所有玩家权限
+     */
+    public static final String MAIL_SENDALL = "woosocial.mail.sendall";
+    
+    /**
+     * 发送系统邮件给在线玩家权限
+     */
+    public static final String MAIL_SENDONLINE = "woosocial.mail.sendonline";
+    
     // ==================== 关系系统权限 ====================
     
     /**

@@ -3,6 +3,7 @@ package com.oolonghoo.woosocial.module.mail.gui;
 import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.config.MessageManager;
 import com.oolonghoo.woosocial.gui.BaseGUI;
+import com.oolonghoo.woosocial.gui.LoadingState;
 import com.oolonghoo.woosocial.model.MailData;
 import com.oolonghoo.woosocial.util.ItemSerializer;
 import net.kyori.adventure.text.Component;
@@ -26,12 +27,14 @@ public class MailListGUI extends BaseGUI {
     private final List<MailData> mails;
     private final int currentPage;
     private final int totalPages;
+    private final LoadingState loadingState;
     
-    public MailListGUI(WooSocial plugin, Player viewer, List<MailData> mails, int currentPage, int totalPages) {
+    public MailListGUI(WooSocial plugin, Player viewer, List<MailData> mails, int currentPage, int totalPages, LoadingState loadingState) {
         super(plugin, viewer, "mail_list");
         this.mails = mails;
         this.currentPage = currentPage;
         this.totalPages = totalPages;
+        this.loadingState = loadingState;
         
         setupItems();
     }
@@ -135,6 +138,12 @@ public class MailListGUI extends BaseGUI {
     
     @Override
     public void handleClick(int slot, Player player, int clickType) {
+        // 检查是否处于加载状态
+        if (loadingState.isLoading(player.getUniqueId())) {
+            messageManager.send(player, "mail.loading");
+            return;
+        }
+        
         if (slot == BACK_SLOT) {
             player.closeInventory();
             return;

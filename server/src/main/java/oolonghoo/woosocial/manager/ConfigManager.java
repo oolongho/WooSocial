@@ -89,63 +89,99 @@ public class ConfigManager {
      * @return "mysql" 或 "sqlite"
      */
     public String getDatabaseType() {
-        return config.getString("storage.type", "sqlite").toLowerCase();
+        return config.getString("database.type", "sqlite").toLowerCase();
     }
     
     /**
      * 获取MySQL主机地址
      */
     public String getMySQLHost() {
-        return config.getString("storage.mysql.host", "localhost");
+        return config.getString("database.mysql.host", "localhost");
     }
     
     /**
      * 获取MySQL端口
      */
     public int getMySQLPort() {
-        return config.getInt("storage.mysql.port", 3306);
+        return config.getInt("database.mysql.port", 3306);
     }
     
     /**
      * 获取MySQL数据库名
      */
     public String getMySQLDatabase() {
-        return config.getString("storage.mysql.database", "minecraft");
+        return config.getString("database.mysql.database", "minecraft");
     }
     
     /**
      * 获取MySQL用户名
      */
     public String getMySQLUser() {
-        return config.getString("storage.mysql.user", "root");
+        return config.getString("database.mysql.user", "root");
     }
     
     /**
      * 获取MySQL密码
      */
     public String getMySQLPassword() {
-        return config.getString("storage.mysql.password", "");
+        return config.getString("database.mysql.password", "");
     }
     
     /**
-     * 获取MySQL连接池大小
+     * 获取MySQL连接池大小（已废弃，使用 getPoolMaximumPoolSize）
      */
+    @Deprecated
     public int getMySQLPoolSize() {
-        return config.getInt("storage.mysql.pool-size", 10);
+        return config.getInt("database.pool.maximum-pool-size", 10);
+    }
+    
+    /**
+     * 获取连接池最大连接数
+     */
+    public int getPoolMaximumPoolSize() {
+        return config.getInt("database.pool.maximum-pool-size", 10);
+    }
+    
+    /**
+     * 获取连接池最小空闲连接数
+     */
+    public int getPoolMinimumIdle() {
+        return config.getInt("database.pool.minimum-idle", 2);
+    }
+    
+    /**
+     * 获取连接超时时间（毫秒）
+     */
+    public long getPoolConnectionTimeout() {
+        return config.getLong("database.pool.connection-timeout", 30000L);
+    }
+    
+    /**
+     * 获取空闲连接超时时间（毫秒）
+     */
+    public long getPoolIdleTimeout() {
+        return config.getLong("database.pool.idle-timeout", 600000L);
+    }
+    
+    /**
+     * 获取连接最大生命周期（毫秒）
+     */
+    public long getPoolMaxLifetime() {
+        return config.getLong("database.pool.max-lifetime", 1800000L);
     }
     
     /**
      * 获取数据库表前缀
      */
     public String getTablePrefix() {
-        return config.getString("storage.mysql.table-prefix", "woosocial_");
+        return config.getString("database.mysql.table-prefix", "woosocial_");
     }
     
     /**
      * 获取SQLite数据库文件名
      */
     public String getSQLiteFile() {
-        return config.getString("storage.sqlite.file", "data.db");
+        return config.getString("database.sqlite.file", "data.db");
     }
     
     // ==================== 好友系统配置 ====================

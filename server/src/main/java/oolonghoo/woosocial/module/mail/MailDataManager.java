@@ -7,25 +7,37 @@ import com.oolonghoo.woosocial.sync.SyncManager;
 import com.oolonghoo.woosocial.sync.SyncMessage;
 import com.oolonghoo.woosocial.sync.SyncMessageType;
 import com.oolonghoo.woosocial.util.ItemSerializer;
+import oolonghoo.woosocial.event.MailSendEvent;
+import oolonghoo.woosocial.event.MailClaimEvent;
+import oolonghoo.woosocial.event.MailDeleteEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.Location;
+
+import com.oolonghoo.woosocial.util.LRUCache;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class MailDataManager {
     
     private final WooSocial plugin;
     private final MailDAO mailDAO;
     
-    private final Map<UUID, List<MailData>> mailCache = new ConcurrentHashMap<>();
-    private final Map<UUID, Integer> unreadCountCache = new ConcurrentHashMap<>();
+    private LRUCache<UUID, List<MailData>> mailCache;
+    private LRUCache<UUID, Integer> unreadCountCache;
     
     private int maxMailsPerPlayer;
     private int expireDays;
     private int maxItemSize;
+    
+    /**
+     * Handling method when inventory space is insufficient during mail claim.
+     * deny - Reject claim, mail is preserved
+     * drop - Add to inventory and drop excess items on the ground
+     */
+    private String claimSpaceInsufficient;
     
     public MailDataManager(WooSocial plugin) {
         this.plugin = plugin;
@@ -36,6 +48,19 @@ public class MailDataManager {
         maxMailsPerPlayer = plugin.getConfig().getInt("mail.max-mails-per-player", 100);
         expireDays = plugin.getConfig().getInt("mail.expire-days", 30);
         maxItemSize = plugin.getConfig().getInt("mail.max-item-size", 32000);
+        claimSpaceInsufficient = plugin.getConfig().getString("mail.claim-space-insufficient", "deny");
+        
+        // 初始化 LRU 缓存
+        int mailMaxSize = plugin.getConfig().getInt("cache.mail-max-size", 1000);
+        mailCache = new LRUCache<>(mailMaxSize);
+        unreadCountCache = new LRUCache<>(mailMaxSize);
+        plugin.getLogger().info("[Mail] LRU 缓存已初始化，最大容量: " + mailMaxSize);
+        
+        // Validate configuration value
+        if (!"deny".equals(claimSpaceInsufficient) && !"drop".equals(claimSpaceInsufficient)) {
+            plugin.getLogger().warning("[Mail] Invalid claim-space-insufficient value: " + claimSpaceInsufficient + ", using default 'deny'");
+            claimSpaceInsufficient = "deny";
+        }
         
         setupSyncHandler();
     }
@@ -66,9 +91,17 @@ public class MailDataManager {
     }
     
     public void shutdown() {
+        // 输出缓存统计信息
+        if (mailCache != null) {
+            plugin.getLogger().info("[Mail] 邮件缓存统计: " + mailCache.getStatistics());
+        }
         saveAll();
-        mailCache.clear();
-        unreadCountCache.clear();
+        if (mailCache != null) {
+            mailCache.clear();
+        }
+        if (unreadCountCache != null) {
+            unreadCountCache.clear();
+        }
     }
     
     public void saveAll() {
@@ -99,7 +132,8 @@ public class MailDataManager {
     }
     
     public List<MailData> getMailList(UUID playerUuid) {
-        return mailCache.getOrDefault(playerUuid, new ArrayList<>());
+        List<MailData> mails = mailCache.get(playerUuid);
+        return mails != null ? mails : new ArrayList<>();
     }
     
     public int getMailCount(UUID playerUuid) {
@@ -108,7 +142,8 @@ public class MailDataManager {
     }
     
     public int getUnreadCount(UUID playerUuid) {
-        return unreadCountCache.getOrDefault(playerUuid, 0);
+        Integer count = unreadCountCache.get(playerUuid);
+        return count != null ? count : 0;
     }
     
     public Optional<MailData> getMailById(UUID playerUuid, int mailId) {
@@ -142,6 +177,16 @@ public class MailDataManager {
         mail.setItemData(itemData);
         mail.setExpireTime(System.currentTimeMillis() + (expireDays * 24L * 60 * 60 * 1000));
         
+        // 触发邮件发送事件
+        MailSendEvent event = new MailSendEvent(senderUuid, senderName, receiverUuid, receiverName, mail);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return CompletableFuture.completedFuture(new SendResult(false, event.getCancelReason()));
+        }
+        
+        // 使用可能被修改后的邮件数据
+        mail = event.getMailData();
+        
         return mailDAO.createMail(mail).thenApply(success -> {
             if (success) {
                 loadMails(receiverUuid);
@@ -156,6 +201,8 @@ public class MailDataManager {
     public CompletableFuture<BulkSendResult> sendBulkMail(UUID senderUuid, String senderName,
                                                    List<UUID> receiverUuids,
                                                    ItemStack item, String bulkId) {
+        long startTime = System.currentTimeMillis();
+        
         int estimatedSize = ItemSerializer.estimateSize(item);
         if (estimatedSize > maxItemSize) {
             return CompletableFuture.completedFuture(new BulkSendResult(0, receiverUuids.size(), "item-too-large"));
@@ -166,7 +213,9 @@ public class MailDataManager {
             return CompletableFuture.completedFuture(new BulkSendResult(0, receiverUuids.size(), "serialize-failed"));
         }
         
-        List<CompletableFuture<Boolean>> futures = new ArrayList<>();
+        // 准备所有邮件数据
+        List<MailData> mailList = new ArrayList<>();
+        long expireTime = System.currentTimeMillis() + (expireDays * 24L * 60 * 60 * 1000);
         
         for (UUID receiverUuid : receiverUuids) {
             String receiverName = Bukkit.getOfflinePlayer(receiverUuid).getName();
@@ -176,25 +225,35 @@ public class MailDataManager {
             mail.setSenderName(senderName);
             mail.setReceiverName(receiverName);
             mail.setItemData(itemData);
-            mail.setExpireTime(System.currentTimeMillis() + (expireDays * 24L * 60 * 60 * 1000));
+            mail.setExpireTime(expireTime);
             mail.setBulk(true);
             mail.setBulkId(bulkId);
             
-            futures.add(mailDAO.createMail(mail).thenApply(success -> {
-                if (success) {
-                    loadMails(receiverUuid);
-                    notifyReceiver(receiverUuid);
-                    broadcastMailNew(receiverUuid);
-                }
-                return success;
-            }));
+            mailList.add(mail);
         }
         
-        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
-                .thenApply(v -> {
-                    int successes = (int) futures.stream().filter(f -> f.join()).count();
-                    return new BulkSendResult(successes, receiverUuids.size(), null);
-                });
+        if (mailList.isEmpty()) {
+            return CompletableFuture.completedFuture(new BulkSendResult(0, receiverUuids.size(), "no-valid-receivers"));
+        }
+        
+        // 使用批量插入
+        return mailDAO.bulkInsertMails(mailList).thenApply(successCount -> {
+            long elapsed = System.currentTimeMillis() - startTime;
+            plugin.getLogger().info("[Mail] 批量发送邮件完成: 成功 " + successCount + "/" + mailList.size() + 
+                    ", 总耗时 " + elapsed + "ms");
+            
+            // 更新缓存并通知接收者
+            for (MailData mail : mailList) {
+                // 只有成功插入的邮件才更新缓存（通过检查ID是否已设置）
+                if (mail.getId() > 0) {
+                    loadMails(mail.getReceiverUuid());
+                    notifyReceiver(mail.getReceiverUuid());
+                    broadcastMailNew(mail.getReceiverUuid());
+                }
+            }
+            
+            return new BulkSendResult(successCount, receiverUuids.size(), null);
+        });
     }
     
     public CompletableFuture<Boolean> claimMail(UUID playerUuid, int mailId) {
@@ -217,14 +276,35 @@ public class MailDataManager {
                 return CompletableFuture.completedFuture(false);
             }
             
+            // 触发邮件领取事件
+            MailClaimEvent event = new MailClaimEvent(playerUuid, player.getName(), mail);
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return CompletableFuture.completedFuture(false);
+            }
+            
             ItemStack item = ItemSerializer.deserialize(mail.getItemData());
             if (item == null) {
                 return CompletableFuture.completedFuture(false);
             }
             
+            // In deny mode, check if there's enough inventory space first
+            if ("deny".equals(claimSpaceInsufficient)) {
+                if (!hasInventorySpace(player, item)) {
+                    return CompletableFuture.completedFuture(false);
+                }
+            }
+            
+            // Try to add item to player's inventory
             HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(item);
+            
+            // Handle inventory space insufficient based on configuration
             if (!leftover.isEmpty()) {
-                return CompletableFuture.completedFuture(false);
+                // Drop mode: Drop excess items on the ground
+                Location playerLocation = player.getLocation();
+                for (ItemStack dropItem : leftover.values()) {
+                    player.getWorld().dropItemNaturally(playerLocation, dropItem);
+                }
             }
             
             return mailDAO.markAsClaimed(mailId).thenApply(success -> {
@@ -235,6 +315,24 @@ public class MailDataManager {
                 return success;
             });
         });
+    }
+    
+    /**
+     * Check if player has enough inventory space for the given item.
+     * @param player The player to check
+     * @param item The item to check space for
+     * @return true if there's enough space, false otherwise
+     */
+    private boolean hasInventorySpace(Player player, ItemStack item) {
+        // Create a copy of the item to test
+        ItemStack testItem = item.clone();
+        HashMap<Integer, ItemStack> leftover = player.getInventory().addItem(testItem);
+        
+        // Remove the test item
+        player.getInventory().removeItem(testItem);
+        
+        // If there's no leftover, there's enough space
+        return leftover.isEmpty();
     }
     
     public CompletableFuture<Boolean> markAsRead(UUID playerUuid, int mailId) {
@@ -262,6 +360,14 @@ public class MailDataManager {
         if (mailOpt.isEmpty()) {
             return CompletableFuture.completedFuture(false);
         }
+        
+        MailData mail = mailOpt.get();
+        
+        // 触发邮件删除事件（不可取消）
+        Player player = Bukkit.getPlayer(playerUuid);
+        String playerName = player != null ? player.getName() : "Unknown";
+        MailDeleteEvent event = new MailDeleteEvent(playerUuid, playerName, mail, MailDeleteEvent.DeleteReason.PLAYER_DELETE);
+        Bukkit.getPluginManager().callEvent(event);
         
         return mailDAO.deleteMail(mailId).thenApply(success -> {
             if (success) {
@@ -344,8 +450,36 @@ public class MailDataManager {
         return maxItemSize;
     }
     
+    /**
+     * Get the handling method for insufficient inventory space during mail claim.
+     * @return "deny" or "drop"
+     */
+    public String getClaimSpaceInsufficient() {
+        return claimSpaceInsufficient;
+    }
+    
     public MailDAO getMailDAO() {
         return mailDAO;
+    }
+    
+    /**
+     * 获取邮件缓存统计信息
+     * @return 缓存统计字符串
+     */
+    public String getCacheStatistics() {
+        if (mailCache != null) {
+            return mailCache.getStatistics();
+        }
+        return "LRUCache[not initialized]";
+    }
+    
+    /**
+     * 预热缓存 - 加载指定玩家的邮件数据
+     * @param playerUuid 玩家UUID
+     * @return CompletableFuture
+     */
+    public CompletableFuture<Void> warmupCache(UUID playerUuid) {
+        return loadMails(playerUuid);
     }
     
     public static class SendResult {

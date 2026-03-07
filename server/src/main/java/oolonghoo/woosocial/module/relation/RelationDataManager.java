@@ -5,6 +5,7 @@ import com.oolonghoo.woosocial.database.RelationDAO;
 import com.oolonghoo.woosocial.model.DailyGiftData;
 import com.oolonghoo.woosocial.model.GiftData;
 import com.oolonghoo.woosocial.model.RelationData;
+import com.oolonghoo.woosocial.util.LRUCache;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -12,31 +13,41 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class RelationDataManager {
     
     private final WooSocial plugin;
     private final RelationDAO relationDAO;
-    private final Map<UUID, Map<UUID, RelationData>> relationCache;
-    private final Map<UUID, Map<UUID, DailyGiftData>> dailyGiftCache;
+    private LRUCache<UUID, Map<UUID, RelationData>> relationCache;
+    private LRUCache<UUID, Map<UUID, DailyGiftData>> dailyGiftCache;
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     
     public RelationDataManager(WooSocial plugin) {
         this.plugin = plugin;
         this.relationDAO = new RelationDAO(plugin, plugin.getDatabaseManager());
-        this.relationCache = new ConcurrentHashMap<>();
-        this.dailyGiftCache = new ConcurrentHashMap<>();
     }
     
     public void initialize() {
+        // 初始化 LRU 缓存
+        int relationMaxSize = plugin.getConfig().getInt("cache.relation-max-size", 500);
+        relationCache = new LRUCache<>(relationMaxSize);
+        dailyGiftCache = new LRUCache<>(relationMaxSize);
+        plugin.getLogger().info("[Relation] LRU 缓存已初始化，最大容量: " + relationMaxSize);
         plugin.getLogger().info("关系数据管理器已初始化");
     }
     
     public void shutdown() {
+        // 输出缓存统计信息
+        if (relationCache != null) {
+            plugin.getLogger().info("[Relation] 关系缓存统计: " + relationCache.getStatistics());
+        }
         saveAll();
-        relationCache.clear();
-        dailyGiftCache.clear();
+        if (relationCache != null) {
+            relationCache.clear();
+        }
+        if (dailyGiftCache != null) {
+            dailyGiftCache.clear();
+        }
     }
     
     public void saveAll() {
@@ -142,8 +153,12 @@ public class RelationDataManager {
     }
     
     private void cacheRelation(RelationData relation) {
-        relationCache.computeIfAbsent(relation.getPlayerUuid(), k -> new ConcurrentHashMap<>())
-                .put(relation.getFriendUuid(), relation);
+        Map<UUID, RelationData> playerRelations = relationCache.get(relation.getPlayerUuid());
+        if (playerRelations == null) {
+            playerRelations = new java.util.concurrent.ConcurrentHashMap<>();
+            relationCache.put(relation.getPlayerUuid(), playerRelations);
+        }
+        playerRelations.put(relation.getFriendUuid(), relation);
     }
     
     private void uncacheRelation(UUID playerUuid, UUID friendUuid) {
@@ -154,8 +169,12 @@ public class RelationDataManager {
     }
     
     private void cacheDailyGiftData(DailyGiftData data) {
-        dailyGiftCache.computeIfAbsent(data.getPlayerUuid(), k -> new ConcurrentHashMap<>())
-                .put(data.getTargetUuid(), data);
+        Map<UUID, DailyGiftData> playerDaily = dailyGiftCache.get(data.getPlayerUuid());
+        if (playerDaily == null) {
+            playerDaily = new java.util.concurrent.ConcurrentHashMap<>();
+            dailyGiftCache.put(data.getPlayerUuid(), playerDaily);
+        }
+        playerDaily.put(data.getTargetUuid(), data);
     }
     
     public void clearCache(UUID playerUuid) {
@@ -165,5 +184,28 @@ public class RelationDataManager {
     
     public RelationDAO getRelationDAO() {
         return relationDAO;
+    }
+    
+    /**
+     * 获取关系缓存统计信息
+     * @return 缓存统计字符串
+     */
+    public String getCacheStatistics() {
+        if (relationCache != null) {
+            return relationCache.getStatistics();
+        }
+        return "LRUCache[not initialized]";
+    }
+    
+    /**
+     * 预热缓存 - 加载指定玩家的关系数据
+     * @param playerUuid 玩家UUID
+     * @return CompletableFuture
+     */
+    public CompletableFuture<Void> warmupCache(UUID playerUuid) {
+        return getRelationsForPlayer(playerUuid).thenAccept(relations -> {
+            // 关系数据已在 getRelationsForPlayer 中缓存
+            plugin.getLogger().fine("[Relation] 已为玩家 " + playerUuid + " 预热 " + relations.size() + " 条关系数据");
+        });
     }
 }

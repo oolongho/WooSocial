@@ -285,12 +285,58 @@ mail:
   click-to-claim: "&a点击领取物品"
   shift-click-delete: "&cShift+点击删除"
   
+  # 加载状态提示
+  loading: "&e正在加载中，请稍候..."
+  processing: "&e正在处理中，请稍候..."
+  
   help-header: "&e========== 邮箱帮助 =========="
   help-list: "&a/mail &7- 打开邮箱"
   help-send: "&a/mail send <玩家> &7- 发送物品"
   help-claim: "&a/mail claim <ID> &7- 领取物品"
   help-delete: "&a/mail delete <ID> &7- 删除邮件"
   help-bulk: "&a/mail bulk all &7- 批量发送(管理员)"
+  help-schedule: "&a/mail schedule <时间> <玩家...> &7- 创建定时邮件"
+  help-cancelschedule: "&a/mail cancelschedule <ID> &7- 取消定时邮件"
+  help-listschedule: "&a/mail listschedule &7- 查看定时邮件列表"
+  help-sendall: "&a/mail sendall &7- 发送给所有玩家(管理员)"
+  help-sendonline: "&a/mail sendonline &7- 发送给在线玩家(管理员)"
+  
+  # 定时邮件
+  schedule-usage: "&c用法: /mail schedule <时间> <玩家> [玩家2...]"
+  cancelschedule-usage: "&c用法: /mail cancelschedule <ID>"
+  schedule-created: "&a定时邮件已创建！ID: %id%，发送时间: %time%"
+  schedule-invalid-time: "&c无效的时间格式！%reason%"
+  schedule-time-past: "&c发送时间不能是过去的时间！"
+  schedule-time-too-far: "&c发送时间不能超过 %days% 天后！"
+  schedule-limit-reached: "&c你的定时邮件数量已达上限 (%max%)！"
+  schedule-failed: "&c创建定时邮件失败！"
+  schedule-list-header: "&e========== 定时邮件列表 =========="
+  schedule-list-empty: "&7暂无待发送的定时邮件。"
+  schedule-list-entry: "&7ID: &f%id% &7| 物品: &f%item% &7| 接收者: &f%receivers% &7| 发送时间: &f%time% &7(剩余: &e%remaining%&7)"
+  schedule-not-found: "&c定时邮件不存在！"
+  schedule-not-owner: "&c这不是你的定时邮件！"
+  schedule-already-sent: "&c该定时邮件已发送或已取消！"
+  schedule-cancel-success: "&a定时邮件 %id% 已取消！"
+  schedule-cancel-failed: "&c取消定时邮件失败！"
+  scheduled-sent: "&a你的定时邮件已发送给 %count% 位玩家！"
+  help-sendall: "&a/mail sendall &7- 发送给所有玩家(管理员)"
+  help-sendonline: "&a/mail sendonline &7- 发送给在线玩家(管理员)"
+  
+  # 系统邮件
+  system:
+    sending-all: "&e正在向所有玩家发送系统邮件..."
+    sending-online: "&e正在向在线玩家发送系统邮件..."
+    sendall-success: "&a成功向 %count%/%total% 位玩家发送了系统邮件！"
+    sendall-failed: "&c发送系统邮件失败！"
+    sendonline-success: "&a成功向 %count%/%total% 位在线玩家发送了系统邮件！"
+    sendonline-failed: "&c发送系统邮件失败！"
+    send-success: "&a成功向 %count%/%total% 位玩家发送了系统邮件！"
+    send-failed: "&c发送系统邮件失败！"
+    receive-notify: "&e你收到了一封系统邮件！物品: %item%"
+    no-targets: "&c没有指定目标玩家！"
+    no-valid-targets: "&c没有有效的目标玩家！"
+    players-not-found: "&c以下玩家未找到: %players%"
+    console-item-required: "&c控制台执行需要指定物品参数！"
 
 # ==================== 关系系统 ====================
 relation:

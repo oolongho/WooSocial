@@ -7,6 +7,8 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
@@ -61,12 +63,12 @@ public class DatabaseManager {
         hikariConfig.setPassword(configManager.getMySQLPassword());
         hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
         
-        // 连接池配置
-        hikariConfig.setMaximumPoolSize(configManager.getMySQLPoolSize());
-        hikariConfig.setMinimumIdle(2);
-        hikariConfig.setConnectionTimeout(10000); // 10秒
-        hikariConfig.setIdleTimeout(600000); // 10分钟
-        hikariConfig.setMaxLifetime(1800000); // 30分钟
+        // 从配置文件读取连接池参数
+        hikariConfig.setMaximumPoolSize(configManager.getPoolMaximumPoolSize());
+        hikariConfig.setMinimumIdle(configManager.getPoolMinimumIdle());
+        hikariConfig.setConnectionTimeout(configManager.getPoolConnectionTimeout());
+        hikariConfig.setIdleTimeout(configManager.getPoolIdleTimeout());
+        hikariConfig.setMaxLifetime(configManager.getPoolMaxLifetime());
         hikariConfig.setConnectionTestQuery("SELECT 1");
         
         // 连接池名称
@@ -85,6 +87,9 @@ public class DatabaseManager {
         hikariConfig.addDataSourceProperty("maintainTimeStats", "false");
         
         dataSource = new HikariDataSource(hikariConfig);
+        
+        plugin.getLogger().info("MySQL连接池初始化完成 - 最大连接数: " + configManager.getPoolMaximumPoolSize() 
+                + ", 最小空闲: " + configManager.getPoolMinimumIdle());
     }
     
     /**
@@ -103,12 +108,12 @@ public class DatabaseManager {
         hikariConfig.setJdbcUrl("jdbc:sqlite:" + dbFile);
         hikariConfig.setDriverClassName("org.sqlite.JDBC");
         
-        // SQLite连接池配置
+        // SQLite连接池配置（SQLite只支持单连接，但保持配置一致性）
         hikariConfig.setMaximumPoolSize(1); // SQLite只支持单连接
         hikariConfig.setMinimumIdle(1);
-        hikariConfig.setConnectionTimeout(10000);
-        hikariConfig.setIdleTimeout(600000);
-        hikariConfig.setMaxLifetime(1800000);
+        hikariConfig.setConnectionTimeout(configManager.getPoolConnectionTimeout());
+        hikariConfig.setIdleTimeout(configManager.getPoolIdleTimeout());
+        hikariConfig.setMaxLifetime(configManager.getPoolMaxLifetime());
         
         // 连接池名称
         hikariConfig.setPoolName("WooSocial-SQLite-HikariCP");
@@ -119,6 +124,8 @@ public class DatabaseManager {
         hikariConfig.addDataSourceProperty("foreign_keys", "ON");
         
         dataSource = new HikariDataSource(hikariConfig);
+        
+        plugin.getLogger().info("SQLite连接池初始化完成 - 数据库文件: " + dbFile);
     }
     
     /**
@@ -177,6 +184,119 @@ public class DatabaseManager {
                     ? getMySQLDailyGiftsTableSQL()
                     : getSQLiteDailyGiftsTableSQL();
             statement.executeUpdate(createDailyGiftsTable);
+            
+            String createScheduledMailsTable = databaseType.equals("mysql")
+                    ? getMySQLScheduledMailsTableSQL()
+                    : getSQLiteScheduledMailsTableSQL();
+            statement.executeUpdate(createScheduledMailsTable);
+            
+            // 执行数据库迁移
+            migrateMailsTable();
+        }
+    }
+    
+    /**
+     * 迁移邮件表结构
+     * 为现有邮件表添加新字段
+     */
+    private void migrateMailsTable() {
+        try (Connection connection = getConnection()) {
+            // 检查并添加 attachments 字段
+            if (!columnExists(connection, tablePrefix + "mails", "attachments")) {
+                executeAlterTable(connection, 
+                    databaseType.equals("mysql") 
+                        ? "ALTER TABLE `" + tablePrefix + "mails` ADD COLUMN `attachments` TEXT"
+                        : "ALTER TABLE `" + tablePrefix + "mails` ADD COLUMN `attachments` TEXT");
+                plugin.getLogger().info("[数据库迁移] 已添加 attachments 字段到邮件表");
+            }
+            
+            // 检查并添加 is_system 字段
+            if (!columnExists(connection, tablePrefix + "mails", "is_system")) {
+                executeAlterTable(connection,
+                    databaseType.equals("mysql")
+                        ? "ALTER TABLE `" + tablePrefix + "mails` ADD COLUMN `is_system` TINYINT(1) NOT NULL DEFAULT 0"
+                        : "ALTER TABLE `" + tablePrefix + "mails` ADD COLUMN `is_system` INTEGER NOT NULL DEFAULT 0");
+                plugin.getLogger().info("[数据库迁移] 已添加 is_system 字段到邮件表");
+            }
+            
+            // 检查并添加 scheduled_time 字段
+            if (!columnExists(connection, tablePrefix + "mails", "scheduled_time")) {
+                executeAlterTable(connection,
+                    databaseType.equals("mysql")
+                        ? "ALTER TABLE `" + tablePrefix + "mails` ADD COLUMN `scheduled_time` BIGINT NOT NULL DEFAULT 0"
+                        : "ALTER TABLE `" + tablePrefix + "mails` ADD COLUMN `scheduled_time` INTEGER NOT NULL DEFAULT 0");
+                plugin.getLogger().info("[数据库迁移] 已添加 scheduled_time 字段到邮件表");
+            }
+            
+            // 为MySQL添加索引
+            if (databaseType.equals("mysql")) {
+                addIndexIfNotExists(connection, tablePrefix + "mails", "idx_scheduled_time", "scheduled_time");
+                addIndexIfNotExists(connection, tablePrefix + "mails", "idx_is_system", "is_system");
+            }
+            
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "[数据库迁移] 邮件表迁移失败，可能字段已存在", e);
+        }
+    }
+    
+    /**
+     * 检查列是否存在
+     */
+    private boolean columnExists(Connection connection, String tableName, String columnName) throws SQLException {
+        if (databaseType.equals("mysql")) {
+            try (PreparedStatement stmt = connection.prepareStatement(
+                    "SELECT COUNT(*) FROM information_schema.COLUMNS " +
+                    "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?")) {
+                stmt.setString(1, tableName);
+                stmt.setString(2, columnName);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getInt(1) > 0;
+                    }
+                }
+            }
+        } else {
+            // SQLite
+            try (PreparedStatement stmt = connection.prepareStatement("PRAGMA table_info(" + tableName + ")");
+                 ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    if (columnName.equalsIgnoreCase(rs.getString("name"))) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * 执行表结构修改
+     */
+    private void executeAlterTable(Connection connection, String sql) throws SQLException {
+        try (Statement stmt = connection.createStatement()) {
+            stmt.executeUpdate(sql);
+        }
+    }
+    
+    /**
+     * 添加索引（如果不存在）
+     */
+    private void addIndexIfNotExists(Connection connection, String tableName, String indexName, String columnName) {
+        try (PreparedStatement stmt = connection.prepareStatement(
+                "SELECT COUNT(*) FROM information_schema.STATISTICS " +
+                "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND INDEX_NAME = ?")) {
+            stmt.setString(1, tableName);
+            stmt.setString(2, indexName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next() && rs.getInt(1) == 0) {
+                    try (Statement alterStmt = connection.createStatement()) {
+                        alterStmt.executeUpdate("ALTER TABLE `" + tableName + "` ADD INDEX `" + indexName + "` (`" + columnName + "`)");
+                        plugin.getLogger().info("[数据库迁移] 已添加索引 " + indexName + " 到邮件表");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.WARNING, "[数据库迁移] 添加索引失败: " + indexName, e);
         }
     }
     
@@ -347,16 +467,21 @@ public class DatabaseManager {
                 "`sender_name` VARCHAR(16), " +
                 "`receiver_uuid` VARCHAR(36) NOT NULL, " +
                 "`receiver_name` VARCHAR(16), " +
-                "`item_data` TEXT, " +
+                "`item_data` TEXT, " + // 保留用于向后兼容
+                "`attachments` TEXT, " + // 新的附件列表字段
                 "`send_time` BIGINT NOT NULL DEFAULT 0, " +
                 "`expire_time` BIGINT NOT NULL DEFAULT 0, " +
                 "`is_read` TINYINT(1) NOT NULL DEFAULT 0, " +
                 "`is_claimed` TINYINT(1) NOT NULL DEFAULT 0, " +
                 "`is_bulk` TINYINT(1) NOT NULL DEFAULT 0, " +
                 "`bulk_id` VARCHAR(36), " +
+                "`is_system` TINYINT(1) NOT NULL DEFAULT 0, " + // 系统邮件标识
+                "`scheduled_time` BIGINT NOT NULL DEFAULT 0, " + // 定时发送时间戳
                 "INDEX `idx_receiver_uuid` (`receiver_uuid`), " +
                 "INDEX `idx_sender_uuid` (`sender_uuid`), " +
-                "INDEX `idx_expire_time` (`expire_time`)" +
+                "INDEX `idx_expire_time` (`expire_time`), " +
+                "INDEX `idx_scheduled_time` (`scheduled_time`), " +
+                "INDEX `idx_is_system` (`is_system`)" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
     }
     
@@ -367,13 +492,17 @@ public class DatabaseManager {
                 "`sender_name` TEXT, " +
                 "`receiver_uuid` TEXT NOT NULL, " +
                 "`receiver_name` TEXT, " +
-                "`item_data` TEXT, " +
+                "`item_data` TEXT, " + // 保留用于向后兼容
+                "`attachments` TEXT, " + // 新的附件列表字段
                 "`send_time` INTEGER NOT NULL DEFAULT 0, " +
                 "`expire_time` INTEGER NOT NULL DEFAULT 0, " +
                 "`is_read` INTEGER NOT NULL DEFAULT 0, " +
                 "`is_claimed` INTEGER NOT NULL DEFAULT 0, " +
                 "`is_bulk` INTEGER NOT NULL DEFAULT 0, " +
-                "`bulk_id` TEXT);";
+                "`bulk_id` TEXT, " +
+                "`is_system` INTEGER NOT NULL DEFAULT 0, " + // 系统邮件标识
+                "`scheduled_time` INTEGER NOT NULL DEFAULT 0" + // 定时发送时间戳
+                ");";
     }
     
     private String getMySQLRelationsTableSQL() {
@@ -457,6 +586,42 @@ public class DatabaseManager {
                 "`coins_sent` INTEGER NOT NULL DEFAULT 0, " +
                 "`gifts_sent` TEXT, " +
                 "UNIQUE (`player_uuid`, `target_uuid`, `date`));";
+    }
+    
+    /**
+     * 获取MySQL定时邮件表创建SQL
+     */
+    private String getMySQLScheduledMailsTableSQL() {
+        return "CREATE TABLE IF NOT EXISTS `" + tablePrefix + "scheduled_mails` (" +
+                "`id` INT AUTO_INCREMENT PRIMARY KEY, " +
+                "`sender_uuid` VARCHAR(36) NOT NULL, " +
+                "`sender_name` VARCHAR(16), " +
+                "`receiver_uuids` TEXT, " +
+                "`receiver_names` TEXT, " +
+                "`attachments` TEXT, " +
+                "`scheduled_time` BIGINT NOT NULL DEFAULT 0, " +
+                "`create_time` BIGINT NOT NULL DEFAULT 0, " +
+                "`status` VARCHAR(20) NOT NULL DEFAULT 'PENDING', " +
+                "INDEX `idx_sender_uuid` (`sender_uuid`), " +
+                "INDEX `idx_scheduled_time` (`scheduled_time`), " +
+                "INDEX `idx_status` (`status`)" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+    }
+    
+    /**
+     * 获取SQLite定时邮件表创建SQL
+     */
+    private String getSQLiteScheduledMailsTableSQL() {
+        return "CREATE TABLE IF NOT EXISTS `" + tablePrefix + "scheduled_mails` (" +
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "`sender_uuid` TEXT NOT NULL, " +
+                "`sender_name` TEXT, " +
+                "`receiver_uuids` TEXT, " +
+                "`receiver_names` TEXT, " +
+                "`attachments` TEXT, " +
+                "`scheduled_time` INTEGER NOT NULL DEFAULT 0, " +
+                "`create_time` INTEGER NOT NULL DEFAULT 0, " +
+                "`status` TEXT NOT NULL DEFAULT 'PENDING');";
     }
     
     /**

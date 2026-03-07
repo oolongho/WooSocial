@@ -12,6 +12,8 @@ public class MailModule extends Module {
     
     private MailDataManager dataManager;
     private MailManager mailManager;
+    private SystemMailManager systemMailManager;
+    private ScheduledMailManager scheduledMailManager;
     private MailCommand mailCommand;
     private MailListener mailListener;
     
@@ -26,7 +28,12 @@ public class MailModule extends Module {
         
         mailManager = new MailManager(plugin, dataManager);
         
-        mailCommand = new MailCommand(plugin, dataManager, mailManager);
+        systemMailManager = new SystemMailManager(plugin, dataManager);
+        
+        scheduledMailManager = new ScheduledMailManager(plugin, dataManager);
+        scheduledMailManager.initialize();
+        
+        mailCommand = new MailCommand(plugin, dataManager, mailManager, systemMailManager, scheduledMailManager);
         try {
             plugin.getCommand("mail").setExecutor(mailCommand);
             plugin.getCommand("mail").setTabCompleter(mailCommand);
@@ -44,6 +51,14 @@ public class MailModule extends Module {
     
     @Override
     public void onDisable() {
+        if (scheduledMailManager != null) {
+            scheduledMailManager.shutdown();
+        }
+        
+        if (systemMailManager != null) {
+            systemMailManager.shutdown();
+        }
+        
         if (dataManager != null) {
             dataManager.shutdown();
         }
@@ -58,6 +73,9 @@ public class MailModule extends Module {
     @Override
     public void onReload() {
         saveAll();
+        if (scheduledMailManager != null) {
+            scheduledMailManager.reload();
+        }
     }
     
     @Override
@@ -81,5 +99,13 @@ public class MailModule extends Module {
     
     public MailManager getMailManager() {
         return mailManager;
+    }
+    
+    public SystemMailManager getSystemMailManager() {
+        return systemMailManager;
+    }
+    
+    public ScheduledMailManager getScheduledMailManager() {
+        return scheduledMailManager;
     }
 }

@@ -1,6 +1,45 @@
 # WooSocial Configuration
 
-# ... and more...
+# Database Configuration
+# 数据库配置
+database:
+  # Database type: sqlite or mysql
+  # 数据库类型: sqlite 或 mysql
+  type: sqlite
+  
+  # MySQL Configuration (only used when type is mysql)
+  # MySQL 配置 (仅当 type 为 mysql 时使用)
+  mysql:
+    host: localhost
+    port: 3306
+    database: minecraft
+    user: root
+    password: ""
+    table-prefix: "woosocial_"
+  
+  # SQLite Configuration (only used when type is sqlite)
+  # SQLite 配置 (仅当 type 为 sqlite 时使用)
+  sqlite:
+    file: "data.db"
+  
+  # Connection Pool Configuration (HikariCP)
+  # 连接池配置 (HikariCP)
+  pool:
+    # Maximum number of connections in the pool
+    # 连接池最大连接数
+    maximum-pool-size: 10
+    # Minimum number of idle connections
+    # 最小空闲连接数
+    minimum-idle: 2
+    # Connection timeout in milliseconds (30 seconds)
+    # 连接超时时间（毫秒）
+    connection-timeout: 30000
+    # Idle connection timeout in milliseconds (10 minutes)
+    # 空闲连接超时时间（毫秒）
+    idle-timeout: 600000
+    # Maximum lifetime of a connection in milliseconds (30 minutes)
+    # 连接最大生命周期（毫秒）
+    max-lifetime: 1800000
 
 # Mail System Configuration
 mail:
@@ -15,6 +54,10 @@ mail:
   max-item-size: 32000
   # Notify on receive
   notify-on-receive: true
+  # Handling method when inventory space is insufficient
+  # deny - Reject claim, mail is preserved
+  # drop - Add to inventory and drop excess items
+  claim-space-insufficient: deny
   # Bulk mail configuration
   bulk:
     enabled: true
@@ -41,3 +84,18 @@ economy:
 playerpoints:
   enabled: false
   provider: "PlayerPoints"
+
+# Cache Configuration
+# 缓存配置
+cache:
+  # Maximum number of mail entries to cache
+  # 邮件缓存最大条目数
+  mail-max-size: 1000
+  # Maximum number of relation entries to cache
+  # 关系缓存最大条目数
+  relation-max-size: 500
+  # Whether to warmup cache on plugin enable
+  # Preloads data for online players when plugin starts
+  # 是否在插件启用时预热缓存
+  # 预加载在线玩家的数据
+  warmup-on-enable: true

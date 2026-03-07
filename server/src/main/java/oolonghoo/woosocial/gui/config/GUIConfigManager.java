@@ -11,30 +11,50 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
+/**
+ * GUI配置管理器
+ * 负责加载、缓存和管理所有GUI配置
+ * 支持热重载和动态注册
+ * 
+ * @author oolongho
+ */
 public class GUIConfigManager {
     
     private final WooSocial plugin;
     private final Map<String, GUIConfig> configs;
+    private final Map<String, GUILayout> layouts;
     private final File guiFolder;
+    private final Set<String> registeredGUIs;
     
-    private static final Set<String> GUI_NAMES = Set.of(
+    // 默认GUI列表
+    private static final Set<String> DEFAULT_GUI_NAMES = Set.of(
             "social_main",
             "friend_list",
             "friend_detail",
             "friend_requests",
             "social_settings",
-            "blocked_list"
+            "blocked_list",
+            "mail_list",
+            "mail_detail",
+            "relation_list",
+            "relation_detail",
+            "relation_proposal",
+            "gift_shop"
     );
     
     public GUIConfigManager(WooSocial plugin) {
         this.plugin = plugin;
-        this.configs = new HashMap<>();
+        this.configs = new ConcurrentHashMap<>();
+        this.layouts = new ConcurrentHashMap<>();
         this.guiFolder = new File(plugin.getDataFolder(), "gui");
+        this.registeredGUIs = new HashSet<>(DEFAULT_GUI_NAMES);
     }
     
     public void initialize() {
@@ -42,11 +62,26 @@ public class GUIConfigManager {
             guiFolder.mkdirs();
         }
         
-        for (String guiName : GUI_NAMES) {
+        for (String guiName : registeredGUIs) {
             loadConfig(guiName);
         }
     }
     
+    /**
+     * 注册新的GUI配置
+     * 
+     * @param name GUI名称
+     */
+    public void registerGUI(String name) {
+        if (!registeredGUIs.contains(name)) {
+            registeredGUIs.add(name);
+            loadConfig(name);
+        }
+    }
+    
+    /**
+     * 加载指定GUI配置
+     */
     public void loadConfig(String name) {
         File externalFile = new File(guiFolder, name + ".yml");
         
@@ -71,10 +106,29 @@ public class GUIConfigManager {
             GUIConfig guiConfig = parseConfig(name, config);
             if (guiConfig != null) {
                 configs.put(name, guiConfig);
+                // 创建并缓存布局辅助对象
+                layouts.put(name, new GUILayout(guiConfig));
+                plugin.getLogger().info("[GUI] 配置加载成功: " + name);
             } else {
-                plugin.getLogger().warning("[GUI] 配置解析失败: " + name + ".yml, 使用代码默认值");
+                plugin.getLogger().warning("[GUI] 配置解析失败: " + name + ".yml");
             }
         }
+    }
+    
+    /**
+     * 热重载单个GUI配置
+     */
+    public boolean reloadConfig(String name) {
+        if (!registeredGUIs.contains(name)) {
+            plugin.getLogger().warning("[GUI] 未注册的GUI: " + name);
+            return false;
+        }
+        
+        configs.remove(name);
+        layouts.remove(name);
+        loadConfig(name);
+        
+        return configs.containsKey(name);
     }
     
     private YamlConfiguration loadDefaultConfig(String name) {
@@ -212,19 +266,157 @@ public class GUIConfigManager {
             }
         }
         
+        // 解析条件显示配置
+        if (section.contains("show_if")) {
+            config.setShowConditions(section.getStringList("show_if"));
+        }
+        
+        if (section.contains("hide_if")) {
+            config.setHideConditions(section.getStringList("hide_if"));
+        }
+        
+        // 解析优先级
+        if (section.contains("priority")) {
+            config.setPriority(section.getInt("priority"));
+        }
+        
         return config;
     }
     
+    // ==================== 配置获取方法 ====================
+    
+    /**
+     * 获取GUI配置
+     */
     public GUIConfig getConfig(String name) {
         return configs.get(name);
     }
     
+    /**
+     * 获取GUI布局辅助对象
+     */
+    public GUILayout getLayout(String name) {
+        return layouts.get(name);
+    }
+    
+    /**
+     * 检查配置是否存在
+     */
     public boolean hasConfig(String name) {
         return configs.containsKey(name);
     }
     
+    /**
+     * 获取所有已注册的GUI名称
+     */
+    public Set<String> getRegisteredGUIs() {
+        return new HashSet<>(registeredGUIs);
+    }
+    
+    /**
+     * 获取所有已加载的GUI配置
+     */
+    public Map<String, GUIConfig> getAllConfigs() {
+        return new HashMap<>(configs);
+    }
+    
+    // ==================== 重载方法 ====================
+    
+    /**
+     * 重载所有配置
+     */
     public void reload() {
         configs.clear();
+        layouts.clear();
         initialize();
+    }
+    
+    /**
+     * 重载所有配置并返回结果
+     */
+    public Map<String, Boolean> reloadAll() {
+        Map<String, Boolean> results = new HashMap<>();
+        
+        for (String name : registeredGUIs) {
+            results.put(name, reloadConfig(name));
+        }
+        
+        return results;
+    }
+    
+    // ==================== 验证方法 ====================
+    
+    /**
+     * 验证所有配置
+     */
+    public Map<String, String> validateAll() {
+        Map<String, String> errors = new HashMap<>();
+        
+        for (Map.Entry<String, GUIConfig> entry : configs.entrySet()) {
+            String name = entry.getKey();
+            GUIConfig config = entry.getValue();
+            
+            if (!config.validate()) {
+                errors.put(name, "配置验证失败");
+            }
+            
+            GUILayout layout = layouts.get(name);
+            if (layout != null) {
+                String layoutError = layout.validate();
+                if (layoutError != null) {
+                    errors.put(name, layoutError);
+                }
+            }
+        }
+        
+        return errors;
+    }
+    
+    /**
+     * 检查配置是否有效
+     */
+    public boolean isConfigValid(String name) {
+        GUIConfig config = configs.get(name);
+        if (config == null) return false;
+        
+        if (!config.validate()) return false;
+        
+        GUILayout layout = layouts.get(name);
+        if (layout == null) return false;
+        
+        return layout.validate() == null;
+    }
+    
+    // ==================== 统计方法 ====================
+    
+    /**
+     * 获取已加载配置数量
+     */
+    public int getLoadedCount() {
+        return configs.size();
+    }
+    
+    /**
+     * 获取已注册GUI数量
+     */
+    public int getRegisteredCount() {
+        return registeredGUIs.size();
+    }
+    
+    /**
+     * 打印配置状态（用于调试）
+     */
+    public void printStatus() {
+        plugin.getLogger().info("=== GUI Config Manager Status ===");
+        plugin.getLogger().info("Registered GUIs: " + registeredGUIs.size());
+        plugin.getLogger().info("Loaded Configs: " + configs.size());
+        
+        for (String name : registeredGUIs) {
+            GUIConfig config = configs.get(name);
+            String status = config != null ? "loaded" : "not loaded";
+            plugin.getLogger().info("  - " + name + ": " + status);
+        }
+        
+        plugin.getLogger().info("=================================");
     }
 }

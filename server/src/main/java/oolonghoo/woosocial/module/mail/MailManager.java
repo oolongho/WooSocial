@@ -2,6 +2,7 @@ package com.oolonghoo.woosocial.module.mail;
 
 import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.config.MessageManager;
+import com.oolonghoo.woosocial.gui.LoadingState;
 import com.oolonghoo.woosocial.model.MailData;
 import com.oolonghoo.woosocial.util.ItemSerializer;
 import org.bukkit.Bukkit;
@@ -17,6 +18,7 @@ public class MailManager {
     private final WooSocial plugin;
     private final MailDataManager dataManager;
     private final MessageManager messageManager;
+    private final LoadingState loadingState;
     
     private int maxSendCount;
     private boolean notifyOnReceive;
@@ -27,6 +29,7 @@ public class MailManager {
         this.plugin = plugin;
         this.dataManager = dataManager;
         this.messageManager = plugin.getMessageManager();
+        this.loadingState = new LoadingState();
         
         loadConfig();
     }
@@ -143,12 +146,20 @@ public class MailManager {
     
     public CompletableFuture<Boolean> claimMail(Player player, int mailId) {
         return dataManager.claimMail(player.getUniqueId(), mailId).thenApply(success -> {
+            // 清除处理中状态
+            loadingState.clearLoading(player.getUniqueId());
+            
             if (success) {
                 messageManager.send(player, "mail.claim-success");
             } else {
                 messageManager.send(player, "mail.claim-failed");
             }
             return success;
+        }).exceptionally(throwable -> {
+            // 发生异常时也要清除状态
+            loadingState.clearLoading(player.getUniqueId());
+            messageManager.send(player, "mail.claim-failed");
+            return false;
         });
     }
     
@@ -196,6 +207,9 @@ public class MailManager {
         final int finalPage = page;
         final UUID playerUuid = player.getUniqueId();
         
+        // 设置加载状态
+        loadingState.setLoading(playerUuid, true);
+        
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             List<MailData> mails = dataManager.getMailList(playerUuid);
             int totalPages = (int) Math.ceil((double) mails.size() / 45);
@@ -204,7 +218,9 @@ public class MailManager {
             final List<MailData> finalMails = new ArrayList<>(mails);
             
             Bukkit.getScheduler().runTask(plugin, () -> {
-                new com.oolonghoo.woosocial.module.mail.gui.MailListGUI(plugin, player, finalMails, finalPage, finalTotalPages).open(player);
+                // 清除加载状态
+                loadingState.clearLoading(playerUuid);
+                new com.oolonghoo.woosocial.module.mail.gui.MailListGUI(plugin, player, finalMails, finalPage, finalTotalPages, loadingState).open(player);
             });
         });
     }
@@ -212,11 +228,17 @@ public class MailManager {
     public void openMailDetailGUI(Player player, int mailId) {
         final UUID playerUuid = player.getUniqueId();
         
+        // 设置加载状态
+        loadingState.setLoading(playerUuid, true);
+        
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             dataManager.getFullMailData(mailId).thenAccept(mail -> {
                 Bukkit.getScheduler().runTask(plugin, () -> {
+                    // 清除加载状态
+                    loadingState.clearLoading(playerUuid);
+                    
                     if (mail != null && mail.getReceiverUuid().equals(playerUuid)) {
-                        new com.oolonghoo.woosocial.module.mail.gui.MailDetailGUI(plugin, player, mail).open(player);
+                        new com.oolonghoo.woosocial.module.mail.gui.MailDetailGUI(plugin, player, mail, loadingState).open(player);
                     } else {
                         messageManager.send(player, "mail.not-found");
                     }
@@ -245,5 +267,14 @@ public class MailManager {
     
     public String getBulkPermission() {
         return bulkPermission;
+    }
+    
+    /**
+     * 获取加载状态管理器
+     * 
+     * @return LoadingState实例
+     */
+    public LoadingState getLoadingState() {
+        return loadingState;
     }
 }

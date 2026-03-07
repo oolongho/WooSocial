@@ -61,6 +61,16 @@ public abstract class Module {
     }
     
     /**
+     * 检查模块是否已启用
+     * 子类可以重写此方法以提供启用状态
+     * 
+     * @return 是否已启用
+     */
+    public boolean isEnabled() {
+        return true;
+    }
+    
+    /**
      * 记录信息日志
      * 
      * @param message 日志消息
