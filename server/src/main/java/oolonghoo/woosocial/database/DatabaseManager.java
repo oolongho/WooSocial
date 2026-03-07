@@ -190,17 +190,18 @@ public class DatabaseManager {
                     : getSQLiteScheduledMailsTableSQL();
             statement.executeUpdate(createScheduledMailsTable);
             
-            // 执行数据库迁移
-            migrateMailsTable();
+            // 执行数据库迁移（复用同一个连接）
+            migrateMailsTable(connection);
         }
     }
     
     /**
      * 迁移邮件表结构
      * 为现有邮件表添加新字段
+     * @param connection 数据库连接（复用外层连接避免SQLite死锁）
      */
-    private void migrateMailsTable() {
-        try (Connection connection = getConnection()) {
+    private void migrateMailsTable(Connection connection) {
+        try {
             // 检查并添加 attachments 字段
             if (!columnExists(connection, tablePrefix + "mails", "attachments")) {
                 executeAlterTable(connection, 
