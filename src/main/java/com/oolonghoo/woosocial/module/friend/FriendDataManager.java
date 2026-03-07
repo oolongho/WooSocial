@@ -630,6 +630,16 @@ public class FriendDataManager {
         return friendData != null && friendData.isReceiveMessages();
     }
     
+    /**
+     * 获取需要通知该玩家上线的好友UUID列表
+     * 
+     * @param playerUuid 上线的玩家UUID
+     * @return CompletableFuture<List<UUID>> 需要通知的好友UUID列表
+     */
+    public CompletableFuture<List<UUID>> getFriendsToNotify(UUID playerUuid) {
+        return friendDAO.getFriendsToNotify(playerUuid);
+    }
+    
     // ==================== 缓存管理 ====================
     
     /**
