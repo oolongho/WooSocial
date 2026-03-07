@@ -3,8 +3,6 @@ package com.oolonghoo.woosocial.sync;
 import com.oolonghoo.woosocial.WooSocial;
 import org.bukkit.Bukkit;
 
-import java.util.logging.Level;
-
 public class PlatformDetector {
     
     private final WooSocial plugin;
@@ -60,12 +58,11 @@ public class PlatformDetector {
             return false;
         }
         
-        if (Bukkit.getServer().spigot().getConfig().getBoolean("settings.bungeecord", false)) {
+        if (!Bukkit.getOnlinePlayers().isEmpty()) {
             return true;
         }
         
-        return Bukkit.getServer().getOnlinePlayers().stream()
-                .anyMatch(player -> player.getPendingConnection().getVersion() > 0);
+        return plugin.getConfig().getBoolean("cross-server.enabled", false);
     }
     
     public boolean isProxyDetected() {
