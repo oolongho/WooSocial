@@ -23,8 +23,8 @@
 - **传送设置**：可视化权限管理
 
 ### 🌐 跨服同步
-- **BungeeCord**：Plugin Message Channel
-- **Velocity**：Plugin Message Channel
+- **BungeeCord**：Plugin Message Channel（需代理端插件）
+- **Velocity**：Plugin Message Channel（需代理端插件）
 - **Redis**：Pub/Sub 发布订阅
 - **MySQL**：轮询同步（兜底方案）
 
@@ -38,6 +38,15 @@
 - Minecraft 1.21+
 - Java 21+
 - Paper 核心（推荐）
+
+## 安装
+
+### 服务端插件
+将 `WooSocial-server-1.0.0.jar` 放入服务端 `plugins/` 目录
+
+### 代理端插件（可选，用于跨服同步）
+将 `WooSocial-proxy-1.0.0.jar` 放入代理端 `plugins/` 目录
+- 支持 Velocity 和 BungeeCord 两种代理
 
 ## 命令
 
