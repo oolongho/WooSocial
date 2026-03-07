@@ -1,0 +1,5 @@
+name: WooSocialProxy
+version: 1.0.0
+main: com.oolonghoo.woosocial.proxy.bungee.WooSocialBungeePlugin
+author: oolonghoo
+description: WooSocial 跨服同步代理端插件

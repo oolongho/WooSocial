@@ -1,1 +1,3 @@
 rootProject.name = 'WooSocial'
+include 'server'
+include 'proxy'

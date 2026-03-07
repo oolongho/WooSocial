@@ -1,0 +1,9 @@
+# WooSocialProxy 配置文件
+
+# 同步设置
+sync:
+  # 是否启用调试模式
+  debug: false
+  
+  # 同步频道名称（不要修改）
+  channel: "woosocial:sync"

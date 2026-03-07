@@ -1,0 +1,8 @@
+{
+  "id": "woosocial-proxy",
+  "name": "WooSocialProxy",
+  "version": "1.0.0",
+  "description": "WooSocial 跨服同步代理端插件",
+  "authors": ["oolonghoo"],
+  "main": "com.oolonghoo.woosocial.proxy.velocity.WooSocialVelocityPlugin"
+}
