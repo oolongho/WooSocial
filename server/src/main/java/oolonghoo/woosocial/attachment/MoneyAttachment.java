@@ -81,14 +81,14 @@ public class MoneyAttachment implements IAttachment {
         ItemMeta meta = icon.getItemMeta();
         
         if (meta != null) {
-            meta.setDisplayName("§6金币附件");
+            meta.displayName(net.kyori.adventure.text.Component.text("§6金币附件"));
             
-            List<String> lore = new ArrayList<>();
-            lore.add("");
-            lore.add("§7金额: §e" + formatAmount());
-            lore.add("");
-            lore.add("§e点击领取");
-            meta.setLore(lore);
+            List<net.kyori.adventure.text.Component> lore = new ArrayList<>();
+            lore.add(net.kyori.adventure.text.Component.empty());
+            lore.add(net.kyori.adventure.text.Component.text("§7金额: §e" + formatAmount()));
+            lore.add(net.kyori.adventure.text.Component.empty());
+            lore.add(net.kyori.adventure.text.Component.text("§e点击领取"));
+            meta.lore(lore);
             
             icon.setItemMeta(meta);
         }

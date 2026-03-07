@@ -107,16 +107,20 @@ public class ItemAttachment implements IAttachment {
             return new ItemStack(Material.BARRIER);
         }
         
-        // 复制物品作为展示图标
         ItemStack icon = itemStack.clone();
         ItemMeta meta = icon.getItemMeta();
         
         if (meta != null) {
-            // 添加提示信息
-            List<String> lore = meta.hasLore() ? new ArrayList<>(meta.getLore()) : new ArrayList<>();
-            lore.add("");
-            lore.add("§e点击领取此物品");
-            meta.setLore(lore);
+            List<net.kyori.adventure.text.Component> lore = new ArrayList<>();
+            if (meta.hasLore()) {
+                List<net.kyori.adventure.text.Component> existingLore = meta.lore();
+                if (existingLore != null) {
+                    lore.addAll(existingLore);
+                }
+            }
+            lore.add(net.kyori.adventure.text.Component.empty());
+            lore.add(net.kyori.adventure.text.Component.text("§e点击领取此物品"));
+            meta.lore(lore);
             icon.setItemMeta(meta);
         }
         

@@ -66,7 +66,7 @@ public class DailyGiftData {
     }
     
     public void addGiftSent(String giftId, int amount) {
-        giftsSent.merge(giftId, amount, Integer::sum);
+        giftsSent.merge(giftId, amount, (oldValue, newValue) -> Integer.valueOf(oldValue.intValue() + newValue.intValue()));
     }
     
     public String getGiftsJson() {

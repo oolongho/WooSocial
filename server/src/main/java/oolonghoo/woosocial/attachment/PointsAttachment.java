@@ -98,14 +98,14 @@ public class PointsAttachment implements IAttachment {
         ItemMeta meta = icon.getItemMeta();
         
         if (meta != null) {
-            meta.setDisplayName("§b点券附件");
+            meta.displayName(net.kyori.adventure.text.Component.text("§b点券附件"));
             
-            List<String> lore = new ArrayList<>();
-            lore.add("");
-            lore.add("§7数量: §b" + amount + " 点券");
-            lore.add("");
-            lore.add("§e点击领取");
-            meta.setLore(lore);
+            List<net.kyori.adventure.text.Component> lore = new ArrayList<>();
+            lore.add(net.kyori.adventure.text.Component.empty());
+            lore.add(net.kyori.adventure.text.Component.text("§7数量: §b" + amount + " 点券"));
+            lore.add(net.kyori.adventure.text.Component.empty());
+            lore.add(net.kyori.adventure.text.Component.text("§e点击领取"));
+            meta.lore(lore);
             
             icon.setItemMeta(meta);
         }
