@@ -1,0 +1,34 @@
+title: "<dark_gray>社交设置"
+
+layout:
+  - '#1######'
+  - '#2#######'
+  - '#########'
+  - '#########'
+  - '#########'
+  - '#########'
+
+icons:
+  '#':
+    material: LIME_STAINED_GLASS_PANE
+    name: ""
+  
+  '1':
+    material: BOOK
+    name: "<yellow>返回"
+    lore:
+      - "<gray>返回主菜单"
+    actions:
+      left: [open_gui:social_main, sound:entity_mule_chest]
+  
+  '2':
+    material: "{allow_friend_teleport ? LIME_DYE : GRAY_DYE}"
+    name: "<gold>好友传送权限"
+    lore:
+      - "<gray>是否允许好友传送到你"
+      - ""
+      - "<gray>状态: {allow_friend_teleport ? <green>允许 : <red>禁止}"
+      - ""
+      - "<aqua>点击切换"
+    actions:
+      left: [toggle_friend_teleport, sound:entity_mule_chest]

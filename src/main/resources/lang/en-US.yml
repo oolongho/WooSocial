@@ -1,0 +1,242 @@
+# WooSocial English Language File
+# English (US) Language File
+
+# ==================== Prefix ====================
+prefix: "&a[WooSocial]&r "
+
+# ==================== General Messages ====================
+general:
+  no-permission: "&cYou don't have permission to do this."
+  player-only: "&cThis command can only be executed by a player."
+  player-not-found: "&cPlayer not found: %player%"
+  unknown-command: "&cUnknown command. Use /woosocial help for help."
+  reload-success: "&aConfiguration reloaded."
+  invalid-argument: "&cInvalid argument: %arg%"
+  invalid-number: "&cPlease enter a valid number."
+  internal-error: "&cAn internal error occurred. Please contact an administrator."
+  feature-disabled: "&cThis feature is disabled."
+  cooldown: "&cPlease wait %time% seconds before trying again."
+
+# ==================== Module Messages ====================
+module:
+  reloaded: "&aModule %module% reloaded."
+  not-found: "&cModule not found: %module%"
+  already-enabled: "&cModule %module% is already enabled."
+  already-disabled: "&cModule %module% is already disabled."
+  cannot-disable: "&cCannot disable module %module%: other modules depend on it."
+  enabled: "&aModule %module% enabled."
+  disabled: "&cModule %module% disabled."
+
+# ==================== Friend System ====================
+friend:
+  # Request related
+  request-sent: "&aFriend request sent to %player%."
+  request-received: "&e%player% wants to be your friend. Use /friend accept %player% to accept or /friend deny %player% to deny."
+  request-accepted: "&aYou are now friends with %player%."
+  request-denied: "&cYou denied %player%'s friend request."
+  request-expired: "&cFriend request expired."
+  request-already-sent: "&cYou have already sent a friend request to this player."
+  request-pending-exists: "&cThis player has already sent you a friend request, please handle it first."
+  no-pending-request: "&cNo pending friend requests."
+  no-pending-request-from: "&cNo pending friend request from %player%."
+  
+  # Friendship
+  already-friend: "&cYou are already friends."
+  not-friend: "&cYou are not friends."
+  friend-removed: "&cYou removed %player% from your friends list."
+  friend-removed-by: "&c%player% removed you from their friends list."
+  
+  # List display
+  list-header: "&e=== Friends List (%page%/%total%) ==="
+  list-online: "&a%player% &7- &f%server%"
+  list-offline: "&c%player% &7- Offline"
+  list-empty: "&7No friends yet."
+  list-footer: "&e================================"
+  
+  # Request list
+  request-list-header: "&e=== Friend Requests (%page%/%total%) ==="
+  request-list-empty: "&7No pending friend requests."
+  request-list-entry: "&e%player% &7- &f%time%"
+  
+  # Limits
+  max-friends-reached: "&cYou have reached the maximum number of friends (%max%)."
+  target-max-friends-reached: "&c%player% has reached the maximum number of friends."
+  
+  # Online notification
+  notify-online-enabled: "&aEnabled online notification for %player%."
+  notify-online-disabled: "&cDisabled online notification for %player%."
+  friend-online-notification: "&aYour friend %player% is now online!"
+  friend-offline-notification: "&cYour friend %player% is now offline."
+  
+  # Favorite
+  favorite-added: "&eAdded %player% to favorites."
+  favorite-removed: "&7Removed %player% from favorites."
+  
+  # Nickname
+  nickname-set: "&aSet nickname for %player% to: %nickname%"
+  nickname-removed: "&aRemoved nickname for %player%."
+  
+  # Message receiving
+  receive-messages-enabled: "&aEnabled receiving messages from %player%."
+  receive-messages-disabled: "&cDisabled receiving messages from %player%."
+  
+  # Self
+  cannot-add-self: "&cYou cannot add yourself as a friend."
+  cannot-remove-self: "&cYou cannot remove yourself."
+
+# ==================== Block System ====================
+block:
+  blocked: "&cYou blocked %player%."
+  unblocked: "&aYou unblocked %player%."
+  already-blocked: "&cYou have already blocked this player."
+  not-blocked: "&cYou haven't blocked this player."
+  cannot-add-blocked: "&cYou have blocked this player, cannot add as friend."
+  cannot-add-blocker: "&cThis player has blocked you, cannot add as friend."
+  cannot-block-self: "&cYou cannot block yourself."
+  
+  # List display
+  list-header: "&e=== Blocked List (%page%/%total%) ==="
+  list-empty: "&7No blocked players."
+  list-entry: "&c%player%"
+  
+  # Limits
+  max-blocked-reached: "&cYou have reached the maximum number of blocked players (%max%)."
+
+# ==================== Teleport System ====================
+teleport:
+  # Teleport process
+  teleporting: "&eTeleporting to %player%... Please wait %time% seconds."
+  teleport-success: "&aYou have been teleported to %player%."
+  teleport-cancelled: "&cTeleport cancelled."
+  teleport-cancelled-move: "&cTeleport cancelled: you moved."
+  teleport-cancelled-damage: "&cTeleport cancelled: you took damage."
+  teleport-denied: "&c%player% does not allow you to teleport."
+  teleport-cooldown: "&cYou need to wait %time% seconds before teleporting again."
+  
+  # Target status
+  target-not-online: "&cTarget player is not online."
+  target-not-friend: "&cTarget player is not your friend."
+  target-in-different-server: "&cTarget player is in a different server: %server%"
+  
+  # Permission settings
+  allow-teleport: "&aYou allowed %player% to teleport to you."
+  deny-teleport: "&cYou denied %player% from teleporting to you."
+  toggle-teleport-on: "&aFriend teleport permission enabled."
+  toggle-teleport-off: "&cFriend teleport permission disabled."
+  teleport-allowed: "&a%player% allows you to teleport."
+  
+  # Self
+  cannot-teleport-self: "&cYou cannot teleport to yourself."
+  cannot-toggle-self: "&cYou cannot set teleport permission for yourself."
+  
+  # Cross-server
+  cross-server-teleporting: "&eTeleporting to %player% on %server% server..."
+  cross-server-success: "&aYou have been sent to %server% server."
+
+# ==================== GUI Messages ====================
+gui:
+  # Titles
+  social-menu-title: "Social Menu"
+  friend-list-title: "Friends (%page%/%total%)"
+  friend-detail-title: "Friend: %player%"
+  friend-settings-title: "Friend Settings: %player%"
+  friend-requests-title: "Friend Requests (%count%)"
+  teleport-settings-title: "Teleport Settings"
+  blocked-list-title: "Blocked List (%page%/%total%)"
+  
+  # Button names
+  button-friend-list: "&aFriend List"
+  button-friend-requests: "&eFriend Requests"
+  button-teleport-settings: "&bTeleport Settings"
+  button-blocked-list: "&cBlocked List"
+  button-settings: "&8Settings"
+  button-close: "&cClose"
+  button-back: "&7Back"
+  button-previous-page: "&7Previous Page"
+  button-next-page: "&7Next Page"
+  button-add-friend: "&aAdd Friend"
+  button-teleport: "&bTeleport"
+  button-message: "&eMessage"
+  button-remove-friend: "&cRemove Friend"
+  button-notify-online: "&eOnline Notify"
+  button-allow-teleport: "&bAllow Teleport"
+  button-block: "&cBlock"
+  button-unblock: "&aUnblock"
+  button-accept: "&aAccept"
+  button-deny: "&cDeny"
+  
+  # Button descriptions
+  lore-friend-list: "&7View your friends list"
+  lore-friend-requests: "&7Handle pending friend requests"
+  lore-teleport-settings: "&7Manage teleport permission settings"
+  lore-blocked-list: "&7View blocked players"
+  lore-settings: "&7Plugin system settings"
+  lore-teleport: "&7Teleport to this friend"
+  lore-message: "&7Send a message to this friend"
+  lore-remove-friend: "&cRemove from friends list"
+  lore-notify-online: "&7Get notified when this friend comes online"
+  lore-allow-teleport: "&7Allow this friend to teleport to you"
+  lore-block: "&cBlock this player"
+  lore-unblock: "&aUnblock this player"
+  lore-accept: "&aAccept friend request"
+  lore-deny: "&cDeny friend request"
+  
+  # Status display
+  status-online: "&aOnline"
+  status-offline: "&cOffline"
+  status-enabled: "&aEnabled"
+  status-disabled: "&cDisabled"
+  status-allowed: "&aAllowed"
+  status-denied: "&cDenied"
+  
+  # Detail display
+  lore-status: "&7Status: %status%"
+  lore-server: "&7Server: %server%"
+  lore-notify-online-status: "&7Online Notify: %status%"
+  lore-allow-teleport-status: "&7Allow Teleport: %status%"
+  lore-last-online: "&7Last Online: %time%"
+  lore-friends-since: "&7Friends Since: %time%"
+  
+  # Placeholders
+  placeholder-searching: "Searching..."
+  placeholder-never: "Never"
+  placeholder-just-now: "Just now"
+  placeholder-minutes-ago: "%count% minutes ago"
+  placeholder-hours-ago: "%count% hours ago"
+  placeholder-days-ago: "%count% days ago"
+
+# ==================== Help Messages ====================
+help:
+  header: "&e========== WooSocial Help ==========="
+  footer: "&e====================================="
+  
+  # Main commands
+  social: "&a/social &7- Open social menu"
+  help: "&a/social help &7- View help"
+  
+  # Friend commands
+  friend: "&a/friend &7- Open friends list"
+  friend-add: "&a/friend add <player> &7- Add friend"
+  friend-accept: "&a/friend accept [player] &7- Accept friend request"
+  friend-deny: "&a/friend deny [player] &7- Deny friend request"
+  friend-remove: "&a/friend remove <player> &7- Remove friend"
+  friend-list: "&a/friend list [page] &7- View friends list"
+  friend-notify: "&a/friend notify <player> [on/off] &7- Set online notification"
+  friend-requests: "&a/friend requests &7- View friend requests"
+  friend-block: "&a/friend block <player> &7- Block player"
+  friend-unblock: "&a/friend unblock <player> &7- Unblock player"
+  friend-blocked: "&a/friend blocked [page] &7- View blocked list"
+  
+  # Teleport commands
+  tpf: "&a/tpf <player> &7- Teleport to friend"
+  tpftoggle: "&a/tpftoggle &7- Toggle friend teleport permission"
+  tpfallow: "&a/tpfallow [player] &7- Allow friend to teleport"
+  tpfdeny: "&a/tpfdeny [player] &7- Deny friend to teleport"
+
+# ==================== Debug Messages ====================
+debug:
+  config-loaded: "&7[Debug] Configuration loaded: %file%"
+  lang-loaded: "&7[Debug] Language file loaded: %lang%"
+  module-loaded: "&7[Debug] Module loaded: %module%"
+  database-connected: "&7[Debug] Database connected"
+  cache-cleared: "&7[Debug] Cache cleared"

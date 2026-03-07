@@ -1,0 +1,98 @@
+# Friend module configuration
+# 好友模块配置文件
+
+# Basic settings
+# 基础设置
+max-friends: 50
+request-expire-time: 300
+default-notify-online: true
+
+# GUI settings
+# GUI界面设置
+gui:
+  # Friends per page in GUI
+  # 每页显示好友数量
+  items-per-page: 28
+  
+  # Filler item for empty slots
+  # 空白槽位填充物品
+  filler:
+    material: GRAY_STAINED_GLASS_PANE
+    name: " "
+
+# Button items
+# 按钮物品配置
+buttons:
+  # Friend list button
+  # 好友列表按钮
+  friend-list:
+    material: PLAYER_HEAD
+    name: "&a好友列表"
+    lore:
+      - "&7查看你的好友列表"
+      - "&7在线: &f%online%&7/&f%total%"
+  
+  # Friend requests button
+  # 好友请求按钮
+  friend-requests:
+    material: MAILBOX
+    name: "&e好友请求"
+    lore:
+      - "&7处理待处理的好友请求"
+      - "&7待处理: &f%pending%"
+  
+  # Add friend button
+  # 添加好友按钮
+  add-friend:
+    material: PLAYER_HEAD
+    name: "&a添加好友"
+    lore:
+      - "&7点击添加新好友"
+  
+  # Remove friend button
+  # 删除好友按钮
+  remove-friend:
+    material: BARRIER
+    name: "&c删除好友"
+    lore:
+      - "&cShift+点击确认删除"
+  
+  # Settings button
+  # 设置按钮
+  settings:
+    material: COMPARATOR
+    name: "&e好友设置"
+    lore:
+      - "&7管理好友设置"
+  
+  # Block button
+  # 屏蔽按钮
+  block:
+    material: REDSTONE_BLOCK
+    name: "&c屏蔽玩家"
+    lore:
+      - "&7屏蔽此玩家"
+  
+  # Unblock button
+  # 取消屏蔽按钮
+  unblock:
+    material: EMERALD_BLOCK
+    name: "&a取消屏蔽"
+    lore:
+      - "&7取消屏蔽此玩家"
+
+# Notification settings
+# 通知设置
+notifications:
+  # Show friend online message
+  # 显示好友上线消息
+  show-online: true
+  # Show friend offline message
+  # 显示好友下线消息
+  show-offline: false
+  # Sound when friend comes online
+  # 好友上线时播放的声音
+  online-sound: ENTITY_EXPERIENCE_ORB_PICKUP
+  # Sound when receiving friend request
+  # 收到好友请求时播放的声音
+  request-sound: BLOCK_NOTE_BLOCK_PLING

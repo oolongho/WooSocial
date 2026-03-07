@@ -1,0 +1,109 @@
+name: WooSocial
+version: ${project.version}
+main: com.oolonghoo.woosocial.WooSocial
+api-version: '1.21'
+author: oolongho
+description: A simple Minecraft social plugin.
+
+softdepend:
+  - PlaceholderAPI
+
+commands:
+  social:
+    description: Open social menu
+    usage: /social
+    permission: woosocial.use
+  friend:
+    description: Friend system commands
+    usage: /friend [args]
+    permission: woosocial.friend.use
+  tpf:
+    description: Teleport to friend
+    usage: /tpf <player>
+    permission: woosocial.teleport.use
+  tpftoggle:
+    description: Toggle teleport permission (global or for specific player)
+    usage: /tpftoggle [player]
+    permission: woosocial.teleport.toggle
+
+permissions:
+  woosocial.use:
+    description: Basic usage permission
+    default: true
+  woosocial.admin:
+    description: Admin permission
+    default: op
+  woosocial.reload:
+    description: Reload config permission
+    default: op
+  woosocial.help:
+    description: View help permission
+    default: true
+  
+  # Friend permissions
+  woosocial.friend:
+    description: Friend base permission
+    default: true
+  woosocial.friend.list:
+    description: View friend list
+    default: true
+  woosocial.friend.add:
+    description: Add friend
+    default: true
+  woosocial.friend.accept:
+    description: Accept friend request
+    default: true
+  woosocial.friend.deny:
+    description: Deny friend request
+    default: true
+  woosocial.friend.remove:
+    description: Remove friend
+    default: true
+  woosocial.friend.requests:
+    description: View friend requests
+    default: true
+  woosocial.friend.notify:
+    description: Set online notification
+    default: true
+  woosocial.friend.limit.bypass:
+    description: Bypass friend limit
+    default: op
+  
+  # Block permissions
+  woosocial.block:
+    description: Block base permission
+    default: true
+  woosocial.block.add:
+    description: Block player
+    default: true
+  woosocial.block.remove:
+    description: Unblock player
+    default: true
+  woosocial.block.list:
+    description: View blocked list
+    default: true
+  
+  # Teleport permissions
+  woosocial.teleport:
+    description: Teleport base permission
+    default: true
+  woosocial.teleport.to:
+    description: Teleport to friend
+    default: true
+  woosocial.teleport.toggle:
+    description: Toggle teleport permission
+    default: true
+  woosocial.teleport.cooldown.bypass:
+    description: Bypass teleport cooldown
+    default: op
+  woosocial.teleport.countdown.bypass:
+    description: Bypass teleport countdown
+    default: op
+  
+  # GUI permissions
+  woosocial.gui:
+    description: Open social menu
+    default: true
+  woosocial.gui.friend:
+    description: Open friend GUI
+    default: true

@@ -1,0 +1,240 @@
+# WooSocial 中文语言文件
+# Chinese (Simplified) Language File
+
+# ==================== 前缀 ====================
+prefix: "&a[WooSocial]&r "
+
+# ==================== 通用消息 ====================
+general:
+  no-permission: "&c你没有权限执行此操作。"
+  player-only: "&c此命令只能由玩家执行。"
+  player-not-found: "&c找不到玩家: %player%"
+  unknown-command: "&c未知的命令。使用 /woosocial help 查看帮助。"
+  reload-success: "&a配置已重新加载。"
+  invalid-argument: "&c无效的参数: %arg%"
+  invalid-number: "&c请输入有效的数字。"
+  internal-error: "&c发生内部错误，请联系管理员。"
+  feature-disabled: "&c此功能已被禁用。"
+  cooldown: "&c请等待 %time% 秒后再试。"
+
+# ==================== 模块消息 ====================
+module:
+  reloaded: "&a模块 %module% 已重新加载。"
+  not-found: "&c找不到模块: %module%"
+  already-enabled: "&c模块 %module% 已经启用。"
+  already-disabled: "&c模块 %module% 已经禁用。"
+  cannot-disable: "&c无法禁用模块 %module%：其他模块依赖它。"
+  enabled: "&a模块 %module% 已启用。"
+  disabled: "&c模块 %module% 已禁用。"
+
+# ==================== 好友系统 ====================
+friend:
+  # 请求相关
+  request-sent: "&a已向 %player% 发送好友请求。"
+  request-received: "&e%player% 想添加你为好友。使用 /friend accept %player% 接受或 /friend deny %player% 拒绝。"
+  request-accepted: "&a你已与 %player% 成为好友。"
+  request-denied: "&c你已拒绝 %player% 的好友请求。"
+  request-expired: "&c好友请求已过期。"
+  request-already-sent: "&c你已经向该玩家发送过好友请求。"
+  request-pending-exists: "&c该玩家已经向你发送过好友请求，请先处理。"
+  no-pending-request: "&c没有待处理的好友请求。"
+  no-pending-request-from: "&c没有来自 %player% 的好友请求。"
+  
+  # 好友关系
+  already-friend: "&c你们已经是好友了。"
+  not-friend: "&c你们不是好友。"
+  friend-removed: "&c你已将 %player% 从好友列表中移除。"
+  friend-removed-by: "&c%player% 已将你从好友列表中移除。"
+  
+  # 列表显示
+  list-header: "&e=== 好友列表 (%page%/%total%) ==="
+  list-online: "&a%player% &7- &f%server%"
+  list-offline: "&c%player% &7- 离线"
+  list-empty: "&7暂无好友。"
+  list-footer: "&e==========================="
+  
+  # 请求列表
+  request-list-header: "&e=== 好友请求 (%page%/%total%) ==="
+  request-list-empty: "&7暂无待处理的好友请求。"
+  request-list-entry: "&e%player% &7- &f%time%"
+  
+  # 限制
+  max-friends-reached: "&c你的好友数量已达上限 (%max%)。"
+  target-max-friends-reached: "&c%player% 的好友数量已达上限。"
+  
+  # 上线提醒
+  notify-online-enabled: "&a已开启 %player% 的上线提醒。"
+  notify-online-disabled: "&c已关闭 %player% 的上线提醒。"
+  friend-online-notification: "&a你的好友 %player% 上线了！"
+  friend-offline-notification: "&c你的好友 %player% 下线了。"
+  
+  # 收藏功能
+  favorite-added: "&e已将 %player% 添加到收藏。"
+  favorite-removed: "&7已将 %player% 从收藏中移除。"
+  
+  # 备注功能
+  nickname-set: "&a已将 %player% 的备注设置为: %nickname%"
+  nickname-removed: "&a已移除 %player% 的备注。"
+  
+  # 消息接收
+  receive-messages-enabled: "&a已开启接收 %player% 的消息。"
+  receive-messages-disabled: "&c已关闭接收 %player% 的消息。"
+  
+  # 自己
+  cannot-add-self: "&c你不能添加自己为好友。"
+  cannot-remove-self: "&c你不能删除自己。"
+
+# ==================== 屏蔽系统 ====================
+block:
+  blocked: "&c你已屏蔽 %player%。"
+  unblocked: "&a你已取消屏蔽 %player%。"
+  already-blocked: "&c你已经屏蔽了该玩家。"
+  not-blocked: "&c你没有屏蔽该玩家。"
+  cannot-add-blocked: "&c你已屏蔽该玩家，无法添加好友。"
+  cannot-add-blocker: "&c该玩家已屏蔽你，无法添加好友。"
+  cannot-block-self: "&c你不能屏蔽自己。"
+  
+  # 列表显示
+  list-header: "&e=== 屏蔽列表 (%page%/%total%) ==="
+  list-empty: "&7暂无屏蔽的玩家。"
+  list-entry: "&c%player%"
+  
+  # 限制
+  max-blocked-reached: "&c你的屏蔽数量已达上限 (%max%)。"
+
+# ==================== 传送系统 ====================
+teleport:
+  # 传送过程
+  teleporting: "&e正在传送到 %player%... 请等待 %time% 秒。"
+  teleport-success: "&a你已传送到 %player%。"
+  teleport-cancelled: "&c传送已取消。"
+  teleport-cancelled-move: "&c传送已取消：你移动了。"
+  teleport-cancelled-damage: "&c传送已取消：你受到了伤害。"
+  teleport-denied: "&c%player% 不允许你传送。"
+  teleport-cooldown: "&c你需要等待 %time% 秒才能再次传送。"
+  
+  # 目标状态
+  target-not-online: "&c目标玩家不在线。"
+  target-not-friend: "&c目标玩家不是你的好友。"
+  target-in-different-server: "&c目标玩家在其他服务器: %server%"
+  
+  # 权限设置
+  allow-teleport: "&a你已允许 %player% 传送到你。"
+  deny-teleport: "&c你已禁止 %player% 传送到你。"
+  toggle-teleport-on: "&a已开启好友传送权限。"
+  toggle-teleport-off: "&c已关闭好友传送权限。"
+  teleport-allowed: "&a%player% 允许你传送。"
+  
+  # 自己
+  cannot-teleport-self: "&c你不能传送到自己。"
+  cannot-toggle-self: "&c你不能对自己设置传送权限。"
+  
+  # 跨服
+  cross-server-teleporting: "&e正在传送到 %server% 服务器的 %player%..."
+  cross-server-success: "&a已将你发送到 %server% 服务器。"
+
+# ==================== GUI 消息 ====================
+gui:
+  # 标题
+  social-menu-title: "社交菜单"
+  friend-list-title: "好友列表 (%page%/%total%)"
+  friend-detail-title: "好友: %player%"
+  friend-requests-title: "好友请求 (%count%)"
+  social-settings-title: "社交设置"
+  blocked-list-title: "屏蔽列表 (%page%/%total%)"
+  
+  # 按钮名称
+  button-friend-list: "&a好友列表"
+  button-friend-requests: "&e好友请求"
+  button-social-settings: "&b社交设置"
+  button-blocked-list: "&c屏蔽列表"
+  button-close: "&c关闭"
+  button-back: "&7返回"
+  button-previous-page: "&7上一页"
+  button-next-page: "&7下一页"
+  button-add-friend: "&a添加好友"
+  button-teleport: "&b传送"
+  button-remove-friend: "&c删除好友"
+  button-notify-online: "&e上线提醒"
+  button-allow-teleport: "&b允许传送"
+  button-block: "&c屏蔽"
+  button-unblock: "&a取消屏蔽"
+  button-accept: "&a接受"
+  button-deny: "&c拒绝"
+  button-favorite: "&e收藏"
+  button-set-nickname: "&6设置备注"
+  
+  # 按钮描述
+  lore-friend-list: "&7查看你的好友列表"
+  lore-friend-requests: "&7处理待处理的好友请求"
+  lore-teleport-settings: "&7管理社交相关设置"
+  lore-blocked-list: "&7查看已屏蔽的玩家"
+  lore-settings: "&7插件系统设置"
+  lore-teleport: "&7传送到此好友"
+  lore-remove-friend: "&c从好友列表中移除"
+  lore-notify-online: "&7当此好友上线时通知你"
+  lore-allow-teleport: "&7允许此好友传送到你"
+  lore-block: "&c屏蔽此玩家"
+  lore-unblock: "&a取消屏蔽此玩家"
+  lore-accept: "&a接受好友请求"
+  lore-deny: "&c拒绝好友请求"
+  
+  # 状态显示
+  status-online: "&a在线"
+  status-offline: "&c离线"
+  status-enabled: "&a已启用"
+  status-disabled: "&c已禁用"
+  status-allowed: "&a允许"
+  status-denied: "&c禁止"
+  
+  # 详细信息显示
+  lore-status: "&7状态: %status%"
+  lore-server: "&7服务器: %server%"
+  lore-notify-online-status: "&7上线提醒: %status%"
+  lore-allow-teleport-status: "&7允许传送: %status%"
+  lore-last-online: "&7最后在线: %time%"
+  lore-friends-since: "&7好友时间: %time%"
+  
+  # 占位符
+  placeholder-searching: "搜索中..."
+  placeholder-never: "从未"
+  placeholder-just-now: "刚刚"
+  placeholder-minutes-ago: "%count% 分钟前"
+  placeholder-hours-ago: "%count% 小时前"
+  placeholder-days-ago: "%count% 天前"
+
+# ==================== 帮助消息 ====================
+help:
+  header: "&e========== WooSocial 帮助 =========="
+  footer: "&e===================================="
+  
+  # 主命令
+  social: "&a/social &7- 打开社交菜单"
+  help: "&a/social help &7- 查看帮助"
+  
+  # 好友命令
+  friend: "&a/friend &7- 打开好友列表"
+  friend-add: "&a/friend add <玩家> &7- 添加好友"
+  friend-accept: "&a/friend accept [玩家] &7- 接受好友请求"
+  friend-deny: "&a/friend deny [玩家] &7- 拒绝好友请求"
+  friend-remove: "&a/friend remove <玩家> &7- 删除好友"
+  friend-list: "&a/friend list [页码] &7- 查看好友列表"
+  friend-notify: "&a/friend notify <玩家> [on/off] &7- 设置上线提醒"
+  friend-requests: "&a/friend requests &7- 查看好友请求"
+  friend-block: "&a/friend block <玩家> &7- 屏蔽玩家"
+  friend-unblock: "&a/friend unblock <玩家> &7- 取消屏蔽"
+  friend-blocked: "&a/friend blocked [页码] &7- 查看屏蔽列表"
+  
+  # 传送命令
+  tpf: "&a/tpf <玩家> &7- 传送到好友"
+  tpftoggle: "&a/tpftoggle &7- 切换好友传送权限"
+  tpfallow: "&a/tpfallow [玩家] &7- 允许好友传送"
+  tpfdeny: "&a/tpfdeny [玩家] &7- 禁止好友传送"
+
+# ==================== 调试消息 ====================
+debug:
+  config-loaded: "&7[Debug] 配置文件已加载: %file%"
+  lang-loaded: "&7[Debug] 语言文件已加载: %lang%"
+  module-loaded: "&7[Debug] 模块已加载: %module%"
+  database-connected: "&7[Debug] 数据库已连接"
+  cache-cleared: "&7[Debug] 缓存已清理"

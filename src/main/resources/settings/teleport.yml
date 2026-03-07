@@ -1,0 +1,91 @@
+# Teleport module configuration
+# 传送模块配置文件
+
+# Basic settings
+# 基础设置
+countdown: 3
+cooldown: 60
+default-allow-teleport: true
+
+# Cancel settings
+# 取消设置
+cancel:
+  # Cancel teleport when player moves
+  # 玩家移动时取消传送
+  on-move: true
+  # Movement threshold in blocks
+  # 移动阈值（格）
+  move-threshold: 1.0
+  # Cancel teleport when player takes damage
+  # 玩家受伤时取消传送
+  on-damage: true
+
+# Teleport command template
+# 传送命令模板
+# %player% = teleporting player, %target% = target player
+tp-command: "tp %player% %target%"
+
+# GUI settings
+# GUI界面设置
+gui:
+  # Filler item for empty slots
+  # 空白槽位填充物品
+  filler:
+    material: GRAY_STAINED_GLASS_PANE
+    name: " "
+
+# Button items
+# 按钮物品配置
+buttons:
+  # Teleport button
+  # 传送按钮
+  teleport:
+    material: ENDER_PEARL
+    name: "&a传送"
+    lore:
+      - "&7传送到此好友"
+  
+  # Toggle teleport button
+  # 切换传送权限按钮
+  toggle:
+    enabled:
+      material: LIME_DYE
+      name: "&a允许传送"
+      lore:
+        - "&7状态: &a已启用"
+        - "&7点击切换"
+    disabled:
+      material: GRAY_DYE
+      name: "&c禁止传送"
+      lore:
+        - "&7状态: &c已禁用"
+        - "&7点击切换"
+  
+  # Allow button
+  # 允许按钮
+  allow:
+    material: GREEN_WOOL
+    name: "&a允许"
+    lore:
+      - "&7允许好友传送"
+  
+  # Deny button
+  # 禁止按钮
+  deny:
+    material: RED_WOOL
+    name: "&c禁止"
+    lore:
+      - "&7禁止好友传送"
+
+# Sound settings
+# 声音设置
+sounds:
+  # Sound when teleport starts
+  # 传送开始时的声音
+  start: ENTITY_ENDERMAN_TELEPORT
+  # Sound when teleport completes
+  # 传送完成时的声音
+  complete: ENTITY_ENDER_DRAGON_FLAP
+  # Sound when teleport is cancelled
+  # 传送取消时的声音
+  cancel: ENTITY_ITEM_BREAK

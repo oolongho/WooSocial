@@ -1,0 +1,54 @@
+# WooSocial
+
+settings:
+  debug: false
+  language: zh-CN
+  auto-save-interval: 300
+
+# Storage Configuration
+# Player data storage type: sqlite (default) or mysql
+storage:
+  type: sqlite
+  
+  # MySQL Configuration (only needed when type is mysql)
+  mysql:
+    host: localhost
+    port: 3306
+    database: woosocial
+    user: root
+    password: ""
+    pool-size: 10
+    table-prefix: "woosocial_"
+
+# Cross-server Configuration
+cross-server:
+  enabled: false
+  # Sync mode: auto, bungee, velocity, redis, mysql, disabled
+  mode: auto
+  # Current server name (for displaying friend's server)
+  server-name: "server-1"
+  
+  # Redis Configuration (only needed when mode is redis)
+  redis:
+    enabled: false
+    uri: "redis://localhost:6379"
+    password: ""
+  
+  # MySQL Poll Configuration (only needed when mode is mysql)
+  mysql-poll:
+    interval: 5  # seconds
+
+# Friend System Configuration
+friend:
+  max-friends: 50
+  request-expire-time: 300  # seconds
+  default-notify-online: true
+
+# Teleport System Configuration
+teleport:
+  countdown: 3  # seconds
+  cooldown: 60  # seconds
+  cancel-on-move: true
+  move-threshold: 1.0  # blocks
+  cancel-on-damage: true
+  default-allow-teleport: true
