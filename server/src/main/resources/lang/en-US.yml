@@ -295,9 +295,7 @@ mail:
   
   # Send mail
   send-mail: "&aSend Mail"
-  send-success: "&aSuccessfully sent mail to %player%!"
   send-success-multiple: "&aSuccessfully sent %count% items to %player%!"
-  send-failed: "&cFailed to send mail!"
   no-item: "&cPlease put an item to send first!"
   
   # Bulk operations

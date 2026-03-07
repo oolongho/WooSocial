@@ -294,9 +294,7 @@ mail:
   
   # 发送邮件
   send-mail: "&a发送邮件"
-  send-success: "&a成功发送邮件给 %player%！"
   send-success-multiple: "&a成功发送 %count% 个物品给 %player%！"
-  send-failed: "&c发送邮件失败！"
   no-item: "&c请先放入要发送的物品！"
   
   # 批量操作
@@ -341,8 +339,6 @@ mail:
   schedule-cancel-success: "&a定时邮件 %id% 已取消！"
   schedule-cancel-failed: "&c取消定时邮件失败！"
   scheduled-sent: "&a你的定时邮件已发送给 %count% 位玩家！"
-  help-sendall: "&a/mail sendall &7- 发送给所有玩家(管理员)"
-  help-sendonline: "&a/mail sendonline &7- 发送给在线玩家(管理员)"
   
   # 系统邮件
   system:
