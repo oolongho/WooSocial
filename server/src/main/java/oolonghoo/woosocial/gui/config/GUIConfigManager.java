@@ -43,6 +43,7 @@ public class GUIConfigManager {
             "blocked_list",
             "mail_list",
             "mail_detail",
+            "send_mail",
             "relation_list",
             "relation_detail",
             "relation_proposal",

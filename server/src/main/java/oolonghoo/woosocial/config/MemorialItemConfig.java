@@ -17,7 +17,7 @@ public class MemorialItemConfig extends ConfigLoader {
     private final Map<String, MemorialItem> items = new HashMap<>();
     
     public MemorialItemConfig(JavaPlugin plugin) {
-        super(plugin, "memorial_items.yml");
+        super(plugin, "settings/memorial_items.yml");
     }
     
     @Override

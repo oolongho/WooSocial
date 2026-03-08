@@ -1,6 +1,7 @@
 package com.oolonghoo.woosocial.gui;
 
 import com.oolonghoo.woosocial.WooSocial;
+import com.oolonghoo.woosocial.module.friend.FriendDataManager;
 import com.oolonghoo.woosocial.module.teleport.TeleportDataManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -15,13 +16,16 @@ import java.util.UUID;
 public class SocialSettingsGUI extends BaseGUI {
     
     private final TeleportDataManager teleportDataManager;
+    private final FriendDataManager friendDataManager;
     private final UUID viewerUUID;
     
     private static final int TELEPORT_TOGGLE_SLOT = 10;
+    private static final int BLOCKED_LIST_SLOT = 12;
     
     public SocialSettingsGUI(WooSocial plugin, Player viewer) {
         super(plugin, viewer, "social_settings");
         this.teleportDataManager = plugin.getModuleManager().getTeleportModule().getDataManager();
+        this.friendDataManager = plugin.getModuleManager().getFriendModule().getDataManager();
         this.viewerUUID = viewer.getUniqueId();
         
         setupItems();
@@ -38,9 +42,10 @@ public class SocialSettingsGUI extends BaseGUI {
         inventory.setItem(BACK_SLOT, createBackButton());
         
         boolean allowTeleport = teleportDataManager.isAllowFriendTeleport(viewerUUID);
+        inventory.setItem(TELEPORT_TOGGLE_SLOT, createTeleportToggleItem(allowTeleport));
         
-        ItemStack toggleItem = createTeleportToggleItem(allowTeleport);
-        inventory.setItem(TELEPORT_TOGGLE_SLOT, toggleItem);
+        int blockedCount = friendDataManager.getBlockedList(viewerUUID).size();
+        inventory.setItem(BLOCKED_LIST_SLOT, createBlockedListButton(blockedCount));
     }
     
     private ItemStack createTeleportToggleItem(boolean allowTeleport) {
@@ -63,6 +68,26 @@ public class SocialSettingsGUI extends BaseGUI {
         
         lore.add(Component.empty());
         lore.add(Component.text("点击切换", NamedTextColor.AQUA));
+        
+        meta.lore(lore);
+        item.setItemMeta(meta);
+        
+        return item;
+    }
+    
+    private ItemStack createBlockedListButton(int blockedCount) {
+        ItemStack item = new ItemStack(Material.BARRIER);
+        var meta = item.getItemMeta();
+        
+        meta.displayName(Component.text("屏蔽列表", NamedTextColor.RED));
+        
+        List<Component> lore = new ArrayList<>();
+        lore.add(Component.text("查看已屏蔽的玩家", NamedTextColor.GRAY));
+        lore.add(Component.empty());
+        lore.add(Component.text("已屏蔽: ", NamedTextColor.GRAY)
+                .append(Component.text(blockedCount, NamedTextColor.YELLOW)));
+        lore.add(Component.empty());
+        lore.add(Component.text("点击查看", NamedTextColor.AQUA));
         
         meta.lore(lore);
         item.setItemMeta(meta);
@@ -93,6 +118,11 @@ public class SocialSettingsGUI extends BaseGUI {
             
             refresh();
             player.openInventory(inventory);
+            return;
+        }
+        
+        if (slot == BLOCKED_LIST_SLOT) {
+            new BlockedListGUI(plugin, player).open(player);
             return;
         }
     }

@@ -26,8 +26,14 @@ public class FriendDataManager {
     private final FriendDAO friendDAO;
     private final PlayerDAO playerDAO;
     
-    // 在线玩家的好友数据缓存
+    // 在线玩家的好友数据缓存（列表形式，用于遍历）
     private final Map<UUID, List<FriendData>> friendCache = new ConcurrentHashMap<>();
+    
+    // 在线玩家的好友数据缓存（Map形式，用于O(1)查询）
+    private final Map<UUID, Map<UUID, FriendData>> friendMapCache = new ConcurrentHashMap<>();
+    
+    // 在线玩家的好友UUID集合（用于O(1)判断好友关系）
+    private final Map<UUID, Set<UUID>> friendUuidSetCache = new ConcurrentHashMap<>();
     
     // 在线玩家的好友请求数据缓存
     private final Map<UUID, List<FriendRequest>> requestCache = new ConcurrentHashMap<>();
@@ -62,6 +68,8 @@ public class FriendDataManager {
         saveAllData();
         
         friendCache.clear();
+        friendMapCache.clear();
+        friendUuidSetCache.clear();
         requestCache.clear();
         playerDataCache.clear();
         blockedCache.clear();
@@ -91,6 +99,17 @@ public class FriendDataManager {
     public CompletableFuture<Void> loadFriendList(UUID playerUuid) {
         return friendDAO.getFriends(playerUuid).thenAccept(friends -> {
             friendCache.put(playerUuid, friends);
+            
+            Map<UUID, FriendData> friendMap = new ConcurrentHashMap<>();
+            Set<UUID> friendUuidSet = ConcurrentHashMap.newKeySet();
+            
+            for (FriendData friend : friends) {
+                friendMap.put(friend.getFriendUuid(), friend);
+                friendUuidSet.add(friend.getFriendUuid());
+            }
+            
+            friendMapCache.put(playerUuid, friendMap);
+            friendUuidSetCache.put(playerUuid, friendUuidSet);
         });
     }
     
@@ -106,19 +125,16 @@ public class FriendDataManager {
     
     /**
      * 获取指定好友的数据
+     * 优化：使用Map实现O(1)查询
      * 
      * @param playerUuid 玩家UUID
      * @param friendUuid 好友UUID
      * @return 好友数据，如果不存在返回null
      */
     public FriendData getFriendData(UUID playerUuid, UUID friendUuid) {
-        List<FriendData> friendList = friendCache.get(playerUuid);
-        if (friendList != null) {
-            for (FriendData data : friendList) {
-                if (data.getFriendUuid().equals(friendUuid)) {
-                    return data;
-                }
-            }
+        Map<UUID, FriendData> friendMap = friendMapCache.get(playerUuid);
+        if (friendMap != null) {
+            return friendMap.get(friendUuid);
         }
         return null;
     }
@@ -136,19 +152,15 @@ public class FriendDataManager {
     
     /**
      * 检查是否为好友关系
+     * 优化：使用Set实现O(1)查询
      * 
      * @param playerUuid 玩家UUID
      * @param friendUuid 好友UUID
      * @return 是否为好友
      */
     public boolean isFriend(UUID playerUuid, UUID friendUuid) {
-        List<FriendData> friends = friendCache.get(playerUuid);
-        if (friends == null) {
-            return false;
-        }
-        
-        return friends.stream()
-                .anyMatch(friend -> friend.getFriendUuid().equals(friendUuid));
+        Set<UUID> friendUuidSet = friendUuidSetCache.get(playerUuid);
+        return friendUuidSet != null && friendUuidSet.contains(friendUuid);
     }
     
     /**
@@ -649,6 +661,8 @@ public class FriendDataManager {
      */
     public void clearCache(UUID playerUuid) {
         friendCache.remove(playerUuid);
+        friendMapCache.remove(playerUuid);
+        friendUuidSetCache.remove(playerUuid);
         requestCache.remove(playerUuid);
         playerDataCache.remove(playerUuid);
         blockedCache.remove(playerUuid);

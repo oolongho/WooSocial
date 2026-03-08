@@ -28,9 +28,9 @@ public class SendMailGUI extends BaseGUI {
     
     private static final int BACK_SLOT = 0;
     private static final int RECEIVER_INFO_SLOT = 4;
-    private static final int[] ITEM_SLOTS = {19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34, 37, 38, 39, 40, 41, 42, 43};
-    private static final int SEND_SLOT = 52;
-    private static final int CANCEL_SLOT = 45;
+    private static final int SEND_SLOT = 49;
+    
+    private static final int[] ITEM_SLOTS = {20, 21, 22, 23, 24, 29, 30, 31, 32, 33};
     private static final Set<Integer> INPUT_SLOTS = new HashSet<>();
     
     static {
@@ -61,17 +61,54 @@ public class SendMailGUI extends BaseGUI {
     
     private void setupItems() {
         fillBorder(54);
+        fillSecondRow();
+        fillFifthRow();
+        fillSecondColumn();
+        fillEighthColumn();
         
         inventory.setItem(BACK_SLOT, createBackButton());
         inventory.setItem(RECEIVER_INFO_SLOT, createReceiverInfoItem());
         inventory.setItem(SEND_SLOT, createSendButton());
-        inventory.setItem(CANCEL_SLOT, createCancelButton());
-        
-        for (int slot : ITEM_SLOTS) {
-            if (inventory.getItem(slot) == null || inventory.getItem(slot).getType() == Material.AIR) {
-                inventory.setItem(slot, createPlaceholderItem());
-            }
+    }
+    
+    private void fillSecondRow() {
+        ItemStack borderItem = createYellowGreenBorderItem();
+        for (int col = 0; col < 9; col++) {
+            int slot = 9 + col;
+            inventory.setItem(slot, borderItem);
         }
+    }
+    
+    private void fillFifthRow() {
+        ItemStack borderItem = createYellowGreenBorderItem();
+        for (int col = 0; col < 9; col++) {
+            int slot = 36 + col;
+            inventory.setItem(slot, borderItem);
+        }
+    }
+    
+    private void fillSecondColumn() {
+        ItemStack borderItem = createYellowGreenBorderItem();
+        for (int row = 0; row < 6; row++) {
+            int slot = row * 9 + 1;
+            inventory.setItem(slot, borderItem);
+        }
+    }
+    
+    private void fillEighthColumn() {
+        ItemStack borderItem = createYellowGreenBorderItem();
+        for (int row = 0; row < 6; row++) {
+            int slot = row * 9 + 7;
+            inventory.setItem(slot, borderItem);
+        }
+    }
+    
+    private ItemStack createYellowGreenBorderItem() {
+        ItemStack item = new ItemStack(Material.LIME_STAINED_GLASS_PANE);
+        ItemMeta meta = item.getItemMeta();
+        meta.displayName(Component.text(" "));
+        item.setItemMeta(meta);
+        return item;
     }
     
     private ItemStack createReceiverInfoItem() {
@@ -88,22 +125,6 @@ public class SendMailGUI extends BaseGUI {
         lore.add(Component.empty());
         lore.add(Component.text("将物品放入下方格子发送", NamedTextColor.YELLOW));
         lore.add(Component.text("最多可放入 " + ITEM_SLOTS.length + " 个物品", NamedTextColor.GRAY));
-        
-        meta.lore(lore);
-        item.setItemMeta(meta);
-        
-        return item;
-    }
-    
-    private ItemStack createPlaceholderItem() {
-        ItemStack item = new ItemStack(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
-        var meta = item.getItemMeta();
-        meta.displayName(Component.text("放入物品", NamedTextColor.YELLOW));
-        
-        List<Component> lore = new ArrayList<>();
-        lore.add(Component.empty());
-        lore.add(Component.text("将你要发送的物品", NamedTextColor.GRAY));
-        lore.add(Component.text("放入这个格子", NamedTextColor.GRAY));
         
         meta.lore(lore);
         item.setItemMeta(meta);
@@ -143,26 +164,11 @@ public class SendMailGUI extends BaseGUI {
         return item;
     }
     
-    private ItemStack createCancelButton() {
-        ItemStack item = new ItemStack(Material.REDSTONE_BLOCK);
-        var meta = item.getItemMeta();
-        meta.displayName(Component.text("取消", NamedTextColor.RED));
-        
-        List<Component> lore = new ArrayList<>();
-        lore.add(Component.text("取消发送并返回", NamedTextColor.GRAY));
-        lore.add(Component.text("物品将返还到背包", NamedTextColor.GRAY));
-        
-        meta.lore(lore);
-        item.setItemMeta(meta);
-        
-        return item;
-    }
-    
     private int getItemCount() {
         int count = 0;
         for (int slot : ITEM_SLOTS) {
             ItemStack item = inventory.getItem(slot);
-            if (item != null && item.getType() != Material.AIR && item.getType() != Material.LIGHT_GRAY_STAINED_GLASS_PANE) {
+            if (item != null && item.getType() != Material.AIR) {
                 count++;
             }
         }
@@ -173,7 +179,7 @@ public class SendMailGUI extends BaseGUI {
         List<ItemStack> items = new ArrayList<>();
         for (int slot : ITEM_SLOTS) {
             ItemStack item = inventory.getItem(slot);
-            if (item != null && item.getType() != Material.AIR && item.getType() != Material.LIGHT_GRAY_STAINED_GLASS_PANE) {
+            if (item != null && item.getType() != Material.AIR) {
                 items.add(item.clone());
             }
         }
@@ -198,7 +204,7 @@ public class SendMailGUI extends BaseGUI {
             return;
         }
         
-        if (slot == BACK_SLOT || slot == CANCEL_SLOT) {
+        if (slot == BACK_SLOT) {
             closedBySend = false;
             player.closeInventory();
             return;
@@ -230,10 +236,8 @@ public class SendMailGUI extends BaseGUI {
                         if (success) {
                             closedBySend = true;
                             player.closeInventory();
-                            messageManager.send(player, "mail.send-success", "player", receiverName);
                         } else {
                             returnItemsToPlayer(player, itemsToSend);
-                            messageManager.send(player, "mail.send-failed");
                         }
                     });
                 });
@@ -248,7 +252,7 @@ public class SendMailGUI extends BaseGUI {
     
     private void returnItemsToPlayer(Player player, List<ItemStack> items) {
         for (ItemStack item : items) {
-            if (item != null && item.getType() != Material.AIR && item.getType() != Material.LIGHT_GRAY_STAINED_GLASS_PANE) {
+            if (item != null && item.getType() != Material.AIR) {
                 var leftover = player.getInventory().addItem(item);
                 for (ItemStack drop : leftover.values()) {
                     player.getWorld().dropItem(player.getLocation(), drop);

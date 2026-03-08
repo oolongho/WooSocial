@@ -15,7 +15,7 @@ public class GiftConfig extends ConfigLoader {
     private final Map<String, GiftType> gifts = new HashMap<>();
     
     public GiftConfig(JavaPlugin plugin) {
-        super(plugin, "gifts.yml");
+        super(plugin, "settings/gifts.yml");
     }
     
     @Override

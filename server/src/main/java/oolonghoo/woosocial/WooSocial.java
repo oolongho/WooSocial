@@ -18,6 +18,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -46,60 +48,60 @@ public class WooSocial extends JavaPlugin {
     public void onEnable() {
         instance = this;
         
-        // 保存默认配置文件
         saveDefaultConfig();
         
-        // 初始化配置管理器
         configManager = new ConfigManager(this);
+        getLogger().info("配置加载完成");
         
-        // 初始化消息管理器
         messageManager = new MessageManager(this);
         messageManager.initialize();
         
-        // 初始化数据库管理器
         try {
             databaseManager = new DatabaseManager(this, configManager);
             databaseManager.initialize();
+            getLogger().info("数据库连接成功 (" + configManager.getDatabaseType().toUpperCase() + ")");
         } catch (SQLException e) {
             getLogger().log(Level.SEVERE, "数据库初始化失败，插件将禁用", e);
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
         
-        // 初始化DAO层
         playerDAO = new PlayerDAO(this, databaseManager);
         friendDAO = new FriendDAO(this, databaseManager);
         
-        // 初始化模块管理器
         moduleManager = new ModuleManager(this);
         moduleManager.initialize();
         
-        // 初始化GUI配置管理器
         guiConfigManager = new com.oolonghoo.woosocial.gui.config.GUIConfigManager(this);
         guiConfigManager.initialize();
         
-        // 初始化Action解析器
         actionParser = new com.oolonghoo.woosocial.gui.action.ActionParser(this);
         
-        // 初始化同步管理器
         initializeSyncManager();
         
-        // 注册模块
+        if (syncManager != null && syncManager.isInitialized()) {
+            getLogger().info("跨服同步已启用 (" + syncManager.getConfig().getMode().name() + ")");
+        }
+        
         registerModules();
         
-        // 加载启用的模块
         moduleManager.loadEnabledModules();
         
-        // 注册命令
+        List<String> enabledModules = new ArrayList<>();
+        for (var entry : moduleManager.getLoadedModules().entrySet()) {
+            enabledModules.add(entry.getKey());
+        }
+        if (!enabledModules.isEmpty()) {
+            getLogger().info("已启用模块: " + String.join(", ", enabledModules));
+        }
+        
         registerCommands();
         
-        // 启动定时任务
         startScheduledTasks();
         
-        // 缓存预热
         warmupCache();
         
-        getLogger().info("WooSocial v" + getPluginMeta().getVersion() + " 已启用！");
+        getLogger().info("WooSocial v" + getPluginMeta().getVersion() + " 已启用!");
     }
     
     /**

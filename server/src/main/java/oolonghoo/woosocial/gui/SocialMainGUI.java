@@ -4,11 +4,15 @@ import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.module.friend.FriendDataManager;
 import com.oolonghoo.woosocial.module.mail.MailDataManager;
 import com.oolonghoo.woosocial.module.relation.RelationDataManager;
+import com.oolonghoo.woosocial.module.teleport.TeleportDataManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +23,7 @@ public class SocialMainGUI extends BaseGUI {
     private final FriendDataManager friendDataManager;
     private final MailDataManager mailDataManager;
     private final RelationDataManager relationDataManager;
+    private final TeleportDataManager teleportDataManager;
     private final UUID viewerUUID;
     
     private static final int FRIEND_LIST_SLOT = 10;
@@ -26,16 +31,14 @@ public class SocialMainGUI extends BaseGUI {
     private static final int MAIL_SLOT = 12;
     private static final int RELATION_LIST_SLOT = 13;
     private static final int GIFT_HISTORY_SLOT = 14;
-    private static final int SOCIAL_SETTINGS_SLOT = 15;
-    private static final int BLOCKED_LIST_SLOT = 16;
-    private static final int HELP_SLOT = 19;
-    private static final int PERSONAL_INFO_SLOT = 20;
+    private static final int PERSONAL_INFO_SLOT = 4;
     
     public SocialMainGUI(WooSocial plugin, Player viewer) {
         super(plugin, viewer, "social_main");
         this.friendDataManager = plugin.getModuleManager().getFriendModule().getDataManager();
         this.mailDataManager = plugin.getModuleManager().getMailModule().getDataManager();
         this.relationDataManager = plugin.getModuleManager().getRelationModule().getDataManager();
+        this.teleportDataManager = plugin.getModuleManager().getTeleportModule().getDataManager();
         this.viewerUUID = viewer.getUniqueId();
         
         setupItems();
@@ -54,15 +57,12 @@ public class SocialMainGUI extends BaseGUI {
         inventory.setItem(MAIL_SLOT, createMailButton());
         inventory.setItem(RELATION_LIST_SLOT, createRelationListButton());
         inventory.setItem(GIFT_HISTORY_SLOT, createGiftHistoryButton());
-        inventory.setItem(SOCIAL_SETTINGS_SLOT, createSocialSettingsButton());
-        inventory.setItem(BLOCKED_LIST_SLOT, createBlockedListButton());
-        inventory.setItem(HELP_SLOT, createHelpButton());
         inventory.setItem(PERSONAL_INFO_SLOT, createPersonalInfoButton());
     }
     
     private ItemStack createFriendListButton() {
         ItemStack item = new ItemStack(Material.PLAYER_HEAD);
-        var meta = (org.bukkit.inventory.meta.SkullMeta) item.getItemMeta();
+        var meta = (SkullMeta) item.getItemMeta();
         meta.displayName(messageManager.getComponent("gui.button-friend-list"));
         
         List<Component> lore = new ArrayList<>();
@@ -158,71 +158,19 @@ public class SocialMainGUI extends BaseGUI {
         return item;
     }
     
-    private ItemStack createSocialSettingsButton() {
-        ItemStack item = new ItemStack(Material.CRAFTING_TABLE);
-        var meta = item.getItemMeta();
-        meta.displayName(messageManager.getComponent("gui.button-social-settings"));
-        
-        List<Component> lore = new ArrayList<>();
-        lore.add(messageManager.getComponent("gui.lore-teleport-settings"));
-        lore.add(Component.empty());
-        lore.add(Component.text("点击打开设置", NamedTextColor.AQUA));
-        
-        meta.lore(lore);
-        item.setItemMeta(meta);
-        return item;
-    }
-    
-    private ItemStack createBlockedListButton() {
-        int blockedCount = friendDataManager.getBlockedList(viewerUUID).size();
-        
-        ItemStack item = new ItemStack(Material.BARRIER);
-        var meta = item.getItemMeta();
-        meta.displayName(messageManager.getComponent("gui.button-blocked-list"));
-        
-        List<Component> lore = new ArrayList<>();
-        lore.add(messageManager.getComponent("gui.lore-blocked-list"));
-        lore.add(Component.empty());
-        lore.add(Component.text("已屏蔽: ", NamedTextColor.GRAY)
-                .append(Component.text(blockedCount, NamedTextColor.YELLOW)));
-        
-        meta.lore(lore);
-        item.setItemMeta(meta);
-        return item;
-    }
-    
-    private ItemStack createHelpButton() {
-        ItemStack item = new ItemStack(Material.BOOK);
-        var meta = item.getItemMeta();
-        meta.displayName(Component.text("帮助", NamedTextColor.YELLOW));
-        
-        List<Component> lore = new ArrayList<>();
-        lore.add(Component.text("插件使用帮助", NamedTextColor.GRAY));
-        lore.add(Component.empty());
-        lore.add(Component.text("/friend add <玩家> - 添加好友", NamedTextColor.GRAY));
-        lore.add(Component.text("/friend remove <玩家> - 删除好友", NamedTextColor.GRAY));
-        lore.add(Component.text("/tpf <好友> - 传送到好友", NamedTextColor.GRAY));
-        lore.add(Component.text("/tpftoggle - 切换传送权限", NamedTextColor.GRAY));
-        lore.add(Component.text("/mail - 打开邮箱", NamedTextColor.GRAY));
-        lore.add(Component.text("/gift - 赠送礼物", NamedTextColor.GRAY));
-        lore.add(Component.text("/relation - 关系管理", NamedTextColor.GRAY));
-        
-        meta.lore(lore);
-        item.setItemMeta(meta);
-        return item;
-    }
-    
     private ItemStack createPersonalInfoButton() {
         int friendCount = friendDataManager.getFriendCount(viewerUUID);
         int blockedCount = friendDataManager.getBlockedList(viewerUUID).size();
         int unreadMail = mailDataManager.getUnreadCount(viewerUUID);
+        boolean allowTeleport = teleportDataManager.isAllowFriendTeleport(viewerUUID);
         
-        ItemStack item = new ItemStack(Material.NAME_TAG);
-        var meta = item.getItemMeta();
-        meta.displayName(Component.text("个人信息", NamedTextColor.WHITE));
+        ItemStack item = new ItemStack(Material.PLAYER_HEAD);
+        var meta = (SkullMeta) item.getItemMeta();
+        meta.setOwningPlayer(Bukkit.getOfflinePlayer(viewerUUID));
+        meta.displayName(Component.text(viewer.getName(), NamedTextColor.GREEN));
         
         List<Component> lore = new ArrayList<>();
-        lore.add(Component.text("查看你的社交信息", NamedTextColor.GRAY));
+        lore.add(Component.text("查看社交设置", NamedTextColor.GRAY));
         lore.add(Component.empty());
         lore.add(Component.text("好友数量: ", NamedTextColor.GRAY)
                 .append(Component.text(friendCount, NamedTextColor.YELLOW)));
@@ -230,6 +178,11 @@ public class SocialMainGUI extends BaseGUI {
                 .append(Component.text(blockedCount, NamedTextColor.YELLOW)));
         lore.add(Component.text("未读邮件: ", NamedTextColor.GRAY)
                 .append(Component.text(unreadMail, NamedTextColor.YELLOW)));
+        lore.add(Component.empty());
+        lore.add(Component.text("传送权限: ", NamedTextColor.GRAY)
+                .append(Component.text(allowTeleport ? "允许" : "禁止", allowTeleport ? NamedTextColor.GREEN : NamedTextColor.RED)));
+        lore.add(Component.empty());
+        lore.add(Component.text("点击打开设置", NamedTextColor.AQUA));
         
         meta.lore(lore);
         item.setItemMeta(meta);
@@ -247,33 +200,29 @@ public class SocialMainGUI extends BaseGUI {
             case BACK_SLOT:
                 player.closeInventory();
                 break;
-                
+            
             case FRIEND_LIST_SLOT:
                 new FriendListGUI(plugin, player).open(player);
                 break;
-                
+            
             case FRIEND_REQUESTS_SLOT:
                 new FriendRequestsGUI(plugin, player).open(player);
                 break;
-                
+            
             case MAIL_SLOT:
                 plugin.getModuleManager().getMailModule().getMailManager().openMailListGUI(player, 1);
                 break;
-                
+            
             case RELATION_LIST_SLOT:
                 new RelationListGUI(plugin, player).open(player);
                 break;
-                
+            
             case GIFT_HISTORY_SLOT:
                 new GiftHistoryGUI(plugin, player).open(player);
                 break;
-                
-            case SOCIAL_SETTINGS_SLOT:
+            
+            case PERSONAL_INFO_SLOT:
                 new SocialSettingsGUI(plugin, player).open(player);
-                break;
-                
-            case BLOCKED_LIST_SLOT:
-                new BlockedListGUI(plugin, player).open(player);
                 break;
         }
     }

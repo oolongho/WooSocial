@@ -52,7 +52,12 @@ public class DatabaseManager {
     private void initializeMySQL() {
         HikariConfig hikariConfig = new HikariConfig();
         
-        // 构建JDBC URL
+        int maxPoolSize = Math.max(2, Math.min(configManager.getPoolMaximumPoolSize(), 50));
+        int minimumIdle = Math.max(1, Math.min(configManager.getPoolMinimumIdle(), maxPoolSize));
+        long connectionTimeout = Math.max(5000, Math.min(configManager.getPoolConnectionTimeout(), 60000));
+        long idleTimeout = Math.max(10000, Math.min(configManager.getPoolIdleTimeout(), 600000));
+        long maxLifetime = Math.max(30000, Math.min(configManager.getPoolMaxLifetime(), 1800000));
+        
         String url = String.format("jdbc:mysql://%s:%d/%s?useSSL=false&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai",
                 configManager.getMySQLHost(),
                 configManager.getMySQLPort(),
@@ -63,18 +68,15 @@ public class DatabaseManager {
         hikariConfig.setPassword(configManager.getMySQLPassword());
         hikariConfig.setDriverClassName("com.mysql.cj.jdbc.Driver");
         
-        // 从配置文件读取连接池参数
-        hikariConfig.setMaximumPoolSize(configManager.getPoolMaximumPoolSize());
-        hikariConfig.setMinimumIdle(configManager.getPoolMinimumIdle());
-        hikariConfig.setConnectionTimeout(configManager.getPoolConnectionTimeout());
-        hikariConfig.setIdleTimeout(configManager.getPoolIdleTimeout());
-        hikariConfig.setMaxLifetime(configManager.getPoolMaxLifetime());
+        hikariConfig.setMaximumPoolSize(maxPoolSize);
+        hikariConfig.setMinimumIdle(minimumIdle);
+        hikariConfig.setConnectionTimeout(connectionTimeout);
+        hikariConfig.setIdleTimeout(idleTimeout);
+        hikariConfig.setMaxLifetime(maxLifetime);
         hikariConfig.setConnectionTestQuery("SELECT 1");
         
-        // 连接池名称
         hikariConfig.setPoolName("WooSocial-HikariCP");
         
-        // 性能优化配置
         hikariConfig.addDataSourceProperty("cachePrepStmts", "true");
         hikariConfig.addDataSourceProperty("prepStmtCacheSize", "250");
         hikariConfig.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
@@ -88,8 +90,8 @@ public class DatabaseManager {
         
         dataSource = new HikariDataSource(hikariConfig);
         
-        plugin.getLogger().info("MySQL连接池初始化完成 - 最大连接数: " + configManager.getPoolMaximumPoolSize() 
-                + ", 最小空闲: " + configManager.getPoolMinimumIdle());
+        plugin.getLogger().info("MySQL连接池初始化完成 - 最大连接数: " + maxPoolSize 
+                + ", 最小空闲: " + minimumIdle);
     }
     
     /**

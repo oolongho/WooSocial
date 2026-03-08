@@ -17,7 +17,7 @@ public class RelationTypeConfig extends ConfigLoader {
     private RelationType defaultType;
     
     public RelationTypeConfig(JavaPlugin plugin) {
-        super(plugin, "relation_types.yml");
+        super(plugin, "settings/relation_types.yml");
     }
     
     @Override

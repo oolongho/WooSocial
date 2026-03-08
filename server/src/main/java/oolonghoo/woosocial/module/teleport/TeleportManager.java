@@ -100,8 +100,8 @@ public class TeleportManager {
             }
         }
         
-        // 检查目标是否允许传送
-        if (!dataManager.isAllowFriendTeleport(targetUuid)) {
+        // 检查目标是否允许传送（检查全局设置和针对发起者的单独设置）
+        if (!dataManager.isAllowTeleport(targetUuid, playerUuid)) {
             messageManager.send(player, "teleport.teleport-denied", "player", target.getName());
             return false;
         }
