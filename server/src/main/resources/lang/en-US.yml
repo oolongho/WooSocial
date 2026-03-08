@@ -373,7 +373,7 @@ relation:
   info-mutual: "&7Mutual: %mutual%"
   
   types-header: "&e=== Relation Types ==="
-  types-entry: "&7%name% &8- &fIntimacy: %intimacy% &7Slots: %slots%"
+  types-entry: "&7{name} &8- &fIntimacy: {intimacy} &7Slots: {slots}"
 
 # ==================== Gift System ====================
 gift:

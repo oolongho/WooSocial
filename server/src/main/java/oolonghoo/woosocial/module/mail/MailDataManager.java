@@ -177,24 +177,29 @@ public class MailDataManager {
         mail.setItemData(itemData);
         mail.setExpireTime(System.currentTimeMillis() + (expireDays * 24L * 60 * 60 * 1000));
         
-        // 触发邮件发送事件
-        MailSendEvent event = new MailSendEvent(senderUuid, senderName, receiverUuid, receiverName, mail);
-        Bukkit.getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
-            return CompletableFuture.completedFuture(new SendResult(false, event.getCancelReason()));
-        }
-        
-        // 使用可能被修改后的邮件数据
-        mail = event.getMailData();
-        
-        return mailDAO.createMail(mail).thenApply(success -> {
-            if (success) {
-                loadMails(receiverUuid);
-                notifyReceiver(receiverUuid);
-                broadcastMailNew(receiverUuid);
-                return new SendResult(true, null);
+        MailData finalMail = mail;
+        return CompletableFuture.supplyAsync(() -> {
+            MailSendEvent event = new MailSendEvent(senderUuid, senderName, receiverUuid, receiverName, finalMail);
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return new SendResult(false, event.getCancelReason());
             }
-            return new SendResult(false, "database-error");
+            return null;
+        }).thenCompose(result -> {
+            if (result != null) {
+                return CompletableFuture.completedFuture(result);
+            }
+            
+            MailData eventMail = finalMail;
+            return mailDAO.createMail(eventMail).thenApply(success -> {
+                if (success) {
+                    loadMails(receiverUuid);
+                    notifyReceiver(receiverUuid);
+                    broadcastMailNew(receiverUuid);
+                    return new SendResult(true, null);
+                }
+                return new SendResult(false, "database-error");
+            });
         });
     }
     

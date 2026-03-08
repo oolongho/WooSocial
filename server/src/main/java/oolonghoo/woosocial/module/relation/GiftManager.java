@@ -18,11 +18,13 @@ public class GiftManager {
     private final WooSocial plugin;
     private final RelationDataManager dataManager;
     private final RelationManager relationManager;
+    private final com.oolonghoo.woosocial.module.friend.FriendDataManager friendDataManager;
     
     public GiftManager(WooSocial plugin, RelationDataManager dataManager, RelationManager relationManager) {
         this.plugin = plugin;
         this.dataManager = dataManager;
         this.relationManager = relationManager;
+        this.friendDataManager = plugin.getModuleManager().getFriendModule().getDataManager();
     }
     
     public CompletableFuture<GiftResult> sendCoins(Player sender, UUID receiverUuid) {
@@ -34,14 +36,22 @@ public class GiftManager {
         
         final int amountPerSend = coinsGift.getAmountPerSend();
         
+        if (!friendDataManager.isFriend(sender.getUniqueId(), receiverUuid)) {
+            return CompletableFuture.completedFuture(
+                    new GiftResult(false, "gift.not-friend", 0));
+        }
+        
         return dataManager.getRelation(sender.getUniqueId(), receiverUuid)
                 .thenCompose(optRelation -> {
                     if (optRelation.isEmpty()) {
-                        return CompletableFuture.completedFuture(
-                                new GiftResult(false, "gift.not-friend", 0));
+                        RelationData newRelation = new RelationData(sender.getUniqueId(), receiverUuid);
+                        newRelation.setIntimacy(0);
+                        newRelation.setFriendName(Bukkit.getOfflinePlayer(receiverUuid).getName());
+                        return dataManager.createRelation(newRelation).thenApply(v -> newRelation);
                     }
-                    
-                    RelationData relation = optRelation.get();
+                    return CompletableFuture.completedFuture(optRelation.get());
+                })
+                .thenCompose(relation -> {
                     
                     return dataManager.getDailyGiftData(sender.getUniqueId(), receiverUuid)
                             .thenCompose(dailyData -> {

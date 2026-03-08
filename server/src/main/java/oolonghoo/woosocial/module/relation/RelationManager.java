@@ -215,15 +215,22 @@ public class RelationManager {
     public CompletableFuture<RelationResult> proposeRelation(Player proposer, UUID targetUuid, RelationType type) {
         final RelationType originalType = type;
         
+        if (!plugin.getModuleManager().getFriendModule().getDataManager().isFriend(proposer.getUniqueId(), targetUuid)) {
+            return CompletableFuture.completedFuture(
+                    new RelationResult(false, "relation.not-friend"));
+        }
+        
         return dataManager.getRelation(proposer.getUniqueId(), targetUuid)
                 .thenCompose(optRelation -> {
                     if (optRelation.isEmpty()) {
-                        return CompletableFuture.completedFuture(
-                                new RelationResult(false, "relation.not-friend"));
+                        RelationData newRelation = new RelationData(proposer.getUniqueId(), targetUuid);
+                        newRelation.setIntimacy(0);
+                        newRelation.setFriendName(Bukkit.getOfflinePlayer(targetUuid).getName());
+                        return dataManager.createRelation(newRelation).thenApply(v -> newRelation);
                     }
-                    
-                    RelationData relation = optRelation.get();
-                    
+                    return CompletableFuture.completedFuture(optRelation.get());
+                })
+                .thenCompose(relation -> {
                     if (relation.getIntimacy() < originalType.getRequiredIntimacy()) {
                         return CompletableFuture.completedFuture(
                                 new RelationResult(false, "relation.intimacy-not-enough"));

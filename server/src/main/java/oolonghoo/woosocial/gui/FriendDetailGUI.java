@@ -43,7 +43,7 @@ public class FriendDetailGUI extends BaseGUI {
     private static final int SEND_MAIL_SLOT = 14;
     private static final int GIFT_SLOT = 15;
     private static final int RELATION_SLOT = 16;
-    private static final int REMOVE_FRIEND_SLOT = 17;
+    private static final int REMOVE_FRIEND_SLOT = 8;
     
     public FriendDetailGUI(WooSocial plugin, Player viewer, UUID friendUuid, String friendName) {
         super(plugin, viewer, "friend_detail");
