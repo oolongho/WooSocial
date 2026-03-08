@@ -253,10 +253,10 @@ mail:
   invalid-item: "&c无效的物品！"
   too-many-items: "&c物品数量超过限制！最大允许: %max%"
   receiver-mailbox-full: "&c对方的邮箱已满！"
-  send-success: "&a已成功发送邮件给 %player%！物品: %item%"
-  send-failed: "&c发送邮件失败！"
-  receive-notify: "&e你收到了来自 %player% 的邮件: %item%"
-  receive-notify-multiple: "&e你收到了来自 %player% 的 %count% 个物品邮件！"
+  send-success: "&a已发送邮件给 %player%！"
+  send-failed: "&c发送失败！"
+  receive-notify: "&e收到 %player% 的邮件: %item%"
+  receive-notify-multiple: "&e收到 %player% 的 %count% 个邮件！"
   
   not-found: "&c邮件不存在！"
   already-claimed: "&c该邮件已被领取！"
@@ -294,7 +294,7 @@ mail:
   
   # 发送邮件
   send-mail: "&a发送邮件"
-  send-success-multiple: "&a成功发送 %count% 个物品给 %player%！"
+  send-success-multiple: "&a已发送 %count% 个物品给 %player%！"
   no-item: "&c请先放入要发送的物品！"
   
   # 批量操作

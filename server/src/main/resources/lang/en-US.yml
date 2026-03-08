@@ -255,9 +255,9 @@ mail:
   invalid-item: "&cInvalid item!"
   too-many-items: "&cItem count exceeds limit! Max: %max%"
   receiver-mailbox-full: "&cReceiver's mailbox is full!"
-  send-success: "&aMail sent to %player%! Item: %item%"
-  send-failed: "&cFailed to send mail!"
-  receive-notify: "&eYou received mail from %player%! Item: %item%"
+  send-success: "&aMail sent to %player%!"
+  send-failed: "&cFailed to send!"
+  receive-notify: "&eReceived mail from %player%: %item%"
   
   not-found: "&cMail not found!"
   already-claimed: "&cThis mail has already been claimed!"
@@ -295,7 +295,7 @@ mail:
   
   # Send mail
   send-mail: "&aSend Mail"
-  send-success-multiple: "&aSuccessfully sent %count% items to %player%!"
+  send-success-multiple: "&aSent %count% items to %player%!"
   no-item: "&cPlease put an item to send first!"
   
   # Bulk operations

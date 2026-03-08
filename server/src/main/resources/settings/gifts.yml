@@ -1,6 +1,6 @@
 # 礼物配置
 # daily-limit: 每日赠送次数限制 (0 = 无限制)
-# amount-per-send: 每次赠送的数量 (仅金币礼物有效)
+# amount-per-send: 每次赠送的数量 (仅金币)
 # intimacy: 每次赠送增加的亲密度
 # cost: 每次赠送的花费
 
@@ -13,7 +13,7 @@ gifts:
       coins: 0
       points: 0
     daily-limit: 10
-    amount-per-send: 100
+    amount-per-send: 10
     icon: "GOLD_INGOT"
   
   rose:
@@ -23,46 +23,16 @@ gifts:
     cost:
       coins: 100
       points: 0
-    daily-limit: 0
+    daily-limit: 10
     icon: "RED_TULIP"
-  
-  tulip:
-    name: "郁金香"
-    description: "优雅的郁金香"
-    intimacy: 25
-    cost:
-      coins: 0
-      points: 10
-    daily-limit: 0
-    icon: "ORANGE_TULIP"
-  
-  lily:
-    name: "百合"
-    description: "纯洁的百合花"
-    intimacy: 50
-    cost:
-      coins: 0
-      points: 25
-    daily-limit: 0
-    icon: "WHITE_TULIP"
-  
-  sunflower:
-    name: "向日葵"
-    description: "阳光的向日葵"
-    intimacy: 100
-    cost:
-      coins: 0
-      points: 50
-    daily-limit: 0
-    icon: "SUNFLOWER"
   
   chocolate:
     name: "巧克力"
     description: "甜蜜的巧克力"
-    intimacy: 15
+    intimacy: 20
     cost:
-      coins: 200
-      points: 0
+      coins: 0
+      points: 1
     daily-limit: 5
     icon: "COCOA_BEANS"
   
