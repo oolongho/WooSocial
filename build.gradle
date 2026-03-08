@@ -1,14 +1,5 @@
-plugins {
-    id 'java'
-}
-
 group = 'com.oolonghoo'
 version = '1.0.0'
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-}
 
 subprojects {
     apply plugin: 'java'
