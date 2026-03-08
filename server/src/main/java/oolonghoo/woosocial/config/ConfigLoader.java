@@ -23,13 +23,19 @@ public class ConfigLoader {
     
     protected final JavaPlugin plugin;
     protected final String fileName;
+    protected final String resourcePath;
     protected final File configFile;
     protected FileConfiguration config;
     protected final Map<String, Object> cache = new HashMap<>();
     
     public ConfigLoader(JavaPlugin plugin, String fileName) {
+        this(plugin, fileName, fileName);
+    }
+    
+    public ConfigLoader(JavaPlugin plugin, String fileName, String resourcePath) {
         this.plugin = plugin;
         this.fileName = fileName;
+        this.resourcePath = resourcePath;
         this.configFile = new File(plugin.getDataFolder(), fileName);
     }
     
@@ -42,26 +48,39 @@ public class ConfigLoader {
             plugin.getDataFolder().mkdirs();
         }
         
-        boolean isCustomFile = !isBundledResource(fileName);
+        File parentDir = configFile.getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            parentDir.mkdirs();
+        }
+        
+        boolean isCustomFile = !isBundledResource(resourcePath);
         
         if (!configFile.exists()) {
             if (isCustomFile) {
                 plugin.getLogger().warning("配置文件未找到: " + fileName);
                 try {
-                    configFile.getParentFile().mkdirs();
                     configFile.createNewFile();
                 } catch (IOException e) {
                     plugin.getLogger().severe("创建配置文件失败: " + fileName);
                 }
             } else {
-                plugin.saveResource(fileName, false);
+                plugin.saveResource(resourcePath, false);
+                
+                File savedFile = new File(plugin.getDataFolder(), resourcePath);
+                if (savedFile.exists() && !savedFile.equals(configFile)) {
+                    File targetDir = configFile.getParentFile();
+                    if (targetDir != null && !targetDir.exists()) {
+                        targetDir.mkdirs();
+                    }
+                    savedFile.renameTo(configFile);
+                }
             }
         }
         
         config = YamlConfiguration.loadConfiguration(configFile);
         
         if (!isCustomFile) {
-            InputStream defaultStream = plugin.getResource(fileName);
+            InputStream defaultStream = plugin.getResource(resourcePath);
             if (defaultStream != null) {
                 YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(
                     new InputStreamReader(defaultStream, StandardCharsets.UTF_8)
@@ -111,8 +130,7 @@ public class ConfigLoader {
     public void reload() {
         config = YamlConfiguration.loadConfiguration(configFile);
         
-        // 重新加载默认配置
-        InputStream defaultStream = plugin.getResource(fileName);
+        InputStream defaultStream = plugin.getResource(resourcePath);
         if (defaultStream != null) {
             YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(
                 new InputStreamReader(defaultStream, StandardCharsets.UTF_8)
