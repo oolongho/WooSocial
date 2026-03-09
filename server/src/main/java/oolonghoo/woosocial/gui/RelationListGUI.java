@@ -1,7 +1,6 @@
 package com.oolonghoo.woosocial.gui;
 
 import com.oolonghoo.woosocial.WooSocial;
-import com.oolonghoo.woosocial.config.MessageManager;
 import com.oolonghoo.woosocial.model.RelationData;
 import com.oolonghoo.woosocial.module.relation.RelationDataManager;
 import com.oolonghoo.woosocial.module.relation.RelationManager;
@@ -32,6 +31,7 @@ public class RelationListGUI extends BaseGUI {
     
     private static final int[] RELATION_SLOTS = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25, 28, 29, 30, 31, 32, 33, 34};
     private static final int PROPOSAL_SLOT = 49;
+    private static final int GIFT_HISTORY_SLOT = 8;
     
     public RelationListGUI(WooSocial plugin, Player viewer) {
         super(plugin, viewer, "relation_list");
@@ -64,6 +64,7 @@ public class RelationListGUI extends BaseGUI {
         
         inventory.setItem(BACK_SLOT, createBackButton());
         inventory.setItem(PROPOSAL_SLOT, createProposalButton());
+        inventory.setItem(GIFT_HISTORY_SLOT, createGiftHistoryButton());
         
         int startIndex = (currentPage - 1) * RELATION_SLOTS.length;
         int endIndex = Math.min(startIndex + RELATION_SLOTS.length, relations.size());
@@ -149,6 +150,21 @@ public class RelationListGUI extends BaseGUI {
         return item;
     }
     
+    private ItemStack createGiftHistoryButton() {
+        ItemStack item = new ItemStack(Material.GOLD_INGOT);
+        var meta = item.getItemMeta();
+        meta.displayName(Component.text("礼物记录", NamedTextColor.GOLD));
+        
+        List<Component> lore = new ArrayList<>();
+        lore.add(Component.text("查看收到的礼物", NamedTextColor.GRAY));
+        lore.add(Component.empty());
+        lore.add(Component.text("点击查看", NamedTextColor.AQUA));
+        
+        meta.lore(lore);
+        item.setItemMeta(meta);
+        return item;
+    }
+    
     protected ItemStack createBackButton() {
         ItemStack item = new ItemStack(Material.BOOK);
         var meta = item.getItemMeta();
@@ -174,6 +190,11 @@ public class RelationListGUI extends BaseGUI {
         
         if (slot == PROPOSAL_SLOT) {
             new RelationProposalGUI(plugin, player).open(player);
+            return;
+        }
+        
+        if (slot == GIFT_HISTORY_SLOT) {
+            new GiftHistoryGUI(plugin, player).open(player);
             return;
         }
         
