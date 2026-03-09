@@ -1,5 +1,17 @@
-# WooSocial Configuration
-# WooSocial 核心配置文件
+# WooSocial
+
+# Settings
+# 设置
+settings:
+  # Debug mode
+  # 调试模式
+  debug: false
+  # Language file
+  # 语言文件
+  language: "zh-CN"
+  # Auto save interval in seconds
+  # 自动保存间隔（秒）
+  auto-save-interval: 300
 
 # Database Configuration
 # 数据库配置
@@ -68,16 +80,3 @@ cache:
   # 是否在插件启用时预热缓存
   # 预加载在线玩家的数据
   warmup-on-enable: true
-
-# Settings Configuration
-# 设置配置
-settings:
-  # Debug mode
-  # 调试模式
-  debug: false
-  # Language file
-  # 语言文件
-  language: "zh-CN"
-  # Auto save interval in seconds
-  # 自动保存间隔（秒）
-  auto-save-interval: 300

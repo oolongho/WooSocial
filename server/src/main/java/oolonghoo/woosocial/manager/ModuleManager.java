@@ -68,8 +68,16 @@ public class ModuleManager {
         FileConfiguration modulesConfig = modulesLoader.getConfig();
         List<String> enabledModules = new ArrayList<>();
         
+        loadModule("friend");
+        enabledModules.add("friend");
+        
         for (Map.Entry<String, Supplier<Module>> entry : moduleFactories.entrySet()) {
             String moduleName = entry.getKey();
+            
+            if ("friend".equals(moduleName)) {
+                continue;
+            }
+            
             boolean enabled = modulesConfig.getBoolean("modules." + moduleName + ".enabled", true);
             
             if (enabled) {
