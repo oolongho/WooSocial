@@ -100,7 +100,12 @@ public class RelationDataManager {
     }
     
     public CompletableFuture<Boolean> updateRelation(RelationData relation) {
-        return relationDAO.updateRelation(relation);
+        return relationDAO.updateRelation(relation).thenApply(success -> {
+            if (success) {
+                cacheRelation(relation);
+            }
+            return success;
+        });
     }
     
     public CompletableFuture<Boolean> updateIntimacy(int relationId, int intimacy) {

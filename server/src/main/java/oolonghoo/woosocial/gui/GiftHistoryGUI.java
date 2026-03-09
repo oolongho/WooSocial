@@ -140,7 +140,7 @@ public class GiftHistoryGUI extends BaseGUI {
     @Override
     public void handleClick(int slot, Player player, int clickType) {
         if (slot == BACK_SLOT) {
-            new SocialMainGUI(plugin, player).open(player);
+            new RelationListGUI(plugin, player).open(player);
             return;
         }
         

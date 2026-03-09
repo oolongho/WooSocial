@@ -57,6 +57,7 @@ public abstract class BaseGUI implements InventoryHolder {
     
     protected void initInventory() {
         setupPlaceholders();
+        setDefaultPlaceholders();
         
         if (guiConfig != null && guiConfig.getTitle() != null) {
             String title = placeholderParser.parse(guiConfig.getTitle());
@@ -66,6 +67,12 @@ public abstract class BaseGUI implements InventoryHolder {
             this.inventory = Bukkit.createInventory(this, 54, 
                     net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize("<gray>WooSocial"));
         }
+    }
+    
+    protected void setDefaultPlaceholders() {
+        setPlaceholder("page", currentPage);
+        setPlaceholder("total_pages", totalPages);
+        setPlaceholder("current_page", currentPage);
     }
     
     protected void renderFromConfig() {
@@ -268,6 +275,25 @@ public abstract class BaseGUI implements InventoryHolder {
         meta.displayName(Component.text("返回", NamedTextColor.YELLOW));
         item.setItemMeta(meta);
         return item;
+    }
+    
+    protected String formatTime(long timestamp) {
+        if (timestamp <= 0) {
+            return messageManager.get("gui.placeholder-never");
+        }
+        long diff = System.currentTimeMillis() - timestamp;
+        if (diff < 60000) {
+            return messageManager.get("gui.placeholder-just-now");
+        } else if (diff < 3600000) {
+            int minutes = (int) (diff / 60000);
+            return messageManager.get("gui.placeholder-minutes-ago", "count", String.valueOf(minutes));
+        } else if (diff < 86400000) {
+            int hours = (int) (diff / 3600000);
+            return messageManager.get("gui.placeholder-hours-ago", "count", String.valueOf(hours));
+        } else {
+            int days = (int) (diff / 86400000);
+            return messageManager.get("gui.placeholder-days-ago", "count", String.valueOf(days));
+        }
     }
     
     protected void setupNavigation() {
