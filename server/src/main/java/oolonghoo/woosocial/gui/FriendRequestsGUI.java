@@ -55,20 +55,6 @@ public class FriendRequestsGUI extends BaseGUI {
             inventory.setItem(slot, createRequestItem(request));
         }
         
-        if (requests.isEmpty()) {
-            ItemStack emptyItem = new ItemStack(Material.BARRIER);
-            var meta = emptyItem.getItemMeta();
-            meta.displayName(Component.text("暂无好友请求", NamedTextColor.GRAY));
-            
-            List<Component> lore = new ArrayList<>();
-            lore.add(Component.text("当有玩家向你发送好友请求时", NamedTextColor.YELLOW));
-            lore.add(Component.text("会显示在这里", NamedTextColor.YELLOW));
-            meta.lore(lore);
-            
-            emptyItem.setItemMeta(meta);
-            inventory.setItem(22, emptyItem);
-        }
-        
         setupNavigation();
     }
     

@@ -33,7 +33,9 @@ public class SocialMainGUI extends BaseGUI {
     
     private static final int PERSONAL_INFO_SLOT = 4;
     
-    private static final int[] FRIEND_SLOTS = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25};
+    private static final int[] FRIEND_SLOTS = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24};
+    
+    private static final int NEXT_PAGE_SLOT = 25;
     
     private static final int FRIEND_REQUESTS_SLOT = 37;
     private static final int MAIL_SLOT = 40;
@@ -79,25 +81,29 @@ public class SocialMainGUI extends BaseGUI {
             }
         }
         
-        if (friends.isEmpty()) {
-            ItemStack emptyItem = new ItemStack(Material.BARRIER);
-            var meta = emptyItem.getItemMeta();
-            meta.displayName(Component.text("暂无好友", NamedTextColor.GRAY));
-            
-            List<Component> lore = new ArrayList<>();
-            lore.add(Component.text("使用 /friend add <玩家>", NamedTextColor.YELLOW));
-            lore.add(Component.text("来添加好友", NamedTextColor.YELLOW));
-            meta.lore(lore);
-            
-            emptyItem.setItemMeta(meta);
-            inventory.setItem(22, emptyItem);
+        if (totalPages > 1) {
+            inventory.setItem(NEXT_PAGE_SLOT, createPageSwitchButton());
         }
         
         inventory.setItem(FRIEND_REQUESTS_SLOT, createFriendRequestsButton());
         inventory.setItem(MAIL_SLOT, createMailButton());
         inventory.setItem(RELATION_LIST_SLOT, createRelationListButton());
+    }
+    
+    private ItemStack createPageSwitchButton() {
+        ItemStack item = new ItemStack(Material.SPECTRAL_ARROW);
+        var meta = item.getItemMeta();
+        meta.displayName(Component.text("切换页面", NamedTextColor.YELLOW));
         
-        setupNavigation();
+        List<Component> lore = new ArrayList<>();
+        lore.add(Component.text("当前: ", NamedTextColor.GRAY)
+                .append(Component.text(currentPage + "/" + totalPages, NamedTextColor.WHITE)));
+        lore.add(Component.empty());
+        lore.add(Component.text("点击切换到下一页", NamedTextColor.AQUA));
+        
+        meta.lore(lore);
+        item.setItemMeta(meta);
+        return item;
     }
     
     private void fillRowWithGreenGlass(int row) {
@@ -315,15 +321,11 @@ public class SocialMainGUI extends BaseGUI {
             return;
         }
         
-        if (slot == PREV_PAGE_SLOT && currentPage > 1) {
-            currentPage--;
-            refresh();
-            player.openInventory(inventory);
-            return;
-        }
-        
-        if (slot == NEXT_PAGE_SLOT && currentPage < totalPages) {
+        if (slot == NEXT_PAGE_SLOT && totalPages > 1) {
             currentPage++;
+            if (currentPage > totalPages) {
+                currentPage = 1;
+            }
             refresh();
             player.openInventory(inventory);
             return;

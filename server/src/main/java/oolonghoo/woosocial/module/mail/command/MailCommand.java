@@ -185,6 +185,11 @@ public class MailCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         
+        if (!plugin.getModuleManager().getFriendModule().getDataManager().isFriend(player.getUniqueId(), target.getUniqueId())) {
+            messageManager.send(player, "mail.not-friend");
+            return true;
+        }
+        
         ItemStack handItem = player.getInventory().getItemInMainHand();
         if (handItem == null || handItem.getType() == Material.AIR) {
             messageManager.send(player, "mail.no-item-in-hand");

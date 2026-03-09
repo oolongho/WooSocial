@@ -3,8 +3,10 @@ package com.oolonghoo.woosocial.module.mail.gui;
 import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.config.MessageManager;
 import com.oolonghoo.woosocial.gui.BaseGUI;
+import com.oolonghoo.woosocial.gui.FriendSelectGUI;
 import com.oolonghoo.woosocial.gui.LoadingState;
 import com.oolonghoo.woosocial.gui.SocialMainGUI;
+import com.oolonghoo.woosocial.model.FriendData;
 import com.oolonghoo.woosocial.model.MailData;
 import com.oolonghoo.woosocial.util.ItemSerializer;
 import net.kyori.adventure.text.Component;
@@ -251,8 +253,9 @@ public class MailListGUI extends BaseGUI {
         }
         
         if (slot == SEND_MAIL_SLOT) {
-            player.closeInventory();
-            player.performCommand("mail send");
+            new FriendSelectGUI(plugin, player, FriendSelectGUI.SelectMode.SEND_MAIL, (p, friend) -> {
+                new SendMailGUI(plugin, p, friend.getFriendUuid(), friend.getFriendName(), loadingState).open(p);
+            }).open(player);
             return;
         }
         

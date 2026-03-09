@@ -1,6 +1,7 @@
 package com.oolonghoo.woosocial.gui;
 
 import com.oolonghoo.woosocial.WooSocial;
+import com.oolonghoo.woosocial.model.FriendData;
 import com.oolonghoo.woosocial.model.RelationData;
 import com.oolonghoo.woosocial.module.relation.RelationDataManager;
 import com.oolonghoo.woosocial.module.relation.RelationManager;
@@ -189,7 +190,9 @@ public class RelationListGUI extends BaseGUI {
         }
         
         if (slot == PROPOSAL_SLOT) {
-            new RelationProposalGUI(plugin, player).open(player);
+            new FriendSelectGUI(plugin, player, FriendSelectGUI.SelectMode.APPLY_RELATION, (p, friend) -> {
+                new RelationProposalGUI(plugin, p, friend.getFriendUuid(), friend.getFriendName()).open(p);
+            }).open(player);
             return;
         }
         
