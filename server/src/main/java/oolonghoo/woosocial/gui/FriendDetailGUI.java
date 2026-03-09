@@ -358,27 +358,6 @@ public class FriendDetailGUI extends BaseGUI {
         return item;
     }
     
-    private String formatTime(long timestamp) {
-        if (timestamp <= 0) {
-            return messageManager.get("gui.placeholder-never");
-        }
-        
-        long diff = System.currentTimeMillis() - timestamp;
-        
-        if (diff < 60000) {
-            return messageManager.get("gui.placeholder-just-now");
-        } else if (diff < 3600000) {
-            int minutes = (int) (diff / 60000);
-            return messageManager.get("gui.placeholder-minutes-ago", "count", String.valueOf(minutes));
-        } else if (diff < 86400000) {
-            int hours = (int) (diff / 3600000);
-            return messageManager.get("gui.placeholder-hours-ago", "count", String.valueOf(hours));
-        } else {
-            int days = (int) (diff / 86400000);
-            return messageManager.get("gui.placeholder-days-ago", "count", String.valueOf(days));
-        }
-    }
-    
     @Override
     public void refresh() {
         loadFriendData();

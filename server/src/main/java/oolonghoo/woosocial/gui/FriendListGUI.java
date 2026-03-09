@@ -126,23 +126,6 @@ public class FriendListGUI extends BaseGUI {
         return head;
     }
     
-    private String formatTime(long timestamp) {
-        long diff = System.currentTimeMillis() - timestamp;
-        
-        if (diff < 60000) {
-            return messageManager.get("gui.placeholder-just-now");
-        } else if (diff < 3600000) {
-            int minutes = (int) (diff / 60000);
-            return messageManager.get("gui.placeholder-minutes-ago", "count", String.valueOf(minutes));
-        } else if (diff < 86400000) {
-            int hours = (int) (diff / 3600000);
-            return messageManager.get("gui.placeholder-hours-ago", "count", String.valueOf(hours));
-        } else {
-            int days = (int) (diff / 86400000);
-            return messageManager.get("gui.placeholder-days-ago", "count", String.valueOf(days));
-        }
-    }
-    
     @Override
     public void refresh() {
         this.friends = dataManager.getFriendList(viewerUUID);

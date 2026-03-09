@@ -1,23 +1,37 @@
 # WooSocial Module Configuration
+# WooSocial 模块配置文件
 
 modules:
+  # Friend module is always enabled (core module)
+  # 好友模块始终启用（核心模块）
   friend:
     enabled: true
+    # This module cannot be disabled as it's the core of WooSocial
+    # 此模块无法禁用，因为它是 WooSocial 的核心
   
+  # Teleport module (depends on friend module)
+  # 传送模块（依赖好友模块）
   teleport:
     enabled: true
   
+  # Block module (independent but affects friend module)
+  # 屏蔽模块（独立运行，但会影响好友模块的行为）
   block:
     enabled: true
   
+  # Mail module (independent)
+  # 邮件模块（独立运行）
   mail:
     enabled: true
   
+  # Relation module (depends on friend module)
+  # 关系模块（依赖好友模块）
   relation:
     enabled: true
 
+# Module Dependencies:
 # 模块依赖说明：
-# - friend 模块: 好友系统核心功能
+# - friend 模块: 好友系统核心功能，始终启用
 # - teleport 模块依赖 friend 模块（只能传送给好友）
 # - block 模块独立运行，但会影响 friend 模块的行为
 # - mail 模块独立运行，提供物品邮件功能

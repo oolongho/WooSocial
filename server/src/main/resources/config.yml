@@ -1,4 +1,5 @@
 # WooSocial Configuration
+# WooSocial 核心配置文件
 
 # Database Configuration
 # 数据库配置
@@ -41,56 +42,14 @@ database:
     # 连接最大生命周期（毫秒）
     max-lifetime: 1800000
 
-# Mail System Configuration
-mail:
-  enabled: true
-  # Max items per send
-  max-send-count: 10
-  # Mail expire time (days)
-  expire-days: 30
-  # Max mails per player
-  max-mails-per-player: 100
-  # Max item data size (bytes)
-  max-item-size: 32000
-  # Notify on receive
-  notify-on-receive: true
-  # Handling method when inventory space is insufficient
-  # deny - Reject claim, mail is preserved
-  # drop - Add to inventory and drop excess items
-  claim-space-insufficient: deny
-  # Bulk mail configuration
-  bulk:
-    enabled: true
-    permission: "woosocial.mail.bulk"
-
-# Friend System Configuration
-friend:
-  enabled: true
-  # Maximum number of friends a player can have
-  # 玩家最大好友数量
-  max-friends: 100
-  # Maximum number of pending friend requests
-  # 最大待处理好友请求数量
-  max-pending-requests: 50
-
-# Relation System Configuration
-relation:
-  enabled: true
-  # Daily free coins to gift
-  daily-free-coins: 100
-  # Daily gift friends limit
-  daily-gift-friends: 5
-  # Intimacy gained per coin
-  coins-intimacy-per-unit: 1
-  # Max intimacy
-  max-intimacy: 10000
-
 # Economy Integration
+# 经济系统集成
 economy:
   enabled: true
   provider: "Vault"
 
 # PlayerPoints Integration (optional)
+# PlayerPoints 积分系统集成（可选）
 playerpoints:
   enabled: true
   provider: "PlayerPoints"
@@ -109,3 +68,16 @@ cache:
   # 是否在插件启用时预热缓存
   # 预加载在线玩家的数据
   warmup-on-enable: true
+
+# Settings Configuration
+# 设置配置
+settings:
+  # Debug mode
+  # 调试模式
+  debug: false
+  # Language file
+  # 语言文件
+  language: "zh-CN"
+  # Auto save interval in seconds
+  # 自动保存间隔（秒）
+  auto-save-interval: 300

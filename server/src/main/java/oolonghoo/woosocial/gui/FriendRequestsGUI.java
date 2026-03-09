@@ -110,14 +110,6 @@ public class FriendRequestsGUI extends BaseGUI {
         return head;
     }
     
-    private String formatTime(long timestamp) {
-        long diff = System.currentTimeMillis() - timestamp;
-        if (diff < 60000) return "刚刚";
-        if (diff < 3600000) return (diff / 60000) + "分钟前";
-        if (diff < 86400000) return (diff / 3600000) + "小时前";
-        return (diff / 86400000) + "天前";
-    }
-    
     private String formatRemaining(long remaining) {
         if (remaining < 60000) return (remaining / 1000) + "秒";
         if (remaining < 3600000) return (remaining / 60000) + "分钟";
