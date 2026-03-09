@@ -70,8 +70,6 @@ public class RelationTypeConfig extends ConfigLoader {
             defaultType = types.values().iterator().next();
             plugin.getLogger().warning("未设置默认关系类型，使用: " + defaultType.getId());
         }
-        
-        plugin.getLogger().info("已加载 " + types.size() + " 种关系类型配置");
     }
     
     public RelationType getType(String id) {

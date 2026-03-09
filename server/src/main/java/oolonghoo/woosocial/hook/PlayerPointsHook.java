@@ -23,7 +23,6 @@ public class PlayerPointsHook implements EconomyHook {
     
     public boolean setup() {
         if (Bukkit.getPluginManager().getPlugin("PlayerPoints") == null) {
-            plugin.getLogger().info("未找到 PlayerPoints 插件（可选）");
             return false;
         }
         
@@ -40,7 +39,6 @@ public class PlayerPointsHook implements EconomyHook {
             giveMethod = apiClass.getMethod("give", UUID.class, int.class);
             
             enabled = true;
-            plugin.getLogger().info("已连接 PlayerPoints 点券系统");
             return true;
         } catch (Exception e) {
             plugin.getLogger().warning("连接 PlayerPoints 失败: " + e.getMessage());

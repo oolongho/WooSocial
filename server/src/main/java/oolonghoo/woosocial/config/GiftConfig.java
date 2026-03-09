@@ -56,8 +56,6 @@ public class GiftConfig extends ConfigLoader {
             
             gifts.put(giftId.toLowerCase(), gift);
         }
-        
-        plugin.getLogger().info("已加载 " + gifts.size() + " 种礼品配置");
     }
     
     public GiftType getGift(String id) {

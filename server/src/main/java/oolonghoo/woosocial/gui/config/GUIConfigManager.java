@@ -91,7 +91,6 @@ public class GUIConfigManager {
         if (externalFile.exists()) {
             try {
                 config = YamlConfiguration.loadConfiguration(externalFile);
-                plugin.getLogger().info("[GUI] 加载外部配置: " + name + ".yml");
             } catch (Exception e) {
                 plugin.getLogger().log(Level.WARNING, "[GUI] 加载外部配置失败: " + name + ".yml, 使用默认配置", e);
                 config = loadDefaultConfig(name);
@@ -107,9 +106,7 @@ public class GUIConfigManager {
             GUIConfig guiConfig = parseConfig(name, config);
             if (guiConfig != null) {
                 configs.put(name, guiConfig);
-                // 创建并缓存布局辅助对象
                 layouts.put(name, new GUILayout(guiConfig));
-                plugin.getLogger().info("[GUI] 配置加载成功: " + name);
             } else {
                 plugin.getLogger().warning("[GUI] 配置解析失败: " + name + ".yml");
             }
@@ -152,7 +149,6 @@ public class GUIConfigManager {
     private void saveDefaultConfig(String name, YamlConfiguration config, File targetFile) {
         try {
             config.save(targetFile);
-            plugin.getLogger().info("[GUI] 已生成默认配置: " + name + ".yml");
         } catch (IOException e) {
             plugin.getLogger().log(Level.WARNING, "[GUI] 保存默认配置失败: " + name, e);
         }

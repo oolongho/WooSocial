@@ -89,9 +89,6 @@ public class DatabaseManager {
         hikariConfig.addDataSourceProperty("maintainTimeStats", "false");
         
         dataSource = new HikariDataSource(hikariConfig);
-        
-        plugin.getLogger().info("MySQL连接池初始化完成 - 最大连接数: " + maxPoolSize 
-                + ", 最小空闲: " + minimumIdle);
     }
     
     /**
@@ -126,8 +123,6 @@ public class DatabaseManager {
         hikariConfig.addDataSourceProperty("foreign_keys", "ON");
         
         dataSource = new HikariDataSource(hikariConfig);
-        
-        plugin.getLogger().info("SQLite连接池初始化完成 - 数据库文件: " + dbFile);
     }
     
     /**
@@ -645,7 +640,6 @@ public class DatabaseManager {
     public void shutdown() {
         if (dataSource != null && !dataSource.isClosed()) {
             dataSource.close();
-            plugin.getLogger().info("数据库连接池已关闭");
         }
     }
     

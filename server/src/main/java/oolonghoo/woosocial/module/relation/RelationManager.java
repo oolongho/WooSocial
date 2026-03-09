@@ -60,22 +60,18 @@ public class RelationManager {
         setupEconomy();
         
         loadConfig();
-        
-        plugin.getLogger().info("关系管理器已初始化");
     }
     
     private void setupEconomy() {
         wooEcoHook = new WooEcoHook();
         if (wooEcoHook.setup()) {
             primaryEconomyHook = wooEcoHook;
-            plugin.getLogger().info("已连接 WooEco 经济系统（直接API模式）");
         } else {
             vaultHook = new VaultHook(plugin);
             if (vaultHook.setup()) {
                 primaryEconomyHook = vaultHook;
             } else {
                 plugin.getLogger().warning("未找到经济系统提供者，部分功能将不可用");
-                plugin.getLogger().info("提示：请安装 WooEco 或 EssentialsX+CMI 等经济插件");
             }
         }
         

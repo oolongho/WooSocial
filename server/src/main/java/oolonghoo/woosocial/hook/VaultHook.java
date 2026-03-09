@@ -31,7 +31,6 @@ public class VaultHook implements EconomyHook {
         
         economy = rsp.getProvider();
         enabled = true;
-        plugin.getLogger().info("已连接 Vault 经济系统: " + economy.getName());
         return true;
     }
     

@@ -58,8 +58,6 @@ public class MemorialItemConfig extends ConfigLoader {
             
             items.put(itemId.toLowerCase(), item);
         }
-        
-        plugin.getLogger().info("已加载 " + items.size() + " 种纪念品配置");
     }
     
     public MemorialItem getItem(String id) {

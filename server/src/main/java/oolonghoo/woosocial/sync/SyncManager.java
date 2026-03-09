@@ -28,7 +28,6 @@ public class SyncManager {
     
     public void initialize() {
         if (!config.isEnabled()) {
-            plugin.getLogger().info("[Sync] 跨服同步已禁用");
             return;
         }
         
@@ -39,7 +38,6 @@ public class SyncManager {
         if (activeHandler != null) {
             activeHandler.initialize();
             initialized = true;
-            plugin.getLogger().info("[Sync] 同步系统已初始化，模式: " + mode.name());
         } else {
             plugin.getLogger().warning("[Sync] 无法初始化同步系统，将运行在单机模式");
         }

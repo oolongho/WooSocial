@@ -79,10 +79,6 @@ public class WooSocial extends JavaPlugin {
         
         initializeSyncManager();
         
-        if (syncManager != null && syncManager.isInitialized()) {
-            getLogger().info("跨服同步已启用 (" + syncManager.getConfig().getMode().name() + ")");
-        }
-        
         registerModules();
         
         moduleManager.loadEnabledModules();
@@ -110,51 +106,35 @@ public class WooSocial extends JavaPlugin {
     private void warmupCache() {
         boolean warmupEnabled = getConfig().getBoolean("cache.warmup-on-enable", true);
         if (!warmupEnabled) {
-            getLogger().info("[Cache] 缓存预热已禁用");
             return;
         }
         
-        long startTime = System.currentTimeMillis();
         var onlinePlayers = Bukkit.getOnlinePlayers();
         
         if (onlinePlayers.isEmpty()) {
-            getLogger().info("[Cache] 没有在线玩家，跳过缓存预热");
             return;
         }
         
-        getLogger().info("[Cache] 开始缓存预热，在线玩家数: " + onlinePlayers.size());
-        
-        // 异步预热缓存
         Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
-            int mailCount = 0;
-            int relationCount = 0;
-            
-            // 预热邮件缓存
             var mailModule = moduleManager.getModule("mail");
             if (mailModule != null && mailModule.isEnabled()) {
                 var mailDataManager = ((com.oolonghoo.woosocial.module.mail.MailModule) mailModule).getDataManager();
                 if (mailDataManager != null) {
                     for (var player : onlinePlayers) {
                         mailDataManager.warmupCache(player.getUniqueId());
-                        mailCount++;
                     }
                 }
             }
             
-            // 预热关系缓存
             var relationModule = moduleManager.getModule("relation");
             if (relationModule != null && relationModule.isEnabled()) {
                 var relationDataManager = ((com.oolonghoo.woosocial.module.relation.RelationModule) relationModule).getDataManager();
                 if (relationDataManager != null) {
                     for (var player : onlinePlayers) {
                         relationDataManager.warmupCache(player.getUniqueId());
-                        relationCount++;
                     }
                 }
             }
-            
-            long elapsed = System.currentTimeMillis() - startTime;
-            getLogger().info("[Cache] 缓存预热完成: 邮件 " + mailCount + " 个, 关系 " + relationCount + " 个, 耗时 " + elapsed + "ms");
         });
     }
     
@@ -284,8 +264,6 @@ public class WooSocial extends JavaPlugin {
         if (databaseManager != null) {
             databaseManager.shutdown();
         }
-        
-        getLogger().info("WooSocial 插件已禁用！");
     }
     
     /**
@@ -350,8 +328,6 @@ public class WooSocial extends JavaPlugin {
         if (moduleManager != null) {
             moduleManager.reloadAllModules();
         }
-        
-        getLogger().info("配置已重新加载");
     }
     
     // ==================== Getters ====================

@@ -108,8 +108,6 @@ public class ScheduledMailManager {
         
         // 使用异步任务检查
         checkTask.runTaskTimerAsynchronously(plugin, checkInterval * 20L, checkInterval * 20L);
-        
-        plugin.getLogger().info("[ScheduledMail] 定时邮件检查任务已启动，检查间隔: " + checkInterval + "秒");
     }
     
     /**

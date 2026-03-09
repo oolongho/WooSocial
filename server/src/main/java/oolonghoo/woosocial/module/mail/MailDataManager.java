@@ -54,7 +54,6 @@ public class MailDataManager {
         int mailMaxSize = plugin.getConfig().getInt("cache.mail-max-size", 1000);
         mailCache = new LRUCache<>(mailMaxSize);
         unreadCountCache = new LRUCache<>(mailMaxSize);
-        plugin.getLogger().info("[Mail] LRU 缓存已初始化，最大容量: " + mailMaxSize);
         
         // Validate configuration value
         if (!"deny".equals(claimSpaceInsufficient) && !"drop".equals(claimSpaceInsufficient)) {
@@ -93,7 +92,6 @@ public class MailDataManager {
     public void shutdown() {
         // 输出缓存统计信息
         if (mailCache != null) {
-            plugin.getLogger().info("[Mail] 邮件缓存统计: " + mailCache.getStatistics());
         }
         saveAll();
         if (mailCache != null) {

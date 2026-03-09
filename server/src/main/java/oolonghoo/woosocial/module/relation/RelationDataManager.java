@@ -32,14 +32,11 @@ public class RelationDataManager {
         int relationMaxSize = plugin.getConfig().getInt("cache.relation-max-size", 500);
         relationCache = new LRUCache<>(relationMaxSize);
         dailyGiftCache = new LRUCache<>(relationMaxSize);
-        plugin.getLogger().info("[Relation] LRU 缓存已初始化，最大容量: " + relationMaxSize);
-        plugin.getLogger().info("关系数据管理器已初始化");
     }
     
     public void shutdown() {
         // 输出缓存统计信息
         if (relationCache != null) {
-            plugin.getLogger().info("[Relation] 关系缓存统计: " + relationCache.getStatistics());
         }
         saveAll();
         if (relationCache != null) {
