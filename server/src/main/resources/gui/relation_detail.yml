@@ -27,7 +27,7 @@ icons:
     name: "{relation_color}{friend_name}"
     lore:
       - "<gray>关系: <yellow>{relation_name}"
-      - "<gray>默契度: <yellow>{intimacy} <gray>({intimacy_level})"
+      - "<gray>亲密度: <yellow>{intimacy} <gray>({intimacy_level})"
       - "<gray>建立时间: <yellow>{create_time}"
       - ""
       - "<gray>状态: {is_mutual ? <green>已确认 : <yellow>待确认}"
@@ -48,7 +48,7 @@ icons:
     name: "<green>礼品商店"
     lore:
       - "<gray>购买礼品赠送"
-      - "<gray>增加默契度"
+      - "<gray>增加亲密度"
       - ""
       - "<aqua>点击打开"
     actions:

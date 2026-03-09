@@ -99,13 +99,9 @@ public class RelationListGUI extends BaseGUI {
         lore.add(Component.text("关系: ", NamedTextColor.GRAY)
                 .append(Component.text(typeName, NamedTextColor.LIGHT_PURPLE)));
         
-        int maxIntimacy = relationManager.getMaxIntimacy();
         int intimacy = relation.getIntimacy();
-        String progressBar = createProgressBar(intimacy, maxIntimacy, 10);
-        int percent = (int) ((double) intimacy / maxIntimacy * 100);
-        
         lore.add(Component.text("亲密度: ", NamedTextColor.GRAY)
-                .append(Component.text(progressBar + " " + percent + "%", NamedTextColor.YELLOW)));
+                .append(Component.text(intimacy, NamedTextColor.YELLOW)));
         
         if (relation.getCreateTime() > 0) {
             String since = DATE_FORMAT.format(new Date(relation.getCreateTime()));
@@ -120,20 +116,6 @@ public class RelationListGUI extends BaseGUI {
         item.setItemMeta(meta);
         
         return item;
-    }
-    
-    private String createProgressBar(int current, int max, int length) {
-        int filled = (int) ((double) current / max * length);
-        StringBuilder sb = new StringBuilder();
-        sb.append(NamedTextColor.GREEN);
-        for (int i = 0; i < filled; i++) {
-            sb.append("█");
-        }
-        sb.append(NamedTextColor.GRAY);
-        for (int i = filled; i < length; i++) {
-            sb.append("░");
-        }
-        return sb.toString();
     }
     
     private ItemStack createProposalButton() {

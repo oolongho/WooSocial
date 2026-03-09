@@ -238,7 +238,7 @@ public class RelationDAO {
         return CompletableFuture.supplyAsync(() -> {
             String sql = "INSERT INTO `" + tablePrefix + "gifts` " +
                     "(`sender_uuid`, `receiver_uuid`, `gift_id`, `gift_amount`, " +
-                    "`intimacy_gained`, `send_time`) VALUES (?, ?, ?, ?, ?, ?)";
+                    "`intimacy_gained`, `send_time`, `sender_name`, `receiver_name`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             
             try (Connection connection = databaseManager.getConnection();
                  PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -249,6 +249,8 @@ public class RelationDAO {
                 statement.setInt(4, gift.getGiftAmount());
                 statement.setInt(5, gift.getIntimacyGained());
                 statement.setLong(6, gift.getSendTime());
+                statement.setString(7, gift.getSenderName());
+                statement.setString(8, gift.getReceiverName());
                 
                 int affected = statement.executeUpdate();
                 if (affected > 0) {
@@ -442,6 +444,13 @@ public class RelationDAO {
         gift.setGiftAmount(resultSet.getInt("gift_amount"));
         gift.setIntimacyGained(resultSet.getInt("intimacy_gained"));
         gift.setSendTime(resultSet.getLong("send_time"));
+        
+        try {
+            gift.setSenderName(resultSet.getString("sender_name"));
+            gift.setReceiverName(resultSet.getString("receiver_name"));
+        } catch (SQLException e) {
+            // 字段可能不存在（旧数据库）
+        }
         
         return gift;
     }

@@ -36,6 +36,7 @@ public class GiftShopGUI extends BaseGUI {
         this.relationManager = plugin.getModuleManager().getRelationModule().getRelationManager();
         this.giftManager = plugin.getModuleManager().getRelationModule().getGiftManager();
         
+        initInventory();
         setupItems();
     }
     

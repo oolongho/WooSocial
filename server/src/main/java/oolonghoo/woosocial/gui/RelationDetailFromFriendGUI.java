@@ -1,7 +1,6 @@
 package com.oolonghoo.woosocial.gui;
 
 import com.oolonghoo.woosocial.WooSocial;
-import com.oolonghoo.woosocial.config.MessageManager;
 import com.oolonghoo.woosocial.model.RelationData;
 import com.oolonghoo.woosocial.module.relation.RelationDataManager;
 import com.oolonghoo.woosocial.module.relation.RelationManager;
@@ -13,7 +12,6 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.text.SimpleDateFormat;
@@ -22,7 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-public class RelationDetailGUI extends BaseGUI {
+public class RelationDetailFromFriendGUI extends BaseGUI {
     
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     
@@ -32,6 +30,7 @@ public class RelationDetailGUI extends BaseGUI {
     private final RelationManager relationManager;
     
     private RelationData relationData;
+    private boolean relationExists = false;
     
     private static final int PLAYER_HEAD_SLOT = 4;
     private static final int INTIMACY_BAR_SLOT = 22;
@@ -40,7 +39,7 @@ public class RelationDetailGUI extends BaseGUI {
     private static final int HISTORY_SLOT = 32;
     private static final int REMOVE_SLOT = 34;
     
-    public RelationDetailGUI(WooSocial plugin, Player viewer, UUID friendUuid, String friendName) {
+    public RelationDetailFromFriendGUI(WooSocial plugin, Player viewer, UUID friendUuid, String friendName) {
         super(plugin, viewer, "relation_detail");
         this.friendUuid = friendUuid;
         this.friendName = friendName;
@@ -55,11 +54,12 @@ public class RelationDetailGUI extends BaseGUI {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (optRelation.isPresent()) {
                     relationData = optRelation.get();
-                    setupItems();
+                    relationExists = true;
                 } else {
-                    viewer.closeInventory();
-                    messageManager.send(viewer, "relation.not-found");
+                    relationData = null;
+                    relationExists = false;
                 }
+                setupItems();
             });
         });
     }
@@ -79,7 +79,10 @@ public class RelationDetailGUI extends BaseGUI {
         inventory.setItem(GIFT_SLOT, createGiftButton());
         inventory.setItem(PROPOSAL_SLOT, createProposalButton());
         inventory.setItem(HISTORY_SLOT, createHistoryButton());
-        inventory.setItem(REMOVE_SLOT, createRemoveButton());
+        
+        if (relationExists) {
+            inventory.setItem(REMOVE_SLOT, createRemoveButton());
+        }
     }
     
     private ItemStack createPlayerInfoItem() {
@@ -90,7 +93,7 @@ public class RelationDetailGUI extends BaseGUI {
         meta.setOwningPlayer(friend);
         
         boolean isOnline = friend.isOnline();
-        String typeName = "好友";
+        String typeName = "未绑定关系";
         
         if (relationData != null && relationData.getRelationType() != null) {
             RelationType relationType = relationManager.getRelationType(relationData.getRelationType());
@@ -104,7 +107,7 @@ public class RelationDetailGUI extends BaseGUI {
         List<Component> lore = new ArrayList<>();
         lore.add(Component.empty());
         lore.add(Component.text("关系: ", NamedTextColor.GRAY)
-                .append(Component.text(typeName, NamedTextColor.LIGHT_PURPLE)));
+                .append(Component.text(typeName, relationExists ? NamedTextColor.LIGHT_PURPLE : NamedTextColor.GRAY)));
         
         if (relationData != null) {
             int intimacy = relationData.getIntimacy();
@@ -116,6 +119,9 @@ public class RelationDetailGUI extends BaseGUI {
                 lore.add(Component.text("建立于: ", NamedTextColor.GRAY)
                         .append(Component.text(since, NamedTextColor.WHITE)));
             }
+        } else {
+            lore.add(Component.text("亲密度: ", NamedTextColor.GRAY)
+                    .append(Component.text("0", NamedTextColor.YELLOW)));
         }
         
         lore.add(Component.empty());
@@ -140,6 +146,9 @@ public class RelationDetailGUI extends BaseGUI {
             int intimacy = relationData.getIntimacy();
             lore.add(Component.text("当前亲密度: ", NamedTextColor.GRAY)
                     .append(Component.text(intimacy, NamedTextColor.YELLOW)));
+        } else {
+            lore.add(Component.text("当前亲密度: ", NamedTextColor.GRAY)
+                    .append(Component.text("0", NamedTextColor.YELLOW)));
         }
         
         meta.lore(lore);
@@ -213,7 +222,7 @@ public class RelationDetailGUI extends BaseGUI {
         var meta = item.getItemMeta();
         meta.displayName(Component.text("返回", NamedTextColor.YELLOW));
         List<Component> lore = new ArrayList<>();
-        lore.add(Component.text("返回关系列表", NamedTextColor.GRAY));
+        lore.add(Component.text("返回好友详情", NamedTextColor.GRAY));
         meta.lore(lore);
         item.setItemMeta(meta);
         return item;
@@ -227,7 +236,7 @@ public class RelationDetailGUI extends BaseGUI {
     @Override
     public void handleClick(int slot, Player player, int clickType) {
         if (slot == BACK_SLOT) {
-            new RelationListGUI(plugin, player).open(player);
+            new FriendDetailGUI(plugin, player, friendUuid, friendName).open(player);
             return;
         }
         
@@ -246,7 +255,7 @@ public class RelationDetailGUI extends BaseGUI {
             return;
         }
         
-        if (slot == REMOVE_SLOT && clickType == 1) {
+        if (slot == REMOVE_SLOT && clickType == 1 && relationExists) {
             handleRemoveRelation(player);
         }
     }
@@ -256,19 +265,14 @@ public class RelationDetailGUI extends BaseGUI {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (success) {
                     messageManager.send(player, "relation.removed", "player", friendName);
-                    new RelationListGUI(plugin, player).open(player);
+                    relationExists = false;
+                    relationData = null;
+                    setupItems();
+                    player.openInventory(inventory);
                 } else {
                     messageManager.send(player, "relation.remove-failed");
                 }
             });
         });
-    }
-    
-    public UUID getFriendUuid() {
-        return friendUuid;
-    }
-    
-    public String getFriendName() {
-        return friendName;
     }
 }

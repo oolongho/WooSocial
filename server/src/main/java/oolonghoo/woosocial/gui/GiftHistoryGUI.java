@@ -81,7 +81,14 @@ public class GiftHistoryGUI extends BaseGUI {
         ItemStack item = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta meta = (SkullMeta) item.getItemMeta();
         
-        String senderName = gift.getSenderName() != null ? gift.getSenderName() : "未知";
+        String senderName;
+        if (gift.getSenderName() != null && !gift.getSenderName().isEmpty() && !"Unknown".equals(gift.getSenderName())) {
+            senderName = gift.getSenderName();
+        } else {
+            OfflinePlayer sender = Bukkit.getOfflinePlayer(gift.getSenderUuid());
+            senderName = sender.getName() != null ? sender.getName() : "未知";
+        }
+        
         OfflinePlayer sender = Bukkit.getOfflinePlayer(gift.getSenderUuid());
         meta.setOwningPlayer(sender);
         

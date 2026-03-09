@@ -19,8 +19,8 @@ icons:
     name: "<gold>{proposer_name}"
     lore:
       - "<gray>申请关系: <yellow>{relation_name}"
-      - "<gray>所需默契度: <yellow>{required_intimacy}"
-      - "<gray>当前默契度: <yellow>{current_intimacy}"
+      - "<gray>所需亲密度: <yellow>{required_intimacy}"
+      - "<gray>当前亲密度: <yellow>{current_intimacy}"
       - ""
       - "<gray>申请时间: <yellow>{proposal_time}"
   

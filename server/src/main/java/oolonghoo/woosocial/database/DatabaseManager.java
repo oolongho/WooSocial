@@ -189,6 +189,32 @@ public class DatabaseManager {
             
             // 执行数据库迁移（复用同一个连接）
             migrateMailsTable(connection);
+            migrateGiftsTable(connection);
+        }
+    }
+    
+    /**
+     * 迁移礼物表结构
+     * 为现有礼物表添加 sender_name 和 receiver_name 字段
+     * @param connection 数据库连接（复用外层连接避免SQLite死锁）
+     */
+    private void migrateGiftsTable(Connection connection) {
+        try {
+            // 检查并添加 sender_name 字段
+            if (!columnExists(connection, tablePrefix + "gifts", "sender_name")) {
+                executeAlterTable(connection, 
+                        "ALTER TABLE `" + tablePrefix + "gifts` ADD COLUMN `sender_name` VARCHAR(64)");
+                plugin.getLogger().info("[数据库迁移] 成功添加 gifts.sender_name 字段");
+            }
+            
+            // 检查并添加 receiver_name 字段
+            if (!columnExists(connection, tablePrefix + "gifts", "receiver_name")) {
+                executeAlterTable(connection, 
+                        "ALTER TABLE `" + tablePrefix + "gifts` ADD COLUMN `receiver_name` VARCHAR(64)");
+                plugin.getLogger().info("[数据库迁移] 成功添加 gifts.receiver_name 字段");
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().warning("[数据库迁移] gifts表迁移失败: " + e.getMessage());
         }
     }
     
@@ -544,6 +570,8 @@ public class DatabaseManager {
                 "`gift_amount` INT NOT NULL DEFAULT 1, " +
                 "`intimacy_gained` INT NOT NULL DEFAULT 0, " +
                 "`send_time` BIGINT NOT NULL DEFAULT 0, " +
+                "`sender_name` VARCHAR(64), " +
+                "`receiver_name` VARCHAR(64), " +
                 "INDEX `idx_sender_uuid` (`sender_uuid`), " +
                 "INDEX `idx_receiver_uuid` (`receiver_uuid`), " +
                 "INDEX `idx_send_time` (`send_time`)" +
@@ -558,7 +586,9 @@ public class DatabaseManager {
                 "`gift_id` TEXT NOT NULL, " +
                 "`gift_amount` INTEGER NOT NULL DEFAULT 1, " +
                 "`intimacy_gained` INTEGER NOT NULL DEFAULT 0, " +
-                "`send_time` INTEGER NOT NULL DEFAULT 0);";
+                "`send_time` INTEGER NOT NULL DEFAULT 0, " +
+                "`sender_name` TEXT, " +
+                "`receiver_name` TEXT);";
     }
     
     private String getMySQLDailyGiftsTableSQL() {

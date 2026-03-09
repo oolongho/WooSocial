@@ -10,13 +10,16 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class RelationProposalGUI extends BaseGUI {
     
@@ -25,6 +28,7 @@ public class RelationProposalGUI extends BaseGUI {
     private final RelationDataManager dataManager;
     private final RelationManager relationManager;
     private RelationData relationData;
+    private boolean relationExists = false;
     
     private static final int[] TYPE_SLOTS = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24, 25};
     
@@ -51,10 +55,21 @@ public class RelationProposalGUI extends BaseGUI {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (optRelation.isPresent()) {
                     relationData = optRelation.get();
+                    relationExists = true;
+                } else {
+                    relationData = createBasicRelation();
+                    relationExists = false;
                 }
                 setupItems();
             });
         });
+    }
+    
+    private RelationData createBasicRelation() {
+        RelationData data = new RelationData(viewer.getUniqueId(), targetUuid);
+        data.setIntimacy(0);
+        data.setFriendName(targetName);
+        return data;
     }
     
     @Override
@@ -68,6 +83,10 @@ public class RelationProposalGUI extends BaseGUI {
         fillBorder(54);
         
         inventory.setItem(BACK_SLOT, createBackButton());
+        
+        if (targetUuid != null) {
+            inventory.setItem(4, createTargetInfoItem());
+        }
         
         List<RelationType> types = new ArrayList<>(relationManager.getAllRelationTypes());
         types.removeIf(RelationType::isDefault);
@@ -86,6 +105,32 @@ public class RelationProposalGUI extends BaseGUI {
         }
         
         setupNavigation();
+    }
+    
+    private ItemStack createTargetInfoItem() {
+        ItemStack item = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta meta = (SkullMeta) item.getItemMeta();
+        
+        OfflinePlayer target = Bukkit.getOfflinePlayer(targetUuid);
+        meta.setOwningPlayer(target);
+        
+        meta.displayName(Component.text(targetName, NamedTextColor.GREEN));
+        
+        List<Component> lore = new ArrayList<>();
+        lore.add(Component.empty());
+        
+        if (relationData != null) {
+            lore.add(Component.text("当前亲密度: ", NamedTextColor.GRAY)
+                    .append(Component.text(relationData.getIntimacy(), NamedTextColor.YELLOW)));
+        }
+        
+        lore.add(Component.empty());
+        lore.add(Component.text("选择要申请的关系类型", NamedTextColor.AQUA));
+        
+        meta.lore(lore);
+        item.setItemMeta(meta);
+        
+        return item;
     }
     
     private ItemStack createTypeItem(RelationType type) {
@@ -127,10 +172,10 @@ public class RelationProposalGUI extends BaseGUI {
         var meta = item.getItemMeta();
         meta.displayName(Component.text("返回", NamedTextColor.YELLOW));
         List<Component> lore = new ArrayList<>();
-        if (targetUuid != null) {
+        if (relationExists && targetUuid != null) {
             lore.add(Component.text("返回关系详情", NamedTextColor.GRAY));
         } else {
-            lore.add(Component.text("返回社交菜单", NamedTextColor.GRAY));
+            lore.add(Component.text("返回关系列表", NamedTextColor.GRAY));
         }
         meta.lore(lore);
         item.setItemMeta(meta);
@@ -149,10 +194,10 @@ public class RelationProposalGUI extends BaseGUI {
     @Override
     public void handleClick(int slot, Player player, int clickType) {
         if (slot == BACK_SLOT) {
-            if (targetUuid != null) {
+            if (relationExists && targetUuid != null) {
                 new RelationDetailGUI(plugin, player, targetUuid, targetName).open(player);
             } else {
-                new SocialMainGUI(plugin, player).open(player);
+                new RelationListGUI(plugin, player).open(player);
             }
             return;
         }
@@ -201,17 +246,27 @@ public class RelationProposalGUI extends BaseGUI {
     
     private void handleApplyRelation(Player player, RelationType type) {
         if (relationData == null) {
-            messageManager.send(player, "relation.not-friend");
-            return;
+            relationData = createBasicRelation();
         }
         
+        if (!relationExists) {
+            dataManager.createRelation(relationData).thenCompose(v -> {
+                relationExists = true;
+                return doProposeRelation(player, type);
+            });
+        } else {
+            doProposeRelation(player, type);
+        }
+    }
+    
+    private CompletableFuture<Void> doProposeRelation(Player player, RelationType type) {
         if (relationData.getIntimacy() < type.getRequiredIntimacy()) {
             messageManager.send(player, "relation.intimacy-not-enough",
                     "required", String.valueOf(type.getRequiredIntimacy()));
-            return;
+            return CompletableFuture.completedFuture(null);
         }
         
-        relationManager.proposeRelation(player, targetUuid, type)
+        return relationManager.proposeRelation(player, targetUuid, type)
                 .thenAccept(result -> {
                     Bukkit.getScheduler().runTask(plugin, () -> {
                         if (result.isSuccess()) {

@@ -92,11 +92,21 @@ public class GiftHistoryWithFriendGUI extends BaseGUI {
         String otherName;
         UUID otherUuid;
         if (isSent) {
-            otherName = gift.getReceiverName() != null ? gift.getReceiverName() : "未知";
             otherUuid = gift.getReceiverUuid();
+            if (gift.getReceiverName() != null && !gift.getReceiverName().isEmpty() && !"Unknown".equals(gift.getReceiverName())) {
+                otherName = gift.getReceiverName();
+            } else {
+                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(otherUuid);
+                otherName = offlinePlayer.getName() != null ? offlinePlayer.getName() : "未知";
+            }
         } else {
-            otherName = gift.getSenderName() != null ? gift.getSenderName() : "未知";
             otherUuid = gift.getSenderUuid();
+            if (gift.getSenderName() != null && !gift.getSenderName().isEmpty() && !"Unknown".equals(gift.getSenderName())) {
+                otherName = gift.getSenderName();
+            } else {
+                OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(otherUuid);
+                otherName = offlinePlayer.getName() != null ? offlinePlayer.getName() : "未知";
+            }
         }
         
         OfflinePlayer other = Bukkit.getOfflinePlayer(otherUuid);

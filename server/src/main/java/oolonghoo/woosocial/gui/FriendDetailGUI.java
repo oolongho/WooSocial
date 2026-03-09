@@ -152,8 +152,8 @@ public class FriendDetailGUI extends BaseGUI {
         }
         
         lore.add(Component.empty());
-        lore.add(messageManager.getComponent("gui.lore-friends-since")
-                .append(Component.text(friendSince, NamedTextColor.YELLOW)));
+        lore.add(messageManager.getComponent("gui.lore-last-online")
+                .append(Component.text(lastOnline, NamedTextColor.YELLOW)));
         
         meta.lore(lore);
         head.setItemMeta(meta);
@@ -322,9 +322,35 @@ public class FriendDetailGUI extends BaseGUI {
         meta.displayName(Component.text("查看关系", NamedTextColor.LIGHT_PURPLE));
         
         List<Component> lore = new ArrayList<>();
-        lore.add(Component.text("查看与TA的关系详情", NamedTextColor.GRAY));
+        
+        var relationModule = plugin.getModuleManager().getRelationModule();
+        if (relationModule != null && relationModule.isEnabled()) {
+            var relationDataOpt = relationModule.getDataManager()
+                    .getRelationSync(viewerUUID, friendUUID);
+            
+            if (relationDataOpt != null && relationDataOpt.isPresent()) {
+                var relationData = relationDataOpt.get();
+                String typeName = "好友";
+                if (relationData.getRelationType() != null) {
+                    var relationType = relationModule.getRelationManager()
+                            .getRelationType(relationData.getRelationType());
+                    if (relationType != null) {
+                        typeName = relationType.getDisplayName();
+                    }
+                }
+                lore.add(Component.text("当前关系: ", NamedTextColor.GRAY)
+                        .append(Component.text(typeName, NamedTextColor.LIGHT_PURPLE)));
+                lore.add(Component.text("亲密度: ", NamedTextColor.GRAY)
+                        .append(Component.text(relationData.getIntimacy(), NamedTextColor.YELLOW)));
+            } else {
+                lore.add(Component.text("未绑定关系", NamedTextColor.GRAY));
+            }
+        } else {
+            lore.add(Component.text("未绑定关系", NamedTextColor.GRAY));
+        }
+        
         lore.add(Component.empty());
-        lore.add(Component.text("点击查看", NamedTextColor.AQUA));
+        lore.add(Component.text("点击查看详情", NamedTextColor.AQUA));
         
         meta.lore(lore);
         item.setItemMeta(meta);
@@ -391,7 +417,7 @@ public class FriendDetailGUI extends BaseGUI {
                 break;
                 
             case RELATION_SLOT:
-                new RelationDetailGUI(plugin, player, friendUUID, friendName).open(player);
+                new RelationDetailFromFriendGUI(plugin, player, friendUUID, friendName).open(player);
                 break;
                 
             case REMOVE_FRIEND_SLOT:

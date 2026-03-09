@@ -53,17 +53,18 @@ public abstract class BaseGUI implements InventoryHolder {
         this.guiConfig = plugin.getGuiConfigManager().getConfig(guiName);
         this.actionParser = plugin.getActionParser();
         this.placeholderParser = new PlaceholderParser();
-        
-        createInventory();
     }
     
-    private void createInventory() {
+    protected void initInventory() {
+        setupPlaceholders();
+        
         if (guiConfig != null && guiConfig.getTitle() != null) {
             String title = placeholderParser.parse(guiConfig.getTitle());
             this.inventory = Bukkit.createInventory(this, 54, 
                     net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(title));
         } else {
-            this.inventory = Bukkit.createInventory(this, 54, Component.text("GUI"));
+            this.inventory = Bukkit.createInventory(this, 54, 
+                    net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize("<gray>WooSocial"));
         }
     }
     

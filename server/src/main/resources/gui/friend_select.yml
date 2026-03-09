@@ -1,0 +1,47 @@
+title: "<dark_gray>选择好友"
+
+layout:
+  - '#########'
+  - '####i####'
+  - '#1111111#'
+  - '#1111111#'
+  - '#1111111#'
+  - '#<#####>#'
+
+icons:
+  '#':
+    material: LIME_STAINED_GLASS_PANE
+    name: ""
+  
+  'i':
+    material: BOOK
+    name: "<yellow>选择好友"
+    lore:
+      - "<gray>点击好友头像选择"
+  
+  '1':
+    material: PLAYER_HEAD
+    skull_owner: "{friend_name}"
+    name: "{is_online ? <green> : <gray>}{friend_name}"
+    lore:
+      - "<gray>状态: {is_online ? <green>在线 : <red>离线}"
+      - ""
+      - "<aqua>点击选择"
+    actions:
+      left: "[select_friend, sound:entity_mule_chest]"
+  
+  '<':
+    material: ARROW
+    name: "<yellow>上一页"
+    lore:
+      - "<gray>当前: <white>{page}/{total_pages}"
+    actions:
+      left: "[prev_page, sound:entity_mule_chest]"
+  
+  '>':
+    material: ARROW
+    name: "<yellow>下一页"
+    lore:
+      - "<gray>当前: <white>{page}/{total_pages}"
+    actions:
+      left: "[next_page, sound:entity_mule_chest]"

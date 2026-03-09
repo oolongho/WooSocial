@@ -76,6 +76,8 @@ public class GiftManager {
                                 GiftData giftRecord = new GiftData(sender.getUniqueId(), receiverUuid, "coins", amountPerSend);
                                 giftRecord.setIntimacyGained(intimacyGained);
                                 giftRecord.setSenderName(sender.getName());
+                                String recvName = Bukkit.getOfflinePlayer(receiverUuid).getName();
+                                giftRecord.setReceiverName(recvName != null ? recvName : "Unknown");
                                 
                                 return dataManager.updateRelation(relation)
                                         .thenCompose(v -> dataManager.saveDailyGiftData(dailyData))
@@ -165,6 +167,8 @@ public class GiftManager {
                                 GiftData giftRecord = new GiftData(sender.getUniqueId(), receiverUuid, finalGiftId, amountPerSend);
                                 giftRecord.setIntimacyGained(intimacyGained);
                                 giftRecord.setSenderName(sender.getName());
+                                String recvName = Bukkit.getOfflinePlayer(receiverUuid).getName();
+                                giftRecord.setReceiverName(recvName != null ? recvName : "Unknown");
                                 
                                 return dataManager.updateRelation(relation)
                                         .thenCompose(v -> dataManager.saveDailyGiftData(dailyData))

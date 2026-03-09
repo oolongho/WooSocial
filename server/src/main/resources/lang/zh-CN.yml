@@ -367,7 +367,7 @@ relation:
   not-friend: "&c你们还不是好友！"
   not-found: "&c关系不存在！"
   type-not-found: "&c关系类型不存在！"
-  intimacy-not-enough: "&c默契度不足！需要: %required%"
+  intimacy-not-enough: "&c亲密度不足！需要: %required%"
   slots-full: "&c该关系类型槽位已满！"
   item-not-found: "&c纪念品不存在！"
   
@@ -386,15 +386,15 @@ relation:
   no-relations: "&7暂无关系记录。"
   
   list-header: "&e=== 关系列表 ==="
-  list-entry: "&7%friend% &8- &f%type% &7(默契度: %intimacy%)"
+  list-entry: "&7%friend% &8- &f%type% &7(亲密度: %intimacy%)"
   
   info-header: "&e=== 关系信息: %player% ==="
   info-type: "&7关系类型: &f%type%"
-  info-intimacy: "&7默契度: &f%intimacy% &7(%level%)"
+  info-intimacy: "&7亲密度: &f%intimacy% &7(%level%)"
   info-mutual: "&7双方确认: %mutual%"
   
   types-header: "&e=== 关系类型列表 ==="
-  types-entry: "&7{name} &8- &f默契度: {intimacy} &7槽位: {slots}"
+  types-entry: "&7{name} &8- &f亲密度: {intimacy} &7槽位: {slots}"
 
 # ==================== 赠礼系统 ====================
 gift:
@@ -409,10 +409,10 @@ gift:
   daily-limit-reached: "&c今日赠送次数已达上限！剩余: %value% 次"
   invalid-amount: "&c无效的数量！"
   
-  coins-sent: "&a成功向 %player% 赠送 %amount% 金币！默契度 +%intimacy%"
+  coins-sent: "&a成功向 %player% 赠送 %amount% 金币！亲密度 +%intimacy%"
   coins-received: "&e%player% 向你赠送了 %amount% 金币！"
   
-  sent: "&a成功向 %player% 赠送 %gift%！默契度 +%intimacy%"
+  sent: "&a成功向 %player% 赠送 %gift%！亲密度 +%intimacy%"
   received: "&e%player% 向你赠送了 %gift%！"
   
   item-not-found: "&c纪念品不存在！"

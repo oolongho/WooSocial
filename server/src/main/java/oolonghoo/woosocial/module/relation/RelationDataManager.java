@@ -50,6 +50,17 @@ public class RelationDataManager {
     public void saveAll() {
     }
     
+    public Optional<RelationData> getRelationSync(UUID playerUuid, UUID friendUuid) {
+        Map<UUID, RelationData> playerRelations = relationCache.get(playerUuid);
+        if (playerRelations != null) {
+            RelationData cached = playerRelations.get(friendUuid);
+            if (cached != null) {
+                return Optional.of(cached);
+            }
+        }
+        return Optional.empty();
+    }
+    
     public CompletableFuture<Optional<RelationData>> getRelation(UUID playerUuid, UUID friendUuid) {
         Map<UUID, RelationData> playerRelations = relationCache.get(playerUuid);
         if (playerRelations != null) {

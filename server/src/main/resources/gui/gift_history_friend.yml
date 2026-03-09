@@ -1,0 +1,46 @@
+title: "<dark_gray>与 {friend_name} 的礼物记录"
+
+layout:
+  - '#########'
+  - '####i####'
+  - '#1111111#'
+  - '#1111111#'
+  - '#########'
+  - '#<#####>#'
+
+icons:
+  '#':
+    material: YELLOW_STAINED_GLASS_PANE
+    name: ""
+  
+  'i':
+    material: PLAYER_HEAD
+    skull_owner: "{friend_name}"
+    name: "<gold>{friend_name}"
+    lore:
+      - "<gray>查看与TA的礼物往来"
+  
+  '1':
+    material: GOLD_INGOT
+    name: "<gold>{gift_name}"
+    lore:
+      - "<gray>发送者: <yellow>{sender_name}"
+      - "<gray>接收者: <yellow>{receiver_name}"
+      - "<gray>时间: <yellow>{send_time}"
+      - "<gray>亲密度: <yellow>+{intimacy_gained}"
+  
+  '<':
+    material: ARROW
+    name: "<yellow>上一页"
+    lore:
+      - "<gray>当前: <white>{page}/{total_pages}"
+    actions:
+      left: "[prev_page, sound:entity_mule_chest]"
+  
+  '>':
+    material: ARROW
+    name: "<yellow>下一页"
+    lore:
+      - "<gray>当前: <white>{page}/{total_pages}"
+    actions:
+      left: "[next_page, sound:entity_mule_chest]"
