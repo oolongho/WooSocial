@@ -174,16 +174,46 @@ public class FriendDataManager {
      */
     public CompletableFuture<Boolean> addFriend(UUID playerUuid, UUID friendUuid, 
                                                  String playerName, String friendName) {
-        // 添加双向好友关系
+        int maxFriends = plugin.getConfigManager().getMaxFriends();
+        int currentFriendCount = getFriendCount(playerUuid);
+        
+        if (currentFriendCount >= maxFriends) {
+            return CompletableFuture.completedFuture(false);
+        }
+        
+        int friendFriendCount = getFriendCount(friendUuid);
+        if (friendFriendCount >= maxFriends) {
+            return CompletableFuture.completedFuture(false);
+        }
+        
         CompletableFuture<Boolean> future1 = friendDAO.addFriend(playerUuid, friendUuid, friendName);
         CompletableFuture<Boolean> future2 = friendDAO.addFriend(friendUuid, playerUuid, playerName);
         
         return CompletableFuture.allOf(future1, future2).thenApply(v -> {
-            // 更新缓存
             loadFriendList(playerUuid);
             loadFriendList(friendUuid);
             return true;
         });
+    }
+    
+    /**
+     * 检查是否可以添加好友
+     * 
+     * @param playerUuid 玩家UUID
+     * @return 是否可以添加
+     */
+    public boolean canAddFriend(UUID playerUuid) {
+        int maxFriends = plugin.getConfigManager().getMaxFriends();
+        return getFriendCount(playerUuid) < maxFriends;
+    }
+    
+    /**
+     * 获取最大好友数量
+     * 
+     * @return 最大好友数量
+     */
+    public int getMaxFriends() {
+        return plugin.getConfigManager().getMaxFriends();
     }
     
     /**
@@ -240,7 +270,17 @@ public class FriendDataManager {
     }
     
     /**
-     * 获取待处理的好友请求列表
+     * 获取待处理的好友请求列表（异步从数据库查询）
+     * 
+     * @param playerUuid 玩家UUID
+     * @return CompletableFuture<List<FriendRequest>>
+     */
+    public CompletableFuture<List<FriendRequest>> getPendingRequestsAsync(UUID playerUuid) {
+        return friendDAO.getPendingRequests(playerUuid);
+    }
+    
+    /**
+     * 获取待处理的好友请求列表（同步，从缓存获取）
      * 
      * @param playerUuid 玩家UUID
      * @return 待处理的好友请求列表
@@ -314,10 +354,17 @@ public class FriendDataManager {
      */
     public CompletableFuture<Boolean> sendFriendRequest(UUID senderUuid, UUID receiverUuid,
                                                          String senderName, String receiverName) {
+        if (!canAddFriend(senderUuid)) {
+            return CompletableFuture.completedFuture(false);
+        }
+        
+        if (!canAddFriend(receiverUuid)) {
+            return CompletableFuture.completedFuture(false);
+        }
+        
         return friendDAO.createFriendRequest(senderUuid, receiverUuid, senderName, receiverName)
                 .thenApply(success -> {
                     if (success) {
-                        // 更新接收者的请求缓存
                         loadFriendRequests(receiverUuid);
                     }
                     return success;

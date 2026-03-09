@@ -30,10 +30,18 @@ public class FriendRequestsGUI extends BaseGUI {
         this.dataManager = plugin.getModuleManager().getFriendModule().getDataManager();
         this.viewerUUID = viewer.getUniqueId();
         
-        this.requests = dataManager.getPendingRequests(viewerUUID);
-        this.totalPages = calculateTotalPages(requests.size(), ITEMS_PER_PAGE);
-        
-        setupItems();
+        loadRequests();
+    }
+    
+    private void loadRequests() {
+        dataManager.getPendingRequestsAsync(viewerUUID).thenAccept(requestsList -> {
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                this.requests = requestsList;
+                this.totalPages = calculateTotalPages(requests.size(), ITEMS_PER_PAGE);
+                initInventory();
+                setupItems();
+            });
+        });
     }
     
     @Override
@@ -45,6 +53,15 @@ public class FriendRequestsGUI extends BaseGUI {
         fillBorder(54);
         
         inventory.setItem(BACK_SLOT, createBackButton());
+        
+        if (requests == null || requests.isEmpty()) {
+            ItemStack emptyItem = new ItemStack(Material.BARRIER);
+            var meta = emptyItem.getItemMeta();
+            meta.displayName(Component.text("暂无好友请求", NamedTextColor.GRAY));
+            emptyItem.setItemMeta(meta);
+            inventory.setItem(22, emptyItem);
+            return;
+        }
         
         int startIndex = getPageStartIndex(currentPage);
         int endIndex = Math.min(startIndex + ITEMS_PER_PAGE, requests.size());
@@ -109,10 +126,7 @@ public class FriendRequestsGUI extends BaseGUI {
     
     @Override
     public void refresh() {
-        this.requests = dataManager.getPendingRequests(viewerUUID);
-        this.totalPages = calculateTotalPages(requests.size(), ITEMS_PER_PAGE);
-        if (currentPage > totalPages) currentPage = totalPages;
-        setupItems();
+        loadRequests();
     }
     
     @Override

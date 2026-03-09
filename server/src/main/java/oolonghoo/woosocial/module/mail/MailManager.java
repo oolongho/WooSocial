@@ -372,58 +372,69 @@ public class MailManager {
     }
     
     /**
-     * 领取所有未领取的邮件附件
+     * 领取所有未领取的邮件附件（异步操作）
      * 
      * @param player 玩家
      * @return 领取的邮件数量
      */
     public CompletableFuture<Integer> claimAllMails(Player player) {
         UUID playerUuid = player.getUniqueId();
-        List<MailData> mails = dataManager.getMailList(playerUuid);
         
-        int claimedCount = 0;
-        List<ItemStack> itemsToGive = new ArrayList<>();
-        
-        for (MailData mail : mails) {
-            if (!mail.isClaimed() && mail.getItemData() != null && !mail.getItemData().isEmpty()) {
-                ItemStack item = ItemSerializer.deserialize(mail.getItemData());
-                if (item != null && item.getType() != Material.AIR) {
-                    itemsToGive.add(item);
-                    dataManager.claimMail(playerUuid, mail.getId());
-                    claimedCount++;
+        return CompletableFuture.supplyAsync(() -> {
+            List<MailData> mails = dataManager.getMailList(playerUuid);
+            
+            int claimedCount = 0;
+            List<ItemStack> itemsToGive = new ArrayList<>();
+            
+            for (MailData mail : mails) {
+                if (!mail.isClaimed() && mail.getItemData() != null && !mail.getItemData().isEmpty()) {
+                    ItemStack item = ItemSerializer.deserialize(mail.getItemData());
+                    if (item != null && item.getType() != Material.AIR) {
+                        itemsToGive.add(item);
+                        dataManager.claimMail(playerUuid, mail.getId());
+                        claimedCount++;
+                    }
                 }
             }
-        }
-        
-        if (!itemsToGive.isEmpty()) {
-            Map<Integer, ItemStack> leftover = player.getInventory().addItem(itemsToGive.toArray(new ItemStack[0]));
-            for (ItemStack item : leftover.values()) {
-                player.getWorld().dropItem(player.getLocation(), item);
-            }
-        }
-        
-        return CompletableFuture.completedFuture(claimedCount);
+            
+            final int count = claimedCount;
+            final List<ItemStack> items = itemsToGive;
+            
+            Bukkit.getScheduler().runTask(plugin, () -> {
+                if (!items.isEmpty() && player.isOnline()) {
+                    Map<Integer, ItemStack> leftover = player.getInventory().addItem(items.toArray(new ItemStack[0]));
+                    for (ItemStack item : leftover.values()) {
+                        player.getWorld().dropItem(player.getLocation(), item);
+                    }
+                }
+            });
+            
+            return count;
+        });
     }
     
     /**
-     * 删除所有已读且已领取的邮件
+     * 删除所有已读且已领取的邮件（异步操作）
      * 
      * @param player 玩家
      * @return 删除的邮件数量
      */
     public CompletableFuture<Integer> deleteReadMails(Player player) {
         UUID playerUuid = player.getUniqueId();
-        List<MailData> mails = dataManager.getMailList(playerUuid);
         
-        int deletedCount = 0;
-        
-        for (MailData mail : mails) {
-            if (mail.isRead() && (mail.isClaimed() || mail.getItemData() == null || mail.getItemData().isEmpty())) {
-                dataManager.deleteMail(playerUuid, mail.getId());
-                deletedCount++;
+        return CompletableFuture.supplyAsync(() -> {
+            List<MailData> mails = dataManager.getMailList(playerUuid);
+            
+            int deletedCount = 0;
+            
+            for (MailData mail : mails) {
+                if (mail.isRead() && (mail.isClaimed() || mail.getItemData() == null || mail.getItemData().isEmpty())) {
+                    dataManager.deleteMail(playerUuid, mail.getId());
+                    deletedCount++;
+                }
             }
-        }
-        
-        return CompletableFuture.completedFuture(deletedCount);
+            
+            return deletedCount;
+        });
     }
 }

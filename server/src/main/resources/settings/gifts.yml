@@ -7,7 +7,7 @@
 gifts:
   coins:
     name: "金币"
-    description: "每日免费赠送的金币"
+    description: "快喊好友上线领取"
     intimacy: 1
     cost:
       coins: 0
@@ -16,32 +16,32 @@ gifts:
     amount-per-send: 10
     icon: "GOLD_INGOT"
   
-  rose:
-    name: "玫瑰"
-    description: "代表爱意的红玫瑰"
+  chocolate:
+    name: "巧克力"
+    description: "甜蜜的巧克力"
     intimacy: 10
     cost:
       coins: 100
       points: 0
     daily-limit: 10
-    icon: "RED_TULIP"
-  
-  chocolate:
-    name: "巧克力"
-    description: "甜蜜的巧克力"
-    intimacy: 20
-    cost:
-      coins: 0
-      points: 1
-    daily-limit: 5
     icon: "COCOA_BEANS"
-  
+
   cake:
     name: "蛋糕"
     description: "美味的蛋糕"
-    intimacy: 30
+    intimacy: 100
     cost:
-      coins: 500
-      points: 5
-    daily-limit: 3
+      coins: 999
+      points: 0
+    daily-limit: 1
     icon: "CAKE"
+
+  rose:
+    name: "玫瑰"
+    description: "代表爱意的红玫瑰"
+    intimacy: 520
+    cost:
+      coins: 0
+      points: 1
+    daily-limit: 10
+    icon: "RED_TULIP"

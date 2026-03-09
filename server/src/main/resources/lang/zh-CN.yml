@@ -370,6 +370,7 @@ relation:
   intimacy-not-enough: "&c亲密度不足！需要: %required%"
   slots-full: "&c该关系类型槽位已满！"
   item-not-found: "&c纪念品不存在！"
+  target-already-has-same-type: "&c对方已经有一个相同类型的关系了！"
   
   proposal-sent: "&a已向 %player% 发送关系申请！"
   proposal-received: "&e%player% 想与你建立 %type% 关系！使用 /relation accept %player% 接受"

@@ -37,6 +37,8 @@ public abstract class BaseGUI implements InventoryHolder {
     protected int currentPage = 1;
     protected int totalPages = 1;
     
+    protected BaseGUI previousGUI;
+    
     private final Map<Integer, IconConfig> slotIconMap = new HashMap<>();
     private final Map<Integer, Map<String, Object>> slotDataContext = new HashMap<>();
     
@@ -243,8 +245,29 @@ public abstract class BaseGUI implements InventoryHolder {
     
     public abstract void refresh();
     
+    public void setPreviousGUI(BaseGUI gui) {
+        this.previousGUI = gui;
+    }
+    
+    public BaseGUI getPreviousGUI() {
+        return previousGUI;
+    }
+    
     public void open(Player player) {
         player.openInventory(inventory);
+    }
+    
+    public void open(Player player, BaseGUI previousGUI) {
+        this.previousGUI = previousGUI;
+        player.openInventory(inventory);
+    }
+    
+    protected void goBack(Player player) {
+        if (previousGUI != null) {
+            previousGUI.open(player);
+        } else {
+            player.closeInventory();
+        }
     }
     
     protected void fillBorder(int size) {

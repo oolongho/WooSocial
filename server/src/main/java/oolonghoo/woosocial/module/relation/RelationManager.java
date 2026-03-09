@@ -246,32 +246,42 @@ public class RelationManager {
                                     new RelationResult(false, "relation.slots-full"));
                         }
                         
-                        String targetName = Bukkit.getOfflinePlayer(targetUuid).getName();
-                        if (targetName == null) {
-                            targetName = "Unknown";
-                        }
-                        RelationProposeEvent event = new RelationProposeEvent(
-                                proposer.getUniqueId(), proposer.getName(),
-                                targetUuid, targetName, originalType);
-                        Bukkit.getPluginManager().callEvent(event);
-                        if (event.isCancelled()) {
-                            return CompletableFuture.completedFuture(
-                                    new RelationResult(false, event.getCancelReason()));
-                        }
-                        
-                        final RelationType finalType = event.getRelationType();
-                        
-                        relation.setRelationType(finalType.getId());
-                        relation.setProposalTime(System.currentTimeMillis());
-                        
-                        return dataManager.updateRelation(relation).thenApply(success -> {
-                            if (success) {
-                                plugin.getSyncManager().broadcastRelationPropose(
-                                        proposer.getUniqueId(), proposer.getName(),
-                                        targetUuid, finalType.getId());
-                                return new RelationResult(true, "relation.proposal-sent");
+                        return dataManager.getRelation(targetUuid, proposer.getUniqueId()).thenCompose(optReverseRelation -> {
+                            if (optReverseRelation.isPresent()) {
+                                RelationData reverseRelation = optReverseRelation.get();
+                                if (originalType.getId().equals(reverseRelation.getRelationType())) {
+                                    return CompletableFuture.completedFuture(
+                                            new RelationResult(false, "relation.target-already-has-same-type"));
+                                }
                             }
-                            return new RelationResult(false, "relation.update-failed");
+                            
+                            String targetName = Bukkit.getOfflinePlayer(targetUuid).getName();
+                            if (targetName == null) {
+                                targetName = "Unknown";
+                            }
+                            RelationProposeEvent event = new RelationProposeEvent(
+                                    proposer.getUniqueId(), proposer.getName(),
+                                    targetUuid, targetName, originalType);
+                            Bukkit.getPluginManager().callEvent(event);
+                            if (event.isCancelled()) {
+                                return CompletableFuture.completedFuture(
+                                        new RelationResult(false, event.getCancelReason()));
+                            }
+                            
+                            final RelationType finalType = event.getRelationType();
+                            
+                            relation.setRelationType(finalType.getId());
+                            relation.setProposalTime(System.currentTimeMillis());
+                            
+                            return dataManager.updateRelation(relation).thenApply(success -> {
+                                if (success) {
+                                    plugin.getSyncManager().broadcastRelationPropose(
+                                            proposer.getUniqueId(), proposer.getName(),
+                                            targetUuid, finalType.getId());
+                                    return new RelationResult(true, "relation.proposal-sent");
+                                }
+                                return new RelationResult(false, "relation.update-failed");
+                            });
                         });
                     });
                 });

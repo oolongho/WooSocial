@@ -63,6 +63,16 @@ mail:
     enabled: true
     permission: "woosocial.mail.bulk"
 
+# Friend System Configuration
+friend:
+  enabled: true
+  # Maximum number of friends a player can have
+  # 玩家最大好友数量
+  max-friends: 100
+  # Maximum number of pending friend requests
+  # 最大待处理好友请求数量
+  max-pending-requests: 50
+
 # Relation System Configuration
 relation:
   enabled: true
@@ -82,7 +92,7 @@ economy:
 
 # PlayerPoints Integration (optional)
 playerpoints:
-  enabled: false
+  enabled: true
   provider: "PlayerPoints"
 
 # Cache Configuration
