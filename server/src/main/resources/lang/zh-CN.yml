@@ -31,7 +31,7 @@ module:
 friend:
   # 请求相关
   request-sent: "&a已向 %player% 发送好友请求。"
-  request-received: "&e%player% 想添加你为好友。使用 /friend accept %player% 接受或 /friend deny %player% 拒绝。"
+  request-received: "&e%player% 想添加你为好友。"
   request-accepted: "&a你已与 %player% 成为好友。"
   request-denied: "&c你已拒绝 %player% 的好友请求。"
   request-expired: "&c好友请求已过期。"
@@ -373,7 +373,7 @@ relation:
   target-already-has-same-type: "&c对方已经有一个相同类型的关系了！"
   
   proposal-sent: "&a已向 %player% 发送关系申请！"
-  proposal-received: "&e%player% 想与你建立 %type% 关系！使用 /relation accept %player% 接受"
+  proposal-received: "&e%player% 想与你建立 %type% 关系！"
   no-proposal: "&c没有待处理的关系申请！"
   accepted: "&a关系已确立！"
   accepted-by: "&a%player% 接受了你的关系申请！"

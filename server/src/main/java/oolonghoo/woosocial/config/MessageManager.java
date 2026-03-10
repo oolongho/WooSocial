@@ -218,6 +218,45 @@ public class MessageManager {
     }
     
     /**
+     * 发送可点击消息给玩家
+     * 使用 MiniMessage 的 click事件功能
+     * 
+     * @param player 玩家
+     * @param key 消息键
+     * @param args 占位符参数
+     */
+    public void sendClickable(Player player, String key, Object... args) {
+        player.sendMessage(getWithPrefixComponent(key, args));
+    }
+    
+    /**
+     * 发送带可点击按钮的消息
+     * 
+     * @param player 玩家
+     * @param messageKey 消息键
+     * @param acceptCommand 同意命令
+     * @param denyCommand 拒绝命令
+     * @param args 占位符参数
+     */
+    public void sendWithClickableButtons(Player player, String messageKey, 
+                                           String acceptCommand, String denyCommand, Object... args) {
+        Component message = getWithPrefixComponent(messageKey, args);
+        
+        Component acceptButton = net.kyori.adventure.text.Component.text("[同意]", NamedTextColor.GREEN)
+                .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCmd(acceptCommand));
+        Component denyButton = net.kyori.adventure.text.Component.text("[拒绝]", NamedTextColor.RED)
+                .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCmd(denyCommand));
+        
+        Component buttons = net.kyori.adventure.text.Component.text()
+                .append(acceptButton)
+                .append(net.kyori.adventure.text.Component.text("    ", NamedTextColor.WHITE))
+                .append(denyButton);
+        
+        player.sendMessage(message);
+        player.sendMessage(buttons);
+    }
+    
+    /**
      * 获取前缀字符串
      * 
      * @return 前缀字符串

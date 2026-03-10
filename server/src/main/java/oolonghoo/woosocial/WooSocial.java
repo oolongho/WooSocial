@@ -172,7 +172,11 @@ public class WooSocial extends JavaPlugin {
         if (senderUuid != null && receiverUuid != null) {
             var receiver = Bukkit.getPlayer(receiverUuid);
             if (receiver != null) {
-                messageManager.send(receiver, "friend.request-received", "player", senderName);
+                messageManager.sendWithClickableButtons(receiver, 
+                        "friend.request-received",
+                        "/friend accept " + senderName,
+                        "/friend deny " + senderName,
+                        "player", senderName);
             }
         }
     }

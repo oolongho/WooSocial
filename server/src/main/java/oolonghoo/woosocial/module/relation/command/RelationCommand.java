@@ -151,7 +151,10 @@ public class RelationCommand implements CommandExecutor, TabCompleter {
             plugin.getServer().getScheduler().runTask(plugin, () -> {
                 if (result.isSuccess()) {
                     messageManager.send(player, result.getMessageKey());
-                    messageManager.send(target, "relation.proposal-received",
+                    messageManager.sendWithClickableButtons(target, 
+                            "relation.proposal-received",
+                            "/relation accept " + player.getName(),
+                            "/relation deny " + player.getName(),
                             "{player}", player.getName(),
                             "{type}", type.getDisplayName());
                 } else {

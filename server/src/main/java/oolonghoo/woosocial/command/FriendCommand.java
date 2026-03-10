@@ -203,7 +203,10 @@ public class FriendCommand implements CommandExecutor, TabCompleter {
                                     // 如果目标玩家在线，发送通知
                                     Player onlineTarget = Bukkit.getPlayer(targetUuid);
                                     if (onlineTarget != null) {
-                                        messageManager.send(onlineTarget, "friend.request-received", 
+                                        messageManager.sendWithClickableButtons(onlineTarget, 
+                                                "friend.request-received",
+                                                "/friend accept " + player.getName(),
+                                                "/friend deny " + player.getName(),
                                                 "player", player.getName());
                                     }
                                 } else {
