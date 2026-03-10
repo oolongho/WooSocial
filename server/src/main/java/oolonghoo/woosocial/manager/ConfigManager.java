@@ -90,6 +90,7 @@ public class ConfigManager {
         
         configCache.put("settings.debug", config.getBoolean("settings.debug", false));
         configCache.put("settings.language", config.getString("settings.language", "zh-CN"));
+        configCache.put("settings.server-name", config.getString("settings.server-name", "server1"));
         configCache.put("settings.auto-save-interval", config.getInt("settings.auto-save-interval", 300));
     }
     
@@ -348,6 +349,13 @@ public class ConfigManager {
      */
     public String getLanguage() {
         return getCachedString("settings.language", "zh-CN");
+    }
+    
+    /**
+     * 获取服务器名称（用于跨服同步）
+     */
+    public String getServerName() {
+        return getCachedString("settings.server-name", "server1");
     }
     
     /**

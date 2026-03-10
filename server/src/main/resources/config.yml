@@ -9,6 +9,9 @@ settings:
   # Language file
   # 语言文件
   language: "zh-CN"
+  # Server name for cross-server sync
+  # 跨服同步使用的服务器名称
+  server-name: "server1"
   # Auto save interval in seconds
   # 自动保存间隔（秒）
   auto-save-interval: 300

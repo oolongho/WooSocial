@@ -1,6 +1,7 @@
 package com.oolonghoo.woosocial.config;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -243,14 +244,16 @@ public class MessageManager {
         Component message = getWithPrefixComponent(messageKey, args);
         
         Component acceptButton = net.kyori.adventure.text.Component.text("[同意]", NamedTextColor.GREEN)
-                .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCmd(acceptCommand));
+                .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand(acceptCommand));
         Component denyButton = net.kyori.adventure.text.Component.text("[拒绝]", NamedTextColor.RED)
-                .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCmd(denyCommand));
+                .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand(denyCommand));
         
-        Component buttons = net.kyori.adventure.text.Component.text()
-                .append(acceptButton)
-                .append(net.kyori.adventure.text.Component.text("    ", NamedTextColor.WHITE))
-                .append(denyButton);
+        Component buttons = net.kyori.adventure.text.Component.join(
+                net.kyori.adventure.text.JoinConfiguration.noSeparators(),
+                acceptButton,
+                net.kyori.adventure.text.Component.text("    ", NamedTextColor.WHITE),
+                denyButton
+        );
         
         player.sendMessage(message);
         player.sendMessage(buttons);
