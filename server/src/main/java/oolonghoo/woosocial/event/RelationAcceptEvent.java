@@ -1,4 +1,4 @@
-package oolonghoo.woosocial.event;
+package com.oolonghoo.woosocial.event;
 
 import com.oolonghoo.woosocial.model.RelationData;
 import com.oolonghoo.woosocial.module.relation.type.RelationType;

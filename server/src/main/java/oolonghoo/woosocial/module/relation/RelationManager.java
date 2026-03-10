@@ -13,9 +13,9 @@ import com.oolonghoo.woosocial.model.RelationData;
 import com.oolonghoo.woosocial.module.relation.type.GiftType;
 import com.oolonghoo.woosocial.module.relation.type.MemorialItem;
 import com.oolonghoo.woosocial.module.relation.type.RelationType;
-import oolonghoo.woosocial.event.RelationProposeEvent;
-import oolonghoo.woosocial.event.RelationAcceptEvent;
-import oolonghoo.woosocial.event.RelationRemoveEvent;
+import com.oolonghoo.woosocial.event.RelationProposeEvent;
+import com.oolonghoo.woosocial.event.RelationAcceptEvent;
+import com.oolonghoo.woosocial.event.RelationRemoveEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

@@ -6,7 +6,7 @@ import com.oolonghoo.woosocial.model.DailyGiftData;
 import com.oolonghoo.woosocial.model.GiftData;
 import com.oolonghoo.woosocial.model.RelationData;
 import com.oolonghoo.woosocial.module.relation.type.GiftType;
-import oolonghoo.woosocial.event.GiftSendEvent;
+import com.oolonghoo.woosocial.event.GiftSendEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

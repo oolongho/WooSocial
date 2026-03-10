@@ -1,4 +1,4 @@
-package oolonghoo.woosocial.event;
+package com.oolonghoo.woosocial.event;
 
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
