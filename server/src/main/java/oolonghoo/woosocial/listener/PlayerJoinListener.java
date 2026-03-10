@@ -73,7 +73,10 @@ public class PlayerJoinListener implements Listener {
             return;
         }
         
-        // 遍历好友，通知在线的好友
+        // 广播玩家上线消息到其他服务器
+        plugin.getSyncManager().broadcastPlayerOnline(playerUuid, playerName, plugin.getConfigManager().getServerName());
+        
+        // 本地通知在线的好友
         for (FriendData friend : friends) {
             UUID friendUuid = friend.getFriendUuid();
             
