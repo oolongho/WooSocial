@@ -11,6 +11,12 @@ softdepend:
   - PlayerPoints
   - WooEco
 
+libraries:
+  - com.zaxxer:HikariCP:5.1.0
+  - org.xerial:sqlite-jdbc:3.45.1.0
+  - com.google.code.gson:gson:2.10.1
+  - io.lettuce:lettuce-core:6.3.0.RELEASE
+
 commands:
   social:
     description: Open social menu
