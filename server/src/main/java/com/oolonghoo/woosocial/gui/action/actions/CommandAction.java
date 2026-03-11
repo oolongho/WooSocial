@@ -10,6 +10,7 @@ import java.util.List;
 
 public class CommandAction implements GUIAction {
     
+    @SuppressWarnings("unused")
     private final WooSocial plugin;
     
     public CommandAction(WooSocial plugin) {

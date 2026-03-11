@@ -3,17 +3,14 @@ package com.oolonghoo.woosocial.database;
 import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.attachment.AttachmentSerializer;
 import com.oolonghoo.woosocial.model.MailData;
-import com.oolonghoo.woosocial.util.ItemSerializer;
-import org.bukkit.inventory.ItemStack;
-
 import java.sql.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public class MailDAO {
     

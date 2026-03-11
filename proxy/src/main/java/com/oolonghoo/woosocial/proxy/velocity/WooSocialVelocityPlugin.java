@@ -26,6 +26,7 @@ public class WooSocialVelocityPlugin {
     
     private final ProxyServer server;
     private final Logger logger;
+    @SuppressWarnings("unused")
     private final Path dataDirectory;
     
     private SyncMessageHandler messageHandler;

@@ -2,15 +2,15 @@ package com.oolonghoo.woosocial.proxy.velocity;
 
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
-import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
-import com.velocitypowered.api.proxy.server.RegisteredServer;
 import org.slf4j.Logger;
 
 public class PluginMessageListener {
     
+    @SuppressWarnings("unused")
     private final ProxyServer server;
+    @SuppressWarnings("unused")
     private final Logger logger;
     private final SyncMessageHandler messageHandler;
     

@@ -10,15 +10,15 @@ import java.util.HashMap;
  * 提供布局解析、槽位计算、分页支持等功能
  * 
  * @author oolongho
- */
-public class GUILayout {
+ */public class GUILayout {
     
     private final GUIConfig config;
     private final List<String> layout;
     private final int rows;
     private final int size;
     
-    // 缓存字符到槽位的映射
+    @SuppressWarnings("unused")
+    private final Map<String, Object> config;// 缓存字符到槽位的映射
     private final Map<Character, List<Integer>> charSlotCache;
     
     /**
