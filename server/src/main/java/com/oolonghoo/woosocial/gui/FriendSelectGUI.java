@@ -1,7 +1,6 @@
 package com.oolonghoo.woosocial.gui;
 
 import com.oolonghoo.woosocial.WooSocial;
-import com.oolonghoo.woosocial.listener.GUIListener;
 import com.oolonghoo.woosocial.model.FriendData;
 import com.oolonghoo.woosocial.module.friend.FriendDataManager;
 import net.kyori.adventure.text.Component;

@@ -2,13 +2,13 @@ package com.oolonghoo.woosocial.module.relation;
 
 import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.model.RelationData;
-import org.bukkit.entity.Player;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public class IntimacyManager {
     
+    @SuppressWarnings("unused")
     private final WooSocial plugin;
     private final RelationDataManager dataManager;
     private final RelationManager relationManager;

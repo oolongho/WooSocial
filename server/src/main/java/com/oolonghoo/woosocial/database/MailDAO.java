@@ -340,7 +340,7 @@ public class MailDAO {
                 }
                 
                 // 执行插入
-                int affectedRows = statement.executeUpdate();
+                statement.executeUpdate();
                 totalSuccess += batch.size();
                 
                 // 获取生成的主键
@@ -402,7 +402,7 @@ public class MailDAO {
                     statement.addBatch();
                 }
                 
-                int[] results = statement.executeBatch();
+                statement.executeBatch();
                 connection.commit(); // 提交事务
                 
                 // 获取生成的主键

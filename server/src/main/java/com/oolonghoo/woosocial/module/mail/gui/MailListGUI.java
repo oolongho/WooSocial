@@ -1,14 +1,11 @@
 package com.oolonghoo.woosocial.module.mail.gui;
 
 import com.oolonghoo.woosocial.WooSocial;
-import com.oolonghoo.woosocial.config.MessageManager;
 import com.oolonghoo.woosocial.gui.BaseGUI;
 import com.oolonghoo.woosocial.gui.FriendSelectGUI;
 import com.oolonghoo.woosocial.gui.LoadingState;
 import com.oolonghoo.woosocial.gui.SocialMainGUI;
-import com.oolonghoo.woosocial.model.FriendData;
 import com.oolonghoo.woosocial.model.MailData;
-import com.oolonghoo.woosocial.util.ItemSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;

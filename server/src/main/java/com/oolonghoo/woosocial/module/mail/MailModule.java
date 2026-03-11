@@ -3,8 +3,6 @@ package com.oolonghoo.woosocial.module.mail;
 import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.module.Module;
 import com.oolonghoo.woosocial.module.mail.command.MailCommand;
-import com.oolonghoo.woosocial.module.mail.gui.MailDetailGUI;
-import com.oolonghoo.woosocial.module.mail.gui.MailListGUI;
 import com.oolonghoo.woosocial.module.mail.listener.MailListener;
 import org.bukkit.Bukkit;
 

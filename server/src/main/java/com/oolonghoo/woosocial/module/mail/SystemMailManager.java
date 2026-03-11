@@ -62,7 +62,6 @@ public class SystemMailManager {
             return CompletableFuture.completedFuture(new SystemMailResult(0, 0, "invalid-item"));
         }
         
-        String taskId = UUID.randomUUID().toString().substring(0, 8);
         messageManager.send(sender, "mail.system.sending-all");
         
         // 异步获取所有玩家并发送邮件
@@ -332,6 +331,7 @@ public class SystemMailManager {
     /**
      * 系统邮件发送任务（用于跟踪长时间运行的任务）
      */
+    @SuppressWarnings("unused")
     private static class SystemMailTask {
         private final String taskId;
         private final int totalTargets;

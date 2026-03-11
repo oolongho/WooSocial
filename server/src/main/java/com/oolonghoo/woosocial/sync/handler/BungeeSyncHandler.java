@@ -9,7 +9,6 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
-import java.util.Arrays;
 
 public class BungeeSyncHandler implements SyncHandler, PluginMessageListener {
     
@@ -113,7 +112,8 @@ public class BungeeSyncHandler implements SyncHandler, PluginMessageListener {
                 String subChannel = in.readUTF();
                 
                 if (subChannel.equals("Forward")) {
-                    String target = in.readUTF();
+                    @SuppressWarnings("unused")
+                    String target = in.readUTF(); // BungeeCord 转发目标，当前未使用
                     
                     short channelLength = in.readShort();
                     byte[] channelBytes = new byte[channelLength];

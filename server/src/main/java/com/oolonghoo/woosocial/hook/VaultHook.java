@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+@SuppressWarnings("deprecation")
 public class VaultHook implements EconomyHook {
     
     private final WooSocial plugin;

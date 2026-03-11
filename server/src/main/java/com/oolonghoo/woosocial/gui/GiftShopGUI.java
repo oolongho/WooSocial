@@ -1,7 +1,6 @@
 package com.oolonghoo.woosocial.gui;
 
 import com.oolonghoo.woosocial.WooSocial;
-import com.oolonghoo.woosocial.config.MessageManager;
 import com.oolonghoo.woosocial.module.relation.GiftManager;
 import com.oolonghoo.woosocial.module.relation.RelationManager;
 import com.oolonghoo.woosocial.module.relation.type.GiftType;

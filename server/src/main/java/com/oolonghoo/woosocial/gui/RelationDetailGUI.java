@@ -1,7 +1,6 @@
 package com.oolonghoo.woosocial.gui;
 
 import com.oolonghoo.woosocial.WooSocial;
-import com.oolonghoo.woosocial.config.MessageManager;
 import com.oolonghoo.woosocial.model.RelationData;
 import com.oolonghoo.woosocial.module.relation.RelationDataManager;
 import com.oolonghoo.woosocial.module.relation.RelationManager;
@@ -13,7 +12,6 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.text.SimpleDateFormat;

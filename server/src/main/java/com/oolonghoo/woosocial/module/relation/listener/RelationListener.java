@@ -3,7 +3,6 @@ package com.oolonghoo.woosocial.module.relation.listener;
 import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.module.relation.RelationDataManager;
 import com.oolonghoo.woosocial.module.relation.RelationManager;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -12,8 +11,11 @@ import java.util.UUID;
 
 public class RelationListener implements Listener {
     
+    @SuppressWarnings("unused")
     private final WooSocial plugin;
+    @SuppressWarnings("unused")
     private final RelationDataManager dataManager;
+    @SuppressWarnings("unused")
     private final RelationManager relationManager;
     
     public RelationListener(WooSocial plugin, RelationDataManager dataManager, RelationManager relationManager) {

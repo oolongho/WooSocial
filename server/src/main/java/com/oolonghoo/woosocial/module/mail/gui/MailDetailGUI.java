@@ -1,7 +1,6 @@
 package com.oolonghoo.woosocial.module.mail.gui;
 
 import com.oolonghoo.woosocial.WooSocial;
-import com.oolonghoo.woosocial.config.MessageManager;
 import com.oolonghoo.woosocial.gui.BaseGUI;
 import com.oolonghoo.woosocial.gui.LoadingState;
 import com.oolonghoo.woosocial.model.MailData;

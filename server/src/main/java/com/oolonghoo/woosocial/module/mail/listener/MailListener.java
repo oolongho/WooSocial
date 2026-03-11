@@ -13,6 +13,7 @@ public class MailListener implements Listener {
     
     private final WooSocial plugin;
     private final MailDataManager dataManager;
+    @SuppressWarnings("unused")
     private final MailManager mailManager;
     
     public MailListener(WooSocial plugin, MailDataManager dataManager, MailManager mailManager) {

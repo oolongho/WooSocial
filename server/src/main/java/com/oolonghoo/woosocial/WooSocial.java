@@ -13,7 +13,6 @@ import com.oolonghoo.woosocial.module.relation.RelationModule;
 import com.oolonghoo.woosocial.module.teleport.TeleportModule;
 import com.oolonghoo.woosocial.sync.SyncManager;
 import com.oolonghoo.woosocial.sync.SyncMessage;
-import com.oolonghoo.woosocial.sync.SyncMessageType;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -183,7 +182,6 @@ public class WooSocial extends JavaPlugin {
     
     private void handleFriendAcceptSync(SyncMessage message) {
         UUID playerUuid = message.getUUID("player_uuid");
-        String playerName = message.getString("player_name");
         UUID friendUuid = message.getUUID("friend_uuid");
         String friendName = message.getString("friend_name");
         

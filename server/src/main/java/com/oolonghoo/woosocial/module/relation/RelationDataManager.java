@@ -6,8 +6,6 @@ import com.oolonghoo.woosocial.model.DailyGiftData;
 import com.oolonghoo.woosocial.model.GiftData;
 import com.oolonghoo.woosocial.model.RelationData;
 import com.oolonghoo.woosocial.util.LRUCache;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

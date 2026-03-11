@@ -21,11 +21,11 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class MailCommand implements CommandExecutor, TabCompleter {
     
     private final WooSocial plugin;
+    @SuppressWarnings("unused")
     private final MailDataManager dataManager;
     private final MailManager mailManager;
     private final SystemMailManager systemMailManager;

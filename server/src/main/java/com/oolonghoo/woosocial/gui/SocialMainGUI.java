@@ -25,6 +25,7 @@ public class SocialMainGUI extends BaseGUI {
     
     private final FriendDataManager friendDataManager;
     private final MailDataManager mailDataManager;
+    @SuppressWarnings("unused")
     private final RelationDataManager relationDataManager;
     private final TeleportDataManager teleportDataManager;
     private final TeleportManager teleportManager;

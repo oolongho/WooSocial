@@ -3,7 +3,6 @@ package com.oolonghoo.woosocial.module.mail;
 import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.config.MessageManager;
 import com.oolonghoo.woosocial.database.ScheduledMailDAO;
-import com.oolonghoo.woosocial.model.MailData;
 import com.oolonghoo.woosocial.model.ScheduledMailData;
 import com.oolonghoo.woosocial.util.ItemSerializer;
 import org.bukkit.Bukkit;
@@ -18,7 +17,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * 定时邮件管理器

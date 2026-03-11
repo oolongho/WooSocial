@@ -21,6 +21,7 @@ import java.util.List;
 public class GiftCommand implements CommandExecutor, TabCompleter {
     
     private final WooSocial plugin;
+    @SuppressWarnings("unused")
     private final RelationDataManager dataManager;
     private final RelationManager relationManager;
     private final GiftManager giftManager;
@@ -100,7 +101,6 @@ public class GiftCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         
-        int amountPerSend = coinsGift.getAmountPerSend();
         int remaining = giftManager.getRemainingDailyLimit(player, target.getUniqueId(), "coins");
         
         if (remaining == -1) {

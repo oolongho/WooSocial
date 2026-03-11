@@ -7,9 +7,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-
 public class VelocitySyncHandler implements SyncHandler, PluginMessageListener {
     
     private static final String CHANNEL_NAME = "woosocial:sync";

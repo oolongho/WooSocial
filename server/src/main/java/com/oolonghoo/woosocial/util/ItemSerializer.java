@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Base64;
 import java.util.logging.Level;
 
+@SuppressWarnings("deprecation")
 public class ItemSerializer {
     
     private static final int MAX_ITEM_SIZE = 65535;
