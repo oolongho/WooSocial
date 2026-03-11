@@ -19,15 +19,15 @@ dependencies {
     // WooEco - local economy plugin
     compileOnly files("../oolongho/WooEco/build/libs/WooEco-1.1.5.jar")
     
-    // Database dependencies
-    implementation "com.zaxxer:HikariCP:5.1.0"
-    implementation "org.xerial:sqlite-jdbc:3.45.1.0"
+    // Database dependencies - Paper 已内置 HikariCP 和 sqlite-jdbc
+    compileOnly "com.zaxxer:HikariCP:5.1.0"
+    compileOnly "org.xerial:sqlite-jdbc:3.45.1.0"
     
-    // Redis support
-    implementation "io.lettuce:lettuce-core:6.3.0.RELEASE"
+    // Redis support - 可选依赖，服务器需自行安装
+    compileOnly "io.lettuce:lettuce-core:6.3.0.RELEASE"
     
-    // JSON support
-    implementation "com.google.code.gson:gson:2.10.1"
+    // JSON support - Paper 已内置 gson
+    compileOnly "com.google.code.gson:gson:2.10.1"
 }
 
 processResources {
@@ -38,8 +38,4 @@ processResources {
 
 jar {
     archiveBaseName.set('WooSocial-server')
-    from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
