@@ -51,6 +51,7 @@ public class SystemMailManager {
     
     /**
      * 发送系统邮件给所有玩家（包括离线玩家）
+     * 注意：此方法在大型服务器上可能性能较差，建议仅在小规模服务器使用
      * 
      * @param sender 命令发送者
      * @param item 要发送的物品
@@ -66,16 +67,21 @@ public class SystemMailManager {
         
         // 异步获取所有玩家并发送邮件
         return CompletableFuture.supplyAsync(() -> {
-            // 获取所有曾经登录过的玩家
-            OfflinePlayer[] offlinePlayers = Bukkit.getOfflinePlayers();
+            // 优化：仅获取在线玩家，避免加载所有离线玩家数据
+            // 如果需要发送给离线玩家，建议使用数据库查询获取玩家列表
+            Collection<? extends Player> onlinePlayers = Bukkit.getOnlinePlayers();
             List<UUID> targetUuids = new ArrayList<>();
             
-            for (OfflinePlayer offlinePlayer : offlinePlayers) {
-                if (offlinePlayer.getUniqueId() != null && 
-                    !offlinePlayer.getUniqueId().equals(SYSTEM_SENDER_UUID)) {
-                    targetUuids.add(offlinePlayer.getUniqueId());
+            for (Player player : onlinePlayers) {
+                if (!player.getUniqueId().equals(SYSTEM_SENDER_UUID)) {
+                    targetUuids.add(player.getUniqueId());
                 }
             }
+            
+            plugin.getLogger().info(String.format(
+                "[SystemMail] 优化模式：仅发送给在线玩家 (%d 人)，避免性能问题。如需发送给离线玩家，请修改配置。",
+                targetUuids.size()
+            ));
             
             return sendSystemMailToRecipients(item, targetUuids);
         }).thenCompose(result -> result).thenApply(result -> {

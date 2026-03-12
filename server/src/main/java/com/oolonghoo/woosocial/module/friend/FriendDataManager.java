@@ -6,6 +6,7 @@ import com.oolonghoo.woosocial.database.PlayerDAO;
 import com.oolonghoo.woosocial.model.FriendData;
 import com.oolonghoo.woosocial.model.FriendRequest;
 import com.oolonghoo.woosocial.model.PlayerData;
+import com.oolonghoo.woosocial.util.LRUCache;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -26,23 +27,23 @@ public class FriendDataManager {
     private final FriendDAO friendDAO;
     private final PlayerDAO playerDAO;
     
-    // 在线玩家的好友数据缓存（列表形式，用于遍历）
-    private final Map<UUID, List<FriendData>> friendCache = new ConcurrentHashMap<>();
+    // 在线玩家的好友数据缓存（列表形式，用于遍历）- 使用 LRU 缓存，限制容量
+    private final LRUCache<UUID, List<FriendData>> friendCache = new LRUCache<>(500);
     
-    // 在线玩家的好友数据缓存（Map形式，用于O(1)查询）
-    private final Map<UUID, Map<UUID, FriendData>> friendMapCache = new ConcurrentHashMap<>();
+    // 在线玩家的好友数据缓存（Map 形式，用于 O(1) 查询）- 使用 LRU 缓存，限制容量
+    private final LRUCache<UUID, Map<UUID, FriendData>> friendMapCache = new LRUCache<>(500);
     
-    // 在线玩家的好友UUID集合（用于O(1)判断好友关系）
-    private final Map<UUID, Set<UUID>> friendUuidSetCache = new ConcurrentHashMap<>();
+    // 在线玩家的好友 UUID 集合（用于 O(1) 判断好友关系）- 使用 LRU 缓存，限制容量
+    private final LRUCache<UUID, Set<UUID>> friendUuidSetCache = new LRUCache<>(500);
     
-    // 在线玩家的好友请求数据缓存
-    private final Map<UUID, List<FriendRequest>> requestCache = new ConcurrentHashMap<>();
+    // 在线玩家的好友请求数据缓存 - 使用 LRU 缓存，限制容量
+    private final LRUCache<UUID, List<FriendRequest>> requestCache = new LRUCache<>(300);
     
-    // 玩家数据缓存
-    private final Map<UUID, PlayerData> playerDataCache = new ConcurrentHashMap<>();
+    // 玩家数据缓存 - 使用 LRU 缓存，限制容量
+    private final LRUCache<UUID, PlayerData> playerDataCache = new LRUCache<>(500);
     
-    // 屏蔽列表缓存
-    private final Map<UUID, Set<UUID>> blockedCache = new ConcurrentHashMap<>();
+    // 屏蔽列表缓存 - 使用 LRU 缓存，限制容量
+    private final LRUCache<UUID, Set<UUID>> blockedCache = new LRUCache<>(500);
     
     /**
      * 构造函数

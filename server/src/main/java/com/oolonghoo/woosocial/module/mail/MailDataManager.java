@@ -159,20 +159,38 @@ public class MailDataManager {
     public CompletableFuture<SendResult> sendMail(UUID senderUuid, String senderName, 
                                                UUID receiverUuid, String receiverName, 
                                                ItemStack item) {
-        int estimatedSize = ItemSerializer.estimateSize(item);
-        if (estimatedSize > maxItemSize) {
-            return CompletableFuture.completedFuture(new SendResult(false, "item-too-large"));
-        }
-        
+        // 优化：使用已序列化的物品数据，避免重复序列化
         String itemData = ItemSerializer.serialize(item);
         if (itemData == null) {
             return CompletableFuture.completedFuture(new SendResult(false, "serialize-failed"));
         }
         
+        if (itemData.length() > maxItemSize) {
+            return CompletableFuture.completedFuture(new SendResult(false, "item-too-large"));
+        }
+        
+        return sendMail(senderUuid, senderName, receiverUuid, receiverName, item, itemData);
+    }
+    
+    /**
+     * 发送邮件（使用已序列化的物品数据，避免重复序列化）
+     * 
+     * @param senderUuid 发送者 UUID
+     * @param senderName 发送者名称
+     * @param receiverUuid 接收者 UUID
+     * @param receiverName 接收者名称
+     * @param item 物品（用于事件和通知）
+     * @param serializedItemData 已序列化的物品数据
+     * @return 发送结果
+     */
+    public CompletableFuture<SendResult> sendMail(UUID senderUuid, String senderName, 
+                                               UUID receiverUuid, String receiverName, 
+                                               ItemStack item, String serializedItemData) {
+        
         MailData mail = new MailData(senderUuid, receiverUuid);
         mail.setSenderName(senderName);
         mail.setReceiverName(receiverName);
-        mail.setItemData(itemData);
+        mail.setItemData(serializedItemData);
         mail.setExpireTime(System.currentTimeMillis() + (expireDays * 24L * 60 * 60 * 1000));
         
         MailData finalMail = mail;

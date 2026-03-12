@@ -58,8 +58,14 @@ public class MailManager {
             return CompletableFuture.completedFuture(false);
         }
         
-        int estimatedSize = ItemSerializer.estimateSize(item);
-        if (estimatedSize > dataManager.getMaxItemSize()) {
+        // 优化：只序列化一次，避免重复计算
+        String serializedItem = ItemSerializer.serialize(item);
+        if (serializedItem == null) {
+            messageManager.send(sender, "mail.serialize-failed");
+            return CompletableFuture.completedFuture(false);
+        }
+        
+        if (serializedItem.length() > dataManager.getMaxItemSize()) {
             messageManager.send(sender, "mail.item-too-large");
             return CompletableFuture.completedFuture(false);
         }
@@ -71,7 +77,8 @@ public class MailManager {
                 sender.getName(),
                 receiver.getUniqueId(),
                 receiver.getName(),
-                clonedItem
+                clonedItem,
+                serializedItem  // 传递已序列化的物品数据
         ).thenApply(result -> {
             if (result.isSuccess()) {
                 messageManager.send(sender, "mail.send-success", 
