@@ -199,6 +199,11 @@ public abstract class BaseGUI implements InventoryHolder {
     }
     
     public void handleClick(int slot, Player player, int clickType) {
+        // 检查玩家是否在线
+        if (player == null || !player.isOnline()) {
+            return;
+        }
+        
         IconConfig config = slotIconMap.get(slot);
         if (config == null || !config.hasActions()) return;
         
@@ -254,12 +259,22 @@ public abstract class BaseGUI implements InventoryHolder {
     }
     
     public void open(Player player) {
+        if (player == null || !player.isOnline()) {
+            return;
+        }
         player.openInventory(inventory);
+        // 注册 GUI 到管理器
+        plugin.getGuiManager().registerGUI(player, this);
     }
     
     public void open(Player player, BaseGUI previousGUI) {
+        if (player == null || !player.isOnline()) {
+            return;
+        }
         this.previousGUI = previousGUI;
         player.openInventory(inventory);
+        // 注册 GUI 到管理器
+        plugin.getGuiManager().registerGUI(player, this);
     }
     
     protected void goBack(Player player) {

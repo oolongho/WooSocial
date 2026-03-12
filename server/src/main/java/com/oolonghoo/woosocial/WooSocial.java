@@ -6,6 +6,7 @@ import com.oolonghoo.woosocial.database.DatabaseManager;
 import com.oolonghoo.woosocial.database.FriendDAO;
 import com.oolonghoo.woosocial.database.PlayerDAO;
 import com.oolonghoo.woosocial.manager.ConfigManager;
+import com.oolonghoo.woosocial.manager.GUIManager;
 import com.oolonghoo.woosocial.manager.ModuleManager;
 import com.oolonghoo.woosocial.module.friend.FriendModule;
 import com.oolonghoo.woosocial.module.mail.MailModule;
@@ -42,6 +43,7 @@ public class WooSocial extends JavaPlugin {
     private com.oolonghoo.woosocial.gui.config.GUIConfigManager guiConfigManager;
     private com.oolonghoo.woosocial.gui.action.ActionParser actionParser;
     private SyncManager syncManager;
+    private GUIManager guiManager;
     
     @Override
     public void onEnable() {
@@ -75,6 +77,8 @@ public class WooSocial extends JavaPlugin {
         guiConfigManager.initialize();
         
         actionParser = new com.oolonghoo.woosocial.gui.action.ActionParser(this);
+        
+        guiManager = new GUIManager();
         
         initializeSyncManager();
         
@@ -252,6 +256,17 @@ public class WooSocial extends JavaPlugin {
     
     @Override
     public void onDisable() {
+        // 清理所有 GUI
+        if (guiManager != null) {
+            // 关闭所有玩家的 GUI
+            for (var player : Bukkit.getOnlinePlayers()) {
+                if (player != null && player.isOnline()) {
+                    player.closeInventory();
+                }
+            }
+            guiManager = null;
+        }
+        
         // 关闭同步系统
         if (syncManager != null) {
             syncManager.shutdown();
@@ -392,7 +407,14 @@ public class WooSocial extends JavaPlugin {
     }
     
     /**
-     * 获取玩家DAO
+     * 获取 GUI 管理器
+     */
+    public GUIManager getGuiManager() {
+        return guiManager;
+    }
+    
+    /**
+     * 获取玩家 DAO
      */
     public PlayerDAO getPlayerDAO() {
         return playerDAO;

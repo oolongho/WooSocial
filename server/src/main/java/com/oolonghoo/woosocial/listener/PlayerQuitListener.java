@@ -47,6 +47,12 @@ public class PlayerQuitListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         
+        // 立即关闭 GUI
+        player.closeInventory();
+        
+        // 清理 GUI 缓存
+        plugin.getGuiManager().onPlayerQuit(player.getUniqueId());
+        
         // 异步处理好友下线通知
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             handleFriendOfflineNotification(player);
