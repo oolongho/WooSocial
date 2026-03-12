@@ -342,11 +342,20 @@ public class MailManager {
         return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
                 .thenApply(v -> {
                     int successCount = 0;
+                    int failureCount = 0;
+                    
                     for (CompletableFuture<Boolean> f : futures) {
                         try {
-                            if (f.get()) successCount++;
+                            if (f.get()) {
+                                successCount++;
+                            } else {
+                                failureCount++;
+                            }
                         } catch (Exception e) {
-                            // ignore
+                            // 记录详细错误信息
+                            plugin.getLogger().log(java.util.logging.Level.WARNING,
+                                    "[Mail] 批量邮件发送失败：" + e.getMessage(), e);
+                            failureCount++;
                         }
                     }
                     
@@ -355,6 +364,12 @@ public class MailManager {
                                 "count", String.valueOf(successCount),
                                 "player", receiverName);
                         
+                        if (failureCount > 0) {
+                            plugin.getLogger().info(String.format(
+                                    "[Mail] 批量邮件发送完成：成功 %d/%d, 失败 %d",
+                                    successCount, successCount + failureCount, failureCount));
+                        }
+                        
                         Player receiver = Bukkit.getPlayer(receiverUuid);
                         if (receiver != null && notifyOnReceive) {
                             messageManager.send(receiver, "mail.receive-notify-multiple",
@@ -362,8 +377,11 @@ public class MailManager {
                                     "count", String.valueOf(successCount));
                         }
                         return true;
+                    } else {
+                        plugin.getLogger().warning(String.format(
+                                "[Mail] 批量邮件发送完全失败：0/%d 成功", failureCount));
+                        return false;
                     }
-                    return false;
                 });
     }
     

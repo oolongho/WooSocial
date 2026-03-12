@@ -211,80 +211,127 @@ public class RelationManager {
     public CompletableFuture<RelationResult> proposeRelation(Player proposer, UUID targetUuid, RelationType type) {
         final RelationType originalType = type;
         
+        // 检查是否为好友
         if (!plugin.getModuleManager().getFriendModule().getDataManager().isFriend(proposer.getUniqueId(), targetUuid)) {
             return CompletableFuture.completedFuture(
                     new RelationResult(false, "relation.not-friend"));
         }
         
-        return dataManager.getRelation(proposer.getUniqueId(), targetUuid)
-                .thenCompose(optRelation -> {
-                    if (optRelation.isEmpty()) {
-                        RelationData newRelation = new RelationData(proposer.getUniqueId(), targetUuid);
-                        newRelation.setIntimacy(0);
-                        newRelation.setFriendName(Bukkit.getOfflinePlayer(targetUuid).getName());
-                        return dataManager.createRelation(newRelation).thenApply(v -> newRelation);
+        // 步骤 1: 获取或创建关系数据
+        return getOrCreateRelationData(proposer.getUniqueId(), targetUuid)
+                .thenCompose(relation -> checkRelationConditions(relation, originalType))
+                .thenCompose(result -> {
+                    if (!result.isSuccess()) {
+                        return CompletableFuture.completedFuture(result);
                     }
-                    return CompletableFuture.completedFuture(optRelation.get());
-                })
-                .thenCompose(relation -> {
-                    if (relation.getIntimacy() < originalType.getRequiredIntimacy()) {
-                        return CompletableFuture.completedFuture(
-                                new RelationResult(false, "relation.intimacy-not-enough"));
-                    }
-                    
-                    if (originalType.requiresItem()) {
-                        MemorialItem item = getMemorialItem(originalType.getRequireItem());
-                        if (item == null) {
-                            return CompletableFuture.completedFuture(
-                                    new RelationResult(false, "relation.item-not-found"));
-                        }
-                    }
-                    
+                    // 步骤 2: 检查是否可以设置关系类型
                     return canSetRelation(proposer.getUniqueId(), originalType).thenCompose(canSet -> {
                         if (!canSet) {
                             return CompletableFuture.completedFuture(
                                     new RelationResult(false, "relation.slots-full"));
                         }
-                        
-                        return dataManager.getRelation(targetUuid, proposer.getUniqueId()).thenCompose(optReverseRelation -> {
-                            if (optReverseRelation.isPresent()) {
-                                RelationData reverseRelation = optReverseRelation.get();
-                                if (originalType.getId().equals(reverseRelation.getRelationType())) {
-                                    return CompletableFuture.completedFuture(
-                                            new RelationResult(false, "relation.target-already-has-same-type"));
-                                }
-                            }
-                            
-                            String targetName = Bukkit.getOfflinePlayer(targetUuid).getName();
-                            if (targetName == null) {
-                                targetName = "Unknown";
-                            }
-                            RelationProposeEvent event = new RelationProposeEvent(
-                                    proposer.getUniqueId(), proposer.getName(),
-                                    targetUuid, targetName, originalType);
-                            Bukkit.getPluginManager().callEvent(event);
-                            if (event.isCancelled()) {
-                                return CompletableFuture.completedFuture(
-                                        new RelationResult(false, event.getCancelReason()));
-                            }
-                            
-                            final RelationType finalType = event.getRelationType();
-                            
-                            relation.setRelationType(finalType.getId());
-                            relation.setProposalTime(System.currentTimeMillis());
-                            
-                            return dataManager.updateRelation(relation).thenApply(success -> {
-                                if (success) {
-                                    plugin.getSyncManager().broadcastRelationPropose(
-                                            proposer.getUniqueId(), proposer.getName(),
-                                            targetUuid, finalType.getId());
-                                    return new RelationResult(true, "relation.proposal-sent");
-                                }
-                                return new RelationResult(false, "relation.update-failed");
-                            });
-                        });
+                        // 步骤 3: 检查反向关系并处理
+                        return processRelationProposal(proposer, targetUuid, originalType);
                     });
                 });
+    }
+    
+    /**
+     * 获取或创建关系数据
+     */
+    private CompletableFuture<RelationData> getOrCreateRelationData(UUID proposerUuid, UUID targetUuid) {
+        return dataManager.getRelation(proposerUuid, targetUuid)
+                .thenCompose(optRelation -> {
+                    if (optRelation.isEmpty()) {
+                        RelationData newRelation = new RelationData(proposerUuid, targetUuid);
+                        newRelation.setIntimacy(0);
+                        newRelation.setFriendName(Bukkit.getOfflinePlayer(targetUuid).getName());
+                        return dataManager.createRelation(newRelation).thenApply(v -> newRelation);
+                    }
+                    return CompletableFuture.completedFuture(optRelation.get());
+                });
+    }
+    
+    /**
+     * 检查关系条件（亲密度、纪念物品等）
+     */
+    private CompletableFuture<RelationResult> checkRelationConditions(RelationData relation, RelationType type) {
+        // 检查亲密度
+        if (relation.getIntimacy() < type.getRequiredIntimacy()) {
+            return CompletableFuture.completedFuture(
+                    new RelationResult(false, "relation.intimacy-not-enough"));
+        }
+        
+        // 检查纪念物品
+        if (type.requiresItem()) {
+            MemorialItem item = getMemorialItem(type.getRequireItem());
+            if (item == null) {
+                return CompletableFuture.completedFuture(
+                        new RelationResult(false, "relation.item-not-found"));
+            }
+        }
+        
+        return CompletableFuture.completedFuture(new RelationResult(true, null));
+    }
+    
+    /**
+     * 处理关系提案（检查反向关系、触发事件、更新数据）
+     */
+    private CompletableFuture<RelationResult> processRelationProposal(Player proposer, UUID targetUuid, RelationType type) {
+        return dataManager.getRelation(targetUuid, proposer.getUniqueId()).thenCompose(optReverseRelation -> {
+            // 检查反向关系
+            if (optReverseRelation.isPresent()) {
+                RelationData reverseRelation = optReverseRelation.get();
+                if (type.getId().equals(reverseRelation.getRelationType())) {
+                    return CompletableFuture.completedFuture(
+                            new RelationResult(false, "relation.target-already-has-same-type"));
+                }
+            }
+            
+            // 获取目标玩家名称
+            String targetName = Bukkit.getOfflinePlayer(targetUuid).getName();
+            if (targetName == null) {
+                targetName = "Unknown";
+            }
+            
+            // 触发事件
+            RelationProposeEvent event = new RelationProposeEvent(
+                    proposer.getUniqueId(), proposer.getName(),
+                    targetUuid, targetName, type);
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return CompletableFuture.completedFuture(
+                        new RelationResult(false, event.getCancelReason()));
+            }
+            
+            // 更新关系数据
+            return updateRelationData(proposer.getUniqueId(), targetUuid, event.getRelationType());
+        });
+    }
+    
+    /**
+     * 更新关系数据并广播
+     */
+    private CompletableFuture<RelationResult> updateRelationData(UUID proposerUuid, UUID targetUuid, RelationType type) {
+        return dataManager.getRelation(proposerUuid, targetUuid).thenCompose(optRelation -> {
+            if (optRelation.isEmpty()) {
+                return CompletableFuture.completedFuture(new RelationResult(false, "relation.not-found"));
+            }
+            
+            RelationData relation = optRelation.get();
+            relation.setRelationType(type.getId());
+            relation.setProposalTime(System.currentTimeMillis());
+            
+            return dataManager.updateRelation(relation).thenApply(success -> {
+                if (success) {
+                    plugin.getSyncManager().broadcastRelationPropose(
+                            proposerUuid, relation.getFriendName(),
+                            targetUuid, type.getId());
+                    return new RelationResult(true, "relation.proposal-sent");
+                }
+                return new RelationResult(false, "relation.update-failed");
+            });
+        });
     }
     
     public CompletableFuture<RelationResult> acceptRelation(UUID playerUuid, UUID proposerUuid) {
