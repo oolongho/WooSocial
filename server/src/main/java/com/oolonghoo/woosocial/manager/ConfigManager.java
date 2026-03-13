@@ -80,8 +80,7 @@ public class ConfigManager {
                     try {
                         plugin.getLogger().info("[Config] Saving default " + fileName + " to settings folder");
                         File outputFile = new File(settingsFolder, fileName);
-                        java.nio.file.Files.copy(resourceStream.readAllBytes(), outputFile.toPath());
-                        resourceStream.close();
+                        java.nio.file.Files.copy(resourceStream, outputFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                     } catch (Exception e) {
                         plugin.getLogger().warning("[Config] Failed to save default " + fileName + ": " + e.getMessage());
                     }
