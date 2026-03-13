@@ -78,11 +78,11 @@ public class ConfigManager {
                 InputStream resourceStream = plugin.getResource(resourcePath);
                 if (resourceStream != null) {
                     try {
-                        plugin.getLogger().info("[Config] Saving default " + fileName + " to settings folder");
+                        plugin.getLogger().info(() -> "[Config] Saving default " + fileName + " to settings folder");
                         File outputFile = new File(settingsFolder, fileName);
                         java.nio.file.Files.copy(resourceStream, outputFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-                    } catch (Exception e) {
-                        plugin.getLogger().warning("[Config] Failed to save default " + fileName + ": " + e.getMessage());
+                    } catch (IOException e) {
+                        plugin.getLogger().warning(() -> "[Config] Failed to save default " + fileName + ": " + e.getMessage());
                     }
                 }
             }
@@ -97,7 +97,7 @@ public class ConfigManager {
             }
             
             moduleConfigs.put(moduleName, moduleConfig);
-            plugin.getLogger().fine("[Config] Loaded module config: " + fileName);
+            plugin.getLogger().fine(() -> "[Config] Loaded module config: " + fileName);
         }
     }
     
@@ -107,7 +107,8 @@ public class ConfigManager {
     private void loadCachedValues() {
         configCache.clear();
         
-        configCache.put("database.type", config.getString("database.type", "sqlite").toLowerCase());
+        String dbType = config.getString("database.type", "sqlite");
+        configCache.put("database.type", dbType != null ? dbType.toLowerCase() : "sqlite");
         configCache.put("database.mysql.host", config.getString("database.mysql.host", "localhost"));
         configCache.put("database.mysql.port", config.getInt("database.mysql.port", 3306));
         configCache.put("database.mysql.database", config.getString("database.mysql.database", "minecraft"));
@@ -167,7 +168,7 @@ public class ConfigManager {
         try {
             config.save(configFile);
         } catch (IOException e) {
-            plugin.getLogger().severe("无法保存配置文件: " + e.getMessage());
+            plugin.getLogger().severe(() -> "无法保存配置文件: " + e.getMessage());
         }
     }
     

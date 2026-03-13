@@ -24,9 +24,9 @@ public class MailListGUI extends BaseGUI {
     
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     
-    private final List<MailData> mails;
-    private final int currentPage;
-    private final int totalPages;
+    private final List<MailData> mailList;
+    private final int currentMailPage;
+    private final int totalMailPages;
     private final LoadingState loadingState;
     
     private static final int SEND_MAIL_SLOT = 8;
@@ -35,9 +35,9 @@ public class MailListGUI extends BaseGUI {
     
     public MailListGUI(WooSocial plugin, Player viewer, List<MailData> mails, int currentPage, int totalPages, LoadingState loadingState) {
         super(plugin, viewer, "mail_list");
-        this.mails = mails;
-        this.currentPage = currentPage;
-        this.totalPages = totalPages;
+        this.mailList = mails;
+        this.currentMailPage = currentPage;
+        this.totalMailPages = totalPages;
         this.loadingState = loadingState;
         
         setupItems();
@@ -45,8 +45,8 @@ public class MailListGUI extends BaseGUI {
     
     @Override
     protected void setupPlaceholders() {
-        placeholderParser.set("page", String.valueOf(currentPage));
-        placeholderParser.set("total_pages", String.valueOf(totalPages));
+        placeholderParser.set("page", String.valueOf(currentMailPage));
+        placeholderParser.set("total_pages", String.valueOf(totalMailPages));
     }
     
     private void setupItems() {
@@ -55,11 +55,11 @@ public class MailListGUI extends BaseGUI {
         inventory.setItem(BACK_SLOT, createBackButton());
         inventory.setItem(SEND_MAIL_SLOT, createSendMailButton());
         
-        int startIndex = (currentPage - 1) * 36;
+        int startIndex = (currentMailPage - 1) * 36;
         int slot = 10;
         
-        for (int i = startIndex; i < Math.min(startIndex + 36, mails.size()); i++) {
-            MailData mail = mails.get(i);
+        for (int i = startIndex; i < Math.min(startIndex + 36, mailList.size()); i++) {
+            MailData mail = mailList.get(i);
             if (slot == 17 || slot == 26 || slot == 35 || slot == 44) {
                 slot += 2;
             }
@@ -67,11 +67,11 @@ public class MailListGUI extends BaseGUI {
             slot++;
         }
         
-        if (currentPage > 1) {
+        if (currentMailPage > 1) {
             inventory.setItem(PREV_PAGE_SLOT, createPrevPageButton());
         }
         
-        if (currentPage < totalPages) {
+        if (currentMailPage < totalMailPages) {
             inventory.setItem(NEXT_PAGE_SLOT, createNextPageButton());
         }
         
@@ -144,7 +144,7 @@ public class MailListGUI extends BaseGUI {
     
     private ItemStack createClaimAllButton() {
         int unclaimedCount = 0;
-        for (MailData mail : mails) {
+        for (MailData mail : mailList) {
             if (!mail.isClaimed() && mail.getItemData() != null && !mail.getItemData().isEmpty()) {
                 unclaimedCount++;
             }
@@ -178,7 +178,7 @@ public class MailListGUI extends BaseGUI {
     
     private ItemStack createDeleteReadButton() {
         int readCount = 0;
-        for (MailData mail : mails) {
+        for (MailData mail : mailList) {
             if (mail.isRead() && (mail.isClaimed() || mail.getItemData() == null || mail.getItemData().isEmpty())) {
                 readCount++;
             }
@@ -204,6 +204,7 @@ public class MailListGUI extends BaseGUI {
         return item;
     }
     
+    @Override
     protected ItemStack createBackButton() {
         ItemStack item = new ItemStack(Material.BOOK);
         var meta = item.getItemMeta();
@@ -268,19 +269,19 @@ public class MailListGUI extends BaseGUI {
             return;
         }
         
-        if (slot == PREV_PAGE_SLOT && currentPage > 1) {
-            plugin.getModuleManager().getMailModule().getMailManager().openMailListGUI(player, currentPage - 1);
+        if (slot == PREV_PAGE_SLOT && currentMailPage > 1) {
+            plugin.getModuleManager().getMailModule().getMailManager().openMailListGUI(player, currentMailPage - 1);
             return;
         }
         
-        if (slot == NEXT_PAGE_SLOT && currentPage < totalPages) {
-            plugin.getModuleManager().getMailModule().getMailManager().openMailListGUI(player, currentPage + 1);
+        if (slot == NEXT_PAGE_SLOT && currentMailPage < totalMailPages) {
+            plugin.getModuleManager().getMailModule().getMailManager().openMailListGUI(player, currentMailPage + 1);
             return;
         }
         
         int mailIndex = getMailIndexFromSlot(slot);
-        if (mailIndex >= 0 && mailIndex < mails.size()) {
-            MailData mail = mails.get(mailIndex);
+        if (mailIndex >= 0 && mailIndex < mailList.size()) {
+            MailData mail = mailList.get(mailIndex);
             plugin.getModuleManager().getMailModule().getMailManager().openMailDetailGUI(player, mail.getId());
         }
     }
@@ -296,7 +297,7 @@ public class MailListGUI extends BaseGUI {
         int itemsInRow = col - 1;
         int itemsBeforeRow = row * 7;
         
-        return (currentPage - 1) * 36 + itemsBeforeRow + itemsInRow;
+        return (currentMailPage - 1) * 36 + itemsBeforeRow + itemsInRow;
     }
     
     private void handleClaimAll(Player player) {

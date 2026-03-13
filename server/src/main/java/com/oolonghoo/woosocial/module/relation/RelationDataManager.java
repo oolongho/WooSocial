@@ -243,7 +243,7 @@ public class RelationDataManager {
     public CompletableFuture<Void> warmupCache(UUID playerUuid) {
         return getRelationsForPlayer(playerUuid).thenAccept(relations -> {
             // 关系数据已在 getRelationsForPlayer 中缓存
-            plugin.getLogger().fine("[Relation] 已为玩家 " + playerUuid + " 预热 " + relations.size() + " 条关系数据");
+            plugin.getLogger().fine(() -> "[Relation] 已为玩家 " + playerUuid + " 预热 " + relations.size() + " 条关系数据");
         });
     }
 }

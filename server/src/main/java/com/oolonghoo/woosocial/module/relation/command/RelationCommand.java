@@ -57,21 +57,28 @@ public class RelationCommand implements CommandExecutor, TabCompleter {
         String subCommand = args[0].toLowerCase();
         
         switch (subCommand) {
-            case "list":
+            case "list" -> {
                 return handleList(player);
-            case "propose":
+            }
+            case "propose" -> {
                 return handlePropose(player, args);
-            case "accept":
+            }
+            case "accept" -> {
                 return handleAccept(player, args);
-            case "remove":
+            }
+            case "remove" -> {
                 return handleRemove(player, args);
-            case "info":
+            }
+            case "info" -> {
                 return handleInfo(player, args);
-            case "types":
+            }
+            case "types" -> {
                 return handleTypes(player);
-            default:
+            }
+            default -> {
                 messageManager.send(player, "relation.usage");
                 return true;
+            }
         }
     }
     
@@ -318,31 +325,35 @@ public class RelationCommand implements CommandExecutor, TabCompleter {
             return completions;
         }
         
-        if (args.length == 1) {
-            List<String> subCommands = Arrays.asList("list", "propose", "accept", "remove", "info", "types");
-            String input = args[0].toLowerCase();
-            subCommands.stream()
-                    .filter(s -> s.startsWith(input))
-                    .forEach(completions::add);
-        } else if (args.length == 2) {
-            String subCommand = args[0].toLowerCase();
-            String input = args[1].toLowerCase();
-            
-            if (subCommand.equals("propose") || subCommand.equals("remove") || subCommand.equals("info") || subCommand.equals("accept")) {
-                Bukkit.getOnlinePlayers().stream()
-                        .filter(p -> !p.equals(sender))
-                        .map(Player::getName)
-                        .filter(name -> name.toLowerCase().startsWith(input))
+        switch (args.length) {
+            case 1 -> {
+                List<String> subCommands = Arrays.asList("list", "propose", "accept", "remove", "info", "types");
+                String input = args[0].toLowerCase();
+                subCommands.stream()
+                        .filter(s -> s.startsWith(input))
                         .forEach(completions::add);
             }
-        } else if (args.length == 3) {
-            String subCommand = args[0].toLowerCase();
-            if (subCommand.equals("propose")) {
-                String input = args[2].toLowerCase();
-                relationManager.getAllRelationTypes().stream()
-                        .map(RelationType::getId)
-                        .filter(id -> id.toLowerCase().startsWith(input))
-                        .forEach(completions::add);
+            case 2 -> {
+                String subCommand = args[0].toLowerCase();
+                String input = args[1].toLowerCase();
+                
+                if (subCommand.equals("propose") || subCommand.equals("remove") || subCommand.equals("info") || subCommand.equals("accept")) {
+                    Bukkit.getOnlinePlayers().stream()
+                            .filter(p -> !p.equals(sender))
+                            .map(Player::getName)
+                            .filter(name -> name.toLowerCase().startsWith(input))
+                            .forEach(completions::add);
+                }
+            }
+            case 3 -> {
+                String subCommand = args[0].toLowerCase();
+                if (subCommand.equals("propose")) {
+                    String input = args[2].toLowerCase();
+                    relationManager.getAllRelationTypes().stream()
+                            .map(RelationType::getId)
+                            .filter(id -> id.toLowerCase().startsWith(input))
+                            .forEach(completions::add);
+                }
             }
         }
         

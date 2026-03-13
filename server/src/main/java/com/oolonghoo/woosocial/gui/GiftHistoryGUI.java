@@ -120,6 +120,7 @@ public class GiftHistoryGUI extends BaseGUI {
         return item;
     }
     
+    @Override
     protected ItemStack createBackButton() {
         ItemStack item = new ItemStack(Material.BOOK);
         var meta = item.getItemMeta();
@@ -154,7 +155,6 @@ public class GiftHistoryGUI extends BaseGUI {
             currentPage++;
             setupItems();
             player.openInventory(inventory);
-            return;
         }
     }
 }

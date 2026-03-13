@@ -130,6 +130,7 @@ public class FriendSelectGUI extends BaseGUI {
         return head;
     }
     
+    @Override
     protected ItemStack createBackButton() {
         ItemStack item = new ItemStack(Material.BOOK);
         var meta = item.getItemMeta();

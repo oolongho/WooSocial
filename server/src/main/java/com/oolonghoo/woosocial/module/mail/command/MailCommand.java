@@ -62,12 +62,14 @@ public class MailCommand implements CommandExecutor, TabCompleter {
         
         String subCommand = args[0].toLowerCase();
         
-        // 系统邮件命令（支持控制台执行）
+        // 系统邮件命令（支持控制台执行)
         switch (subCommand) {
-            case "sendall":
+            case "sendall" -> {
                 return handleSendAll(sender, args);
-            case "sendonline":
+            }
+            case "sendonline" -> {
                 return handleSendOnline(sender, args);
+            }
         }
         
         // 其他命令仅玩家执行
@@ -79,27 +81,37 @@ public class MailCommand implements CommandExecutor, TabCompleter {
         Player player = (Player) sender;
         
         switch (subCommand) {
-            case "send":
+            case "send" -> {
                 return handleSend(player, args);
-            case "list":
+            }
+            case "list" -> {
                 return handleList(player, args);
-            case "claim":
+            }
+            case "claim" -> {
                 return handleClaim(player, args);
-            case "delete":
+            }
+            case "delete" -> {
                 return handleDelete(player, args);
-            case "bulk":
+            }
+            case "bulk" -> {
                 return handleBulk(player, args);
-            case "schedule":
+            }
+            case "schedule" -> {
                 return handleSchedule(player, args);
-            case "cancelschedule":
+            }
+            case "cancelschedule" -> {
                 return handleCancelSchedule(player, args);
-            case "listschedule":
+            }
+            case "listschedule" -> {
                 return handleListSchedule(player);
-            case "help":
+            }
+            case "help" -> {
                 return handleHelp(player);
-            default:
+            }
+            default -> {
                 messageManager.send(player, "mail.usage");
                 return true;
+            }
         }
     }
     
@@ -107,7 +119,7 @@ public class MailCommand implements CommandExecutor, TabCompleter {
      * 处理发送系统邮件给所有玩家（包括离线玩家）
      * 支持控制台执行
      */
-    private boolean handleSendAll(CommandSender sender, String[] args) {
+    private boolean handleSendAll(CommandSender sender, @SuppressWarnings("unused") String[] args) {
         if (!sender.hasPermission(Perms.MAIL_SENDALL)) {
             messageManager.send(sender, "general.no-permission");
             return true;
@@ -115,10 +127,9 @@ public class MailCommand implements CommandExecutor, TabCompleter {
         
         // 获取物品
         ItemStack item;
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
-            item = player.getInventory().getItemInMainHand();
-            if (item == null || item.getType() == Material.AIR) {
+        if (sender instanceof Player p) {
+            item = p.getInventory().getItemInMainHand();
+            if (item.getType() == Material.AIR) {
                 messageManager.send(sender, "mail.no-item-in-hand");
                 return true;
             }
@@ -136,7 +147,7 @@ public class MailCommand implements CommandExecutor, TabCompleter {
      * 处理发送系统邮件给在线玩家
      * 支持控制台执行
      */
-    private boolean handleSendOnline(CommandSender sender, String[] args) {
+    private boolean handleSendOnline(CommandSender sender, @SuppressWarnings("unused") String[] args) {
         if (!sender.hasPermission(Perms.MAIL_SENDONLINE)) {
             messageManager.send(sender, "general.no-permission");
             return true;
@@ -144,10 +155,9 @@ public class MailCommand implements CommandExecutor, TabCompleter {
         
         // 获取物品
         ItemStack item;
-        if (sender instanceof Player) {
-            Player player = (Player) sender;
-            item = player.getInventory().getItemInMainHand();
-            if (item == null || item.getType() == Material.AIR) {
+        if (sender instanceof Player p) {
+            item = p.getInventory().getItemInMainHand();
+            if (item.getType() == Material.AIR) {
                 messageManager.send(sender, "mail.no-item-in-hand");
                 return true;
             }
@@ -191,7 +201,7 @@ public class MailCommand implements CommandExecutor, TabCompleter {
         }
         
         ItemStack handItem = player.getInventory().getItemInMainHand();
-        if (handItem == null || handItem.getType() == Material.AIR) {
+        if (handItem.getType() == Material.AIR) {
             messageManager.send(player, "mail.no-item-in-hand");
             return true;
         }
@@ -293,7 +303,7 @@ public class MailCommand implements CommandExecutor, TabCompleter {
         }
         
         ItemStack handItem = player.getInventory().getItemInMainHand();
-        if (handItem == null || handItem.getType() == Material.AIR) {
+        if (handItem.getType() == Material.AIR) {
             messageManager.send(player, "mail.no-item-in-hand");
             return true;
         }
@@ -347,7 +357,7 @@ public class MailCommand implements CommandExecutor, TabCompleter {
         
         // 检查物品
         ItemStack handItem = player.getInventory().getItemInMainHand();
-        if (handItem == null || handItem.getType() == Material.AIR) {
+        if (handItem.getType() == Material.AIR) {
             messageManager.send(player, "mail.no-item-in-hand");
             return true;
         }
@@ -362,33 +372,33 @@ public class MailCommand implements CommandExecutor, TabCompleter {
                                         scheduledMailManager.parseTime(timeStr)));
                     } else {
                         switch (result.getErrorCode()) {
-                            case "invalid-time":
+                            case "invalid-time" -> {
                                 messageManager.send(player, "mail.schedule-invalid-time",
                                         "reason", result.getData() != null ? result.getData() : "");
-                                break;
-                            case "time-in-past":
+                            }
+                            case "time-in-past" -> {
                                 messageManager.send(player, "mail.schedule-time-past");
-                                break;
-                            case "time-too-far":
+                            }
+                            case "time-too-far" -> {
                                 messageManager.send(player, "mail.schedule-time-too-far",
                                         "days", result.getData());
-                                break;
-                            case "no-item":
+                            }
+                            case "no-item" -> {
                                 messageManager.send(player, "mail.no-item-in-hand");
-                                break;
-                            case "item-too-large":
+                            }
+                            case "item-too-large" -> {
                                 messageManager.send(player, "mail.item-too-large");
-                                break;
-                            case "limit-reached":
+                            }
+                            case "limit-reached" -> {
                                 messageManager.send(player, "mail.schedule-limit-reached",
                                         "max", result.getData());
-                                break;
-                            case "no-receivers":
+                            }
+                            case "no-receivers" -> {
                                 messageManager.send(player, "mail.no-receivers");
-                                break;
-                            default:
+                            }
+                            default -> {
                                 messageManager.send(player, "mail.schedule-failed");
-                                break;
+                            }
                         }
                     }
                 });

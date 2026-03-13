@@ -57,7 +57,7 @@ public class MailDataManager {
         
         // Validate configuration value
         if (!"deny".equals(claimSpaceInsufficient) && !"drop".equals(claimSpaceInsufficient)) {
-            plugin.getLogger().warning("[Mail] Invalid claim-space-insufficient value: " + claimSpaceInsufficient + ", using default 'deny'");
+            plugin.getLogger().warning(() -> "[Mail] Invalid claim-space-insufficient value: " + claimSpaceInsufficient + ", using default 'deny'");
             claimSpaceInsufficient = "deny";
         }
         
@@ -159,17 +159,17 @@ public class MailDataManager {
     public CompletableFuture<SendResult> sendMail(UUID senderUuid, String senderName, 
                                                UUID receiverUuid, String receiverName, 
                                                ItemStack item) {
-        // 优化：使用已序列化的物品数据，避免重复序列化
-        String itemData = ItemSerializer.serialize(item);
-        if (itemData == null) {
+        // 优化：只序列化一次，避免重复计算
+        String serializedItem = ItemSerializer.serialize(item);
+        if (serializedItem == null) {
             return CompletableFuture.completedFuture(new SendResult(false, "serialize-failed"));
         }
         
-        if (itemData.length() > maxItemSize) {
+        if (serializedItem.length() > maxItemSize) {
             return CompletableFuture.completedFuture(new SendResult(false, "item-too-large"));
         }
         
-        return sendMail(senderUuid, senderName, receiverUuid, receiverName, item, itemData);
+        return sendMail(senderUuid, senderName, receiverUuid, receiverName, item, serializedItem);
     }
     
     /**
@@ -260,7 +260,7 @@ public class MailDataManager {
         // 使用批量插入
         return mailDAO.bulkInsertMails(mailList).thenApply(successCount -> {
             long elapsed = System.currentTimeMillis() - startTime;
-            plugin.getLogger().info("[Mail] 批量发送邮件完成: 成功 " + successCount + "/" + mailList.size() + 
+            plugin.getLogger().info(() -> "[Mail] 批量发送邮件完成: 成功 " + successCount + "/" + mailList.size() + 
                     ", 总耗时 " + elapsed + "ms");
             
             // 更新缓存并通知接收者
@@ -402,7 +402,7 @@ public class MailDataManager {
     public void cleanExpiredMails() {
         mailDAO.cleanExpiredMails().thenAccept(count -> {
             if (count > 0) {
-                plugin.getLogger().info("[Mail] 清理了 " + count + " 封过期邮件");
+                plugin.getLogger().info(() -> "[Mail] 清理了 " + count + " 封过期邮件");
             }
         });
     }

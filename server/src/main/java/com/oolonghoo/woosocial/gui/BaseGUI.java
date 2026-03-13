@@ -79,7 +79,7 @@ public abstract class BaseGUI implements InventoryHolder {
     
     protected void renderFromConfig() {
         if (guiConfig == null) {
-            plugin.getLogger().warning("[GUI] 配置未找到: " + guiName);
+            plugin.getLogger().warning(() -> "[GUI] 配置未找到: " + guiName);
             return;
         }
         
@@ -375,6 +375,7 @@ public abstract class BaseGUI implements InventoryHolder {
         return (page - 1) * CONTENT_SLOTS.length;
     }
     
+    @Override
     public Inventory getInventory() {
         return inventory;
     }

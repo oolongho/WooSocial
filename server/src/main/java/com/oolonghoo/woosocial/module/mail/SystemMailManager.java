@@ -182,7 +182,7 @@ public class SystemMailManager {
         
         for (String playerName : playerNames) {
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
-            if (offlinePlayer != null && offlinePlayer.getUniqueId() != null) {
+            if (offlinePlayer.getUniqueId() != null) {
                 targetUuids.add(offlinePlayer.getUniqueId());
             } else {
                 notFoundPlayers.add(playerName);
@@ -276,7 +276,7 @@ public class SystemMailManager {
                     failCount++;
                 }
             } catch (Exception e) {
-                plugin.getLogger().warning("[SystemMail] Failed to send mail to " + receiverUuid + ": " + e.getMessage());
+                plugin.getLogger().warning(() -> "[SystemMail] Failed to send mail to " + receiverUuid + ": " + e.getMessage());
                 failCount++;
             }
         }
@@ -321,7 +321,7 @@ public class SystemMailManager {
         }
         
         OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(receiverUuid);
-        return offlinePlayer != null ? offlinePlayer.getName() : null;
+        return offlinePlayer.getName();
     }
     
     /**

@@ -99,26 +99,26 @@ public class ItemSerializer {
             String encoded = Base64.getEncoder().encodeToString(bytes);
             
             if (encoded.length() > MAX_ITEM_SIZE) {
-                Bukkit.getLogger().warning("[WooSocial] 物品数据过大：" + encoded.length() + " bytes");
+                Bukkit.getLogger().warning(() -> "[WooSocial] 物品数据过大：" + encoded.length() + " bytes");
             }
             
             return encoded;
         } catch (IOException e) {
-            Bukkit.getLogger().log(Level.WARNING, "[WooSocial] 物品序列化失败：" + e.getMessage());
+            Bukkit.getLogger().log(Level.WARNING, () -> "[WooSocial] 物品序列化失败：" + e.getMessage());
             return null;
         } finally {
             if (oos != null) {
                 try {
                     oos.close();
                 } catch (IOException e) {
-                    Bukkit.getLogger().log(Level.FINE, "[WooSocial] 关闭输出流失败：" + e.getMessage());
+                    Bukkit.getLogger().log(Level.FINE, () -> "[WooSocial] 关闭输出流失败：" + e.getMessage());
                 }
             }
             if (bos != null) {
                 try {
                     bos.close();
                 } catch (IOException e) {
-                    Bukkit.getLogger().log(Level.FINE, "[WooSocial] 关闭字节流失败：" + e.getMessage());
+                    Bukkit.getLogger().log(Level.FINE, () -> "[WooSocial] 关闭字节流失败：" + e.getMessage());
                 }
             }
         }
@@ -133,17 +133,17 @@ public class ItemSerializer {
             byte[] bytes = Base64.getDecoder().decode(data);
             
             if (bytes.length > MAX_ITEM_SIZE) {
-                Bukkit.getLogger().warning("[WooSocial] 物品数据过大：" + bytes.length + " bytes");
+                Bukkit.getLogger().warning(() -> "[WooSocial] 物品数据过大：" + bytes.length + " bytes");
                 return null;
             }
             
-            ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-            SafeBukkitObjectInputStream ois = new SafeBukkitObjectInputStream(bis);
-            ItemStack item = (ItemStack) ois.readObject();
-            ois.close();
-            return item;
+            try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+                 SafeBukkitObjectInputStream ois = new SafeBukkitObjectInputStream(bis)) {
+                ItemStack item = (ItemStack) ois.readObject();
+                return item;
+            }
         } catch (IOException | ClassNotFoundException e) {
-            Bukkit.getLogger().log(Level.WARNING, "[WooSocial] 物品反序列化失败：" + e.getMessage());
+            Bukkit.getLogger().log(Level.WARNING, () -> "[WooSocial] 物品反序列化失败：" + e.getMessage());
             return null;
         }
     }

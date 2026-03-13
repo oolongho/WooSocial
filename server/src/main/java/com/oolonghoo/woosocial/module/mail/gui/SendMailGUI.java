@@ -22,10 +22,10 @@ public class SendMailGUI extends BaseGUI {
     
     private final UUID receiverUuid;
     private final String receiverName;
-    private final LoadingState loadingState;
+    private final LoadingState mailLoadingState;
     private boolean closedBySend = false;
     
-    private static final int BACK_SLOT = 0;
+    private static final int SEND_MAIL_BACK_SLOT = 0;
     private static final int RECEIVER_INFO_SLOT = 4;
     private static final int SEND_SLOT = 49;
     
@@ -42,7 +42,7 @@ public class SendMailGUI extends BaseGUI {
         super(plugin, viewer, "send_mail");
         this.receiverUuid = receiverUuid;
         this.receiverName = receiverName;
-        this.loadingState = loadingState;
+        this.mailLoadingState = loadingState;
         
         setupItems();
     }
@@ -65,7 +65,7 @@ public class SendMailGUI extends BaseGUI {
         fillSecondColumn();
         fillEighthColumn();
         
-        inventory.setItem(BACK_SLOT, createBackButton());
+        inventory.setItem(SEND_MAIL_BACK_SLOT, createBackButton());
         inventory.setItem(RECEIVER_INFO_SLOT, createReceiverInfoItem());
         inventory.setItem(SEND_SLOT, createSendButton());
     }
@@ -198,12 +198,12 @@ public class SendMailGUI extends BaseGUI {
     
     @Override
     public void handleClick(int slot, Player player, int clickType) {
-        if (loadingState.isLoading(player.getUniqueId())) {
+        if (mailLoadingState.isLoading(player.getUniqueId())) {
             messageManager.send(player, "mail.processing");
             return;
         }
         
-        if (slot == BACK_SLOT) {
+        if (slot == SEND_MAIL_BACK_SLOT) {
             closedBySend = false;
             player.closeInventory();
             return;
@@ -222,14 +222,14 @@ public class SendMailGUI extends BaseGUI {
             return;
         }
         
-        loadingState.setLoading(player.getUniqueId(), true);
+        mailLoadingState.setLoading(player.getUniqueId(), true);
         
         clearItemSlots();
         
         plugin.getModuleManager().getMailModule().getMailManager()
                 .sendMailWithItems(player, receiverUuid, receiverName, itemsToSend)
                 .thenAccept(success -> {
-                    loadingState.clearLoading(player.getUniqueId());
+                    mailLoadingState.clearLoading(player.getUniqueId());
                     
                     Bukkit.getScheduler().runTask(plugin, () -> {
                         if (success) {

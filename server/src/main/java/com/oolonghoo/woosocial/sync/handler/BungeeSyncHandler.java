@@ -9,6 +9,7 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.io.IOException;
 
 public class BungeeSyncHandler implements SyncHandler, PluginMessageListener {
     
@@ -35,7 +36,7 @@ public class BungeeSyncHandler implements SyncHandler, PluginMessageListener {
             available = true;
             plugin.getLogger().info("[Sync] BungeeCord 同步处理器已初始化");
         } catch (Exception e) {
-            plugin.getLogger().severe("[Sync] BungeeCord 同步处理器初始化失败: " + e.getMessage());
+            plugin.getLogger().severe(() -> "[Sync] BungeeCord 同步处理器初始化失败: " + e.getMessage());
             available = false;
         }
     }
@@ -66,15 +67,15 @@ public class BungeeSyncHandler implements SyncHandler, PluginMessageListener {
                 Player player = Bukkit.getOnlinePlayers().stream().findFirst().orElse(null);
                 if (player == null) {
                     plugin.getLogger().warning("[Sync] 没有在线玩家，无法发送消息");
-                    return;
-                }
-                
-                byte[] messageData = message.toBytes();
-                byte[] forwardData = createForwardData("Forward", "ALL", CHANNEL_NAME, messageData);
-                
-                player.sendPluginMessage(plugin, "BungeeCord", forwardData);
+                return;
+            }
+            
+            byte[] messageData = message.toBytes();
+            byte[] forwardData = createForwardData("Forward", "ALL", CHANNEL_NAME, messageData);
+            
+            player.sendPluginMessage(plugin, "BungeeCord", forwardData);
             } catch (Exception e) {
-                plugin.getLogger().warning("[Sync] 发送消息失败: " + e.getMessage());
+                plugin.getLogger().warning(() -> "[Sync] 发送消息失败: " + e.getMessage());
             }
         });
     }
@@ -94,8 +95,8 @@ public class BungeeSyncHandler implements SyncHandler, PluginMessageListener {
             out.write(data);
             
             return stream.toByteArray();
-        } catch (Exception e) {
-            plugin.getLogger().warning("[Sync] 创建转发数据失败: " + e.getMessage());
+        } catch (IOException e) {
+            plugin.getLogger().warning(() -> "[Sync] 创建转发数据失败: " + e.getMessage());
             return new byte[0];
         }
     }
@@ -138,8 +139,8 @@ public class BungeeSyncHandler implements SyncHandler, PluginMessageListener {
                         syncManager.handleIncomingMessage(syncMessage);
                     }
                 }
-            } catch (Exception e) {
-                plugin.getLogger().warning("[Sync] 处理接收消息失败: " + e.getMessage());
+            } catch (IOException e) {
+                plugin.getLogger().warning(() -> "[Sync] 处理接收消息失败: " + e.getMessage());
             }
         });
     }

@@ -45,10 +45,14 @@ public class MemorialItemConfig extends ConfigLoader {
             }
             
             String iconStr = itemSection.getString("icon", "DIAMOND");
+            if (iconStr == null || iconStr.isEmpty()) {
+                iconStr = "DIAMOND";
+            }
+            final String finalIconStr = iconStr;
             try {
                 item.setIcon(Material.valueOf(iconStr.toUpperCase()));
             } catch (IllegalArgumentException e) {
-                plugin.getLogger().warning("无效的纪念品图标材质: " + iconStr + "，使用默认值 DIAMOND");
+                plugin.getLogger().warning(() -> "无效的纪念品图标材质: " + finalIconStr + "，使用默认值 DIAMOND");
                 item.setIcon(Material.DIAMOND);
             }
             

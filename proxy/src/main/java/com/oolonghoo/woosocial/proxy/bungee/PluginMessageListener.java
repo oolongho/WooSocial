@@ -13,12 +13,11 @@ public class PluginMessageListener implements Listener {
     @SuppressWarnings("unused")
     private final ProxyServer proxy;
     @SuppressWarnings("unused")
-    private final Logger logger;
+    private static final Logger logger = Logger.getLogger(PluginMessageListener.class.getName());
     private final SyncMessageHandler messageHandler;
     
     public PluginMessageListener(ProxyServer proxy, Logger logger, SyncMessageHandler messageHandler) {
         this.proxy = proxy;
-        this.logger = logger;
         this.messageHandler = messageHandler;
     }
     

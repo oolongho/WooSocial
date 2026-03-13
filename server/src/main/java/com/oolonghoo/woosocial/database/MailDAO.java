@@ -272,7 +272,7 @@ public class MailDAO {
         
         return CompletableFuture.supplyAsync(() -> {
             long startTime = System.currentTimeMillis();
-            int successCount = 0;
+            int successCount;
             
             // 根据数据库类型选择不同的批量插入策略
             if (databaseManager.isMySQL()) {
@@ -282,7 +282,7 @@ public class MailDAO {
             }
             
             long elapsed = System.currentTimeMillis() - startTime;
-            plugin.getLogger().info("[Mail] 批量插入完成: 成功 " + successCount + "/" + mails.size() + 
+            plugin.getLogger().info(() -> "[Mail] 批量插入完成: 成功 " + successCount + "/" + mails.size() + 
                     " 封邮件, 耗时 " + elapsed + "ms");
             
             return successCount;

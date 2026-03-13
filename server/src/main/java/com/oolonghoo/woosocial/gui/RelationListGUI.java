@@ -147,6 +147,7 @@ public class RelationListGUI extends BaseGUI {
         return item;
     }
     
+    @Override
     protected ItemStack createBackButton() {
         ItemStack item = new ItemStack(Material.BOOK);
         var meta = item.getItemMeta();

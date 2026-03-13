@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 import java.util.logging.Level;
 
 /**
@@ -159,20 +158,20 @@ public abstract class BaseDAO<T> {
             
             if (param == null) {
                 statement.setNull(index, java.sql.Types.NULL);
-            } else if (param instanceof String) {
-                statement.setString(index, (String) param);
-            } else if (param instanceof Integer) {
-                statement.setInt(index, (Integer) param);
-            } else if (param instanceof Long) {
-                statement.setLong(index, (Long) param);
-            } else if (param instanceof Boolean) {
-                statement.setBoolean(index, (Boolean) param);
-            } else if (param instanceof Double) {
-                statement.setDouble(index, (Double) param);
-            } else if (param instanceof Float) {
-                statement.setFloat(index, (Float) param);
-            } else if (param instanceof Timestamp) {
-                statement.setTimestamp(index, (Timestamp) param);
+            } else if (param instanceof String s) {
+                statement.setString(index, s);
+            } else if (param instanceof Integer intVal) {
+                statement.setInt(index, intVal);
+            } else if (param instanceof Long l) {
+                statement.setLong(index, l);
+            } else if (param instanceof Boolean b) {
+                statement.setBoolean(index, b);
+            } else if (param instanceof Double d) {
+                statement.setDouble(index, d);
+            } else if (param instanceof Float f) {
+                statement.setFloat(index, f);
+            } else if (param instanceof Timestamp t) {
+                statement.setTimestamp(index, t);
             } else {
                 statement.setObject(index, param);
             }

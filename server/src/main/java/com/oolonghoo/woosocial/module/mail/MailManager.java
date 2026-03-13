@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class MailManager {
     
@@ -254,16 +255,7 @@ public class MailManager {
         });
     }
     
-    private boolean hasInventorySpace(Player player, ItemStack item) {
-        int emptySlots = 0;
-        for (ItemStack content : player.getInventory().getStorageContents()) {
-            if (content == null || content.getType() == Material.AIR) {
-                emptySlots++;
-            }
-        }
-        return emptySlots >= 1;
-    }
-    
+
     public int getMaxSendCount() {
         return maxSendCount;
     }
@@ -323,13 +315,7 @@ public class MailManager {
                         receiverUuid,
                         receiverName,
                         clonedItem
-                ).thenApply(result -> {
-                    if (result.isSuccess()) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                });
+                ).thenApply(result -> result.isSuccess());
                 futures.add(future);
             }
         }
@@ -339,7 +325,7 @@ public class MailManager {
             return CompletableFuture.completedFuture(false);
         }
         
-        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+        return CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new))
                 .thenApply(v -> {
                     int successCount = 0;
                     int failureCount = 0;
@@ -351,7 +337,7 @@ public class MailManager {
                             } else {
                                 failureCount++;
                             }
-                        } catch (Exception e) {
+                        } catch (InterruptedException | ExecutionException e) {
                             // 记录详细错误信息
                             plugin.getLogger().log(java.util.logging.Level.WARNING,
                                     "[Mail] 批量邮件发送失败：" + e.getMessage(), e);
@@ -427,7 +413,7 @@ public class MailManager {
             
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (!items.isEmpty() && player.isOnline()) {
-                    Map<Integer, ItemStack> leftover = player.getInventory().addItem(items.toArray(new ItemStack[0]));
+                    Map<Integer, ItemStack> leftover = player.getInventory().addItem(items.toArray(ItemStack[]::new));
                     for (ItemStack item : leftover.values()) {
                         player.getWorld().dropItem(player.getLocation(), item);
                     }

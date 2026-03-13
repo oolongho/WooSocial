@@ -26,9 +26,9 @@ public class MailDetailGUI extends BaseGUI {
     
     private final MailData mail;
     private final LoadingState loadingState;
-    private final com.oolonghoo.woosocial.module.mail.MailDataManager dataManager;
+    private final com.oolonghoo.woosocial.module.mail.MailDataManager mailDataManager;
     
-    private static final int BACK_SLOT = 0;
+    private static final int MAIL_DETAIL_BACK_SLOT = 0;
     private static final int SENDER_HEAD_SLOT = 4;
     private static final int ITEM_DISPLAY_SLOT = 22;
     private static final int CLAIM_SLOT = 47;
@@ -39,10 +39,10 @@ public class MailDetailGUI extends BaseGUI {
         super(plugin, viewer, "mail_detail");
         this.mail = mail;
         this.loadingState = loadingState;
-        this.dataManager = plugin.getModuleManager().getMailModule().getDataManager();
+        this.mailDataManager = plugin.getModuleManager().getMailModule().getDataManager();
         
         if (!mail.isRead()) {
-            dataManager.markAsRead(viewer.getUniqueId(), mail.getId());
+            mailDataManager.markAsRead(viewer.getUniqueId(), mail.getId());
         }
         
         setupItems();
@@ -58,7 +58,7 @@ public class MailDetailGUI extends BaseGUI {
     private void setupItems() {
         fillBorder(54);
         
-        inventory.setItem(BACK_SLOT, createMailBackButton());
+        inventory.setItem(MAIL_DETAIL_BACK_SLOT, createMailBackButton());
         inventory.setItem(SENDER_HEAD_SLOT, createSenderInfoItem());
         inventory.setItem(ITEM_DISPLAY_SLOT, createItemDisplay());
         inventory.setItem(CLAIM_SLOT, createClaimButton());
@@ -260,7 +260,7 @@ public class MailDetailGUI extends BaseGUI {
             return;
         }
         
-        if (slot == BACK_SLOT) {
+        if (slot == MAIL_DETAIL_BACK_SLOT) {
             plugin.getModuleManager().getMailModule().getMailManager().openMailListGUI(player, 1);
             return;
         }

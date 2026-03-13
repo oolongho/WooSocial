@@ -36,8 +36,7 @@ public class SocialMainGUI extends BaseGUI {
     
     private static final int[] FRIEND_SLOTS = {10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 22, 23, 24};
     
-    private static final int NEXT_PAGE_SLOT = 25;
-    
+    private static final int SOCIAL_NEXT_PAGE_SLOT = 25;
     private static final int FRIEND_REQUESTS_SLOT = 37;
     private static final int MAIL_SLOT = 40;
     private static final int RELATION_LIST_SLOT = 43;
@@ -83,7 +82,7 @@ public class SocialMainGUI extends BaseGUI {
         }
         
         if (totalPages > 1) {
-            inventory.setItem(NEXT_PAGE_SLOT, createPageSwitchButton());
+            inventory.setItem(SOCIAL_NEXT_PAGE_SLOT, createPageSwitchButton());
         }
         
         inventory.setItem(FRIEND_REQUESTS_SLOT, createFriendRequestsButton());
@@ -305,7 +304,7 @@ public class SocialMainGUI extends BaseGUI {
             return;
         }
         
-        if (slot == NEXT_PAGE_SLOT && totalPages > 1) {
+        if (slot == SOCIAL_NEXT_PAGE_SLOT && totalPages > 1) {
             currentPage++;
             if (currentPage > totalPages) {
                 currentPage = 1;

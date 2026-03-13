@@ -29,7 +29,7 @@ public class VelocitySyncHandler implements SyncHandler, PluginMessageListener {
             available = true;
             plugin.getLogger().info("[Sync] Velocity 同步处理器已初始化");
         } catch (Exception e) {
-            plugin.getLogger().severe("[Sync] Velocity 同步处理器初始化失败: " + e.getMessage());
+            plugin.getLogger().severe(() -> "[Sync] Velocity 同步处理器初始化失败: " + e.getMessage());
             available = false;
         }
     }
@@ -64,7 +64,7 @@ public class VelocitySyncHandler implements SyncHandler, PluginMessageListener {
                 byte[] messageData = message.toBytes();
                 player.sendPluginMessage(plugin, CHANNEL_NAME, messageData);
             } catch (Exception e) {
-                plugin.getLogger().warning("[Sync] 发送消息失败: " + e.getMessage());
+                plugin.getLogger().warning(() -> "[Sync] 发送消息失败: " + e.getMessage());
             }
         });
     }
@@ -82,7 +82,7 @@ public class VelocitySyncHandler implements SyncHandler, PluginMessageListener {
                     syncManager.handleIncomingMessage(syncMessage);
                 }
             } catch (Exception e) {
-                plugin.getLogger().warning("[Sync] 处理接收消息失败: " + e.getMessage());
+                plugin.getLogger().warning(() -> "[Sync] 处理接收消息失败: " + e.getMessage());
             }
         });
     }

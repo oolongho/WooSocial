@@ -114,7 +114,7 @@ public class ScheduledMailManager {
     private void restorePendingMails() {
         scheduledMailDAO.getPendingScheduledMails().thenAccept(mails -> {
             if (!mails.isEmpty()) {
-                plugin.getLogger().info("[ScheduledMail] 恢复 " + mails.size() + " 封待发送的定时邮件");
+                plugin.getLogger().info(() -> "[ScheduledMail] 恢复 " + mails.size() + " 封待发送的定时邮件");
             }
         });
     }
@@ -156,7 +156,7 @@ public class ScheduledMailManager {
             
             if (item == null || item.getType() == Material.AIR) {
                 scheduledMailDAO.updateStatus(scheduledMail.getId(), ScheduledMailData.Status.CANCELLED);
-                plugin.getLogger().warning("[ScheduledMail] 定时邮件 " + scheduledMail.getId() + " 附件无效，已取消");
+                plugin.getLogger().warning(() -> "[ScheduledMail] 定时邮件 " + scheduledMail.getId() + " 附件无效，已取消");
                 return;
             }
             
@@ -202,7 +202,8 @@ public class ScheduledMailManager {
                         "count", String.valueOf(successCount));
             }
             
-            plugin.getLogger().info("[ScheduledMail] 定时邮件 " + scheduledMail.getId() + " 已发送给 " + successCount + " 位玩家");
+            final int finalSuccessCount = successCount;
+            plugin.getLogger().info(() -> "[ScheduledMail] 定时邮件 " + scheduledMail.getId() + " 已发送给 " + finalSuccessCount + " 位玩家");
         });
     }
     
@@ -362,20 +363,12 @@ public class ScheduledMailManager {
             int amount = Integer.parseInt(matcher.group(1));
             String unit = matcher.group(2).toLowerCase();
             
-            long millis;
-            switch (unit) {
-                case "m":
-                    millis = amount * 60L * 1000;
-                    break;
-                case "h":
-                    millis = amount * 60L * 60 * 1000;
-                    break;
-                case "d":
-                    millis = amount * 24L * 60 * 60 * 1000;
-                    break;
-                default:
-                    throw new IllegalArgumentException("未知的时间单位: " + unit);
-            }
+            long millis = switch (unit) {
+                case "m" -> amount * 60L * 1000;
+                case "h" -> amount * 60L * 60 * 1000;
+                case "d" -> amount * 24L * 60 * 60 * 1000;
+                default -> throw new IllegalArgumentException("未知的时间单位: " + unit);
+            };
             
             return System.currentTimeMillis() + millis;
         }

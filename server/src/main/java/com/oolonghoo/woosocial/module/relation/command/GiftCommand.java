@@ -57,17 +57,22 @@ public class GiftCommand implements CommandExecutor, TabCompleter {
         String subCommand = args[0].toLowerCase();
         
         switch (subCommand) {
-            case "coins":
+            case "coins" -> {
                 return handleCoins(player, args);
-            case "send":
+            }
+            case "send" -> {
                 return handleSend(player, args);
-            case "shop":
+            }
+            case "shop" -> {
                 return handleShop(player);
-            case "list":
+            }
+            case "list" -> {
                 return handleList(player);
-            default:
+            }
+            default -> {
                 messageManager.send(player, "gift.usage");
                 return true;
+            }
         }
     }
     
@@ -242,31 +247,37 @@ public class GiftCommand implements CommandExecutor, TabCompleter {
             return completions;
         }
         
-        if (args.length == 1) {
-            List<String> subCommands = Arrays.asList("coins", "send", "shop", "list");
-            String input = args[0].toLowerCase();
-            subCommands.stream()
-                    .filter(s -> s.startsWith(input))
-                    .forEach(completions::add);
-        } else if (args.length == 2) {
-            String subCommand = args[0].toLowerCase();
-            String input = args[1].toLowerCase();
-            
-            if (subCommand.equals("coins") || subCommand.equals("send")) {
-                Bukkit.getOnlinePlayers().stream()
-                        .filter(p -> !p.equals(sender))
-                        .map(Player::getName)
-                        .filter(name -> name.toLowerCase().startsWith(input))
+        switch (args.length) {
+            case 1 -> {
+                List<String> subCommands = Arrays.asList("coins", "send", "shop", "list");
+                String input = args[0].toLowerCase();
+                subCommands.stream()
+                        .filter(s -> s.startsWith(input))
                         .forEach(completions::add);
             }
-        } else if (args.length == 3) {
-            String subCommand = args[0].toLowerCase();
-            if (subCommand.equals("send")) {
-                String input = args[2].toLowerCase();
-                relationManager.getAllGiftTypes().stream()
-                        .map(GiftType::getId)
-                        .filter(id -> id.toLowerCase().startsWith(input))
-                        .forEach(completions::add);
+            case 2 -> {
+                String subCommand = args[0].toLowerCase();
+                String input = args[1].toLowerCase();
+                
+                switch (subCommand) {
+                    case "coins", "send" -> {
+                        Bukkit.getOnlinePlayers().stream()
+                                .filter(p -> !p.equals(sender))
+                                .map(Player::getName)
+                                .filter(name -> name.toLowerCase().startsWith(input))
+                                .forEach(completions::add);
+                    }
+                }
+            }
+            case 3 -> {
+                String subCommand = args[0].toLowerCase();
+                if (subCommand.equals("send")) {
+                    String input = args[2].toLowerCase();
+                    relationManager.getAllGiftTypes().stream()
+                            .map(GiftType::getId)
+                            .filter(id -> id.toLowerCase().startsWith(input))
+                            .forEach(completions::add);
+                }
             }
         }
         

@@ -60,7 +60,7 @@ public class WooSocial extends JavaPlugin {
         try {
             databaseManager = new DatabaseManager(this, configManager);
             databaseManager.initialize();
-            getLogger().info("数据库连接成功 (" + configManager.getDatabaseType().toUpperCase() + ")");
+            getLogger().info(() -> "数据库连接成功 (" + configManager.getDatabaseType().toUpperCase() + ")");
         } catch (SQLException e) {
             getLogger().log(Level.SEVERE, "数据库初始化失败，插件将禁用", e);
             getServer().getPluginManager().disablePlugin(this);
@@ -91,7 +91,7 @@ public class WooSocial extends JavaPlugin {
             enabledModules.add(entry.getKey());
         }
         if (!enabledModules.isEmpty()) {
-            getLogger().info("已启用模块: " + String.join(", ", enabledModules));
+            getLogger().info(() -> "已启用模块: " + String.join(", ", enabledModules));
         }
         
         registerCommands();
@@ -100,7 +100,7 @@ public class WooSocial extends JavaPlugin {
         
         warmupCache();
         
-        getLogger().info("WooSocial v" + getPluginMeta().getVersion() + " 已启用!");
+        getLogger().info(() -> "WooSocial v" + getPluginMeta().getVersion() + " 已启用!");
     }
     
     /**
