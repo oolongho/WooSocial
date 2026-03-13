@@ -80,9 +80,16 @@ public class RelationManager {
     }
     
     private void loadConfig() {
-        dailyFreeCoins = configManager.getConfig().getInt("relation.daily-free-coins", 100);
-        maxIntimacy = configManager.getConfig().getInt("relation.max-intimacy", 10000);
-        coinsIntimacyPerUnit = configManager.getConfig().getInt("relation.coins-intimacy-per-unit", 1);
+        var relationConfig = configManager.getModuleConfig("relation");
+        if (relationConfig != null) {
+            dailyFreeCoins = relationConfig.getInt("daily-free-coins", 100);
+            maxIntimacy = relationConfig.getInt("max-intimacy", 10000);
+            coinsIntimacyPerUnit = relationConfig.getInt("coins-intimacy-per-unit", 1);
+        } else {
+            dailyFreeCoins = 100;
+            maxIntimacy = 10000;
+            coinsIntimacyPerUnit = 1;
+        }
     }
     
     public void reload() {

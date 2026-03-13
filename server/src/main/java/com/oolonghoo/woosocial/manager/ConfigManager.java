@@ -23,6 +23,7 @@ public class ConfigManager {
     private FileConfiguration config;
     private File configFile;
     
+    private final Map<String, FileConfiguration> moduleConfigs = new HashMap<>();
     private final Map<String, Object> configCache = new HashMap<>();
     
     public ConfigManager(WooSocial plugin) {
@@ -53,7 +54,52 @@ public class ConfigManager {
             config.setDefaults(defaultConfig);
         }
         
+        loadModuleConfigs();
         loadCachedValues();
+    }
+    
+    /**
+     * 加载模块配置文件
+     */
+    private void loadModuleConfigs() {
+        File settingsFolder = new File(plugin.getDataFolder(), "settings");
+        if (!settingsFolder.exists()) {
+            settingsFolder.mkdirs();
+        }
+        
+        String[] moduleNames = {"friend", "mail", "relation", "teleport", "gifts", "relation_types", "memorial_items"};
+        
+        for (String moduleName : moduleNames) {
+            String fileName = moduleName + ".yml";
+            File moduleFile = new File(settingsFolder, fileName);
+            
+            if (!moduleFile.exists()) {
+                String resourcePath = "settings/" + fileName;
+                InputStream resourceStream = plugin.getResource(resourcePath);
+                if (resourceStream != null) {
+                    try {
+                        plugin.getLogger().info("[Config] Saving default " + fileName + " to settings folder");
+                        File outputFile = new File(settingsFolder, fileName);
+                        java.nio.file.Files.copy(resourceStream.readAllBytes(), outputFile.toPath());
+                        resourceStream.close();
+                    } catch (Exception e) {
+                        plugin.getLogger().warning("[Config] Failed to save default " + fileName + ": " + e.getMessage());
+                    }
+                }
+            }
+            
+            FileConfiguration moduleConfig = YamlConfiguration.loadConfiguration(moduleFile);
+            
+            InputStream defaultStream = plugin.getResource("settings/" + fileName);
+            if (defaultStream != null) {
+                YamlConfiguration defaultConfig = YamlConfiguration.loadConfiguration(
+                        new InputStreamReader(defaultStream, StandardCharsets.UTF_8));
+                moduleConfig.setDefaults(defaultConfig);
+            }
+            
+            moduleConfigs.put(moduleName, moduleConfig);
+            plugin.getLogger().fine("[Config] Loaded module config: " + fileName);
+        }
     }
     
     /**
@@ -77,16 +123,22 @@ public class ConfigManager {
         configCache.put("database.pool.idle-timeout", config.getLong("database.pool.idle-timeout", 600000L));
         configCache.put("database.pool.max-lifetime", config.getLong("database.pool.max-lifetime", 1800000L));
         
-        configCache.put("friend.max-friends", config.getInt("friend.max-friends", 50));
-        configCache.put("friend.request-expire-time", config.getInt("friend.request-expire-time", 300));
-        configCache.put("friend.default-notify-online", config.getBoolean("friend.default-notify-online", true));
+        FileConfiguration friendConfig = getModuleConfig("friend");
+        if (friendConfig != null) {
+            configCache.put("friend.max-friends", friendConfig.getInt("max-friends", 50));
+            configCache.put("friend.request-expire-time", friendConfig.getInt("request-expire-time", 300));
+            configCache.put("friend.default-notify-online", friendConfig.getBoolean("default-notify-online", true));
+        }
         
-        configCache.put("teleport.countdown", config.getInt("teleport.countdown", 3));
-        configCache.put("teleport.cooldown", config.getInt("teleport.cooldown", 60));
-        configCache.put("teleport.cancel-on-move", config.getBoolean("teleport.cancel-on-move", true));
-        configCache.put("teleport.move-threshold", config.getDouble("teleport.move-threshold", 1.0));
-        configCache.put("teleport.cancel-on-damage", config.getBoolean("teleport.cancel-on-damage", true));
-        configCache.put("teleport.default-allow-teleport", config.getBoolean("teleport.default-allow-teleport", true));
+        FileConfiguration teleportConfig = getModuleConfig("teleport");
+        if (teleportConfig != null) {
+            configCache.put("teleport.countdown", teleportConfig.getInt("countdown", 3));
+            configCache.put("teleport.cooldown", teleportConfig.getInt("cooldown", 60));
+            configCache.put("teleport.cancel-on-move", teleportConfig.getBoolean("cancel.on-move", true));
+            configCache.put("teleport.move-threshold", teleportConfig.getDouble("cancel.move-threshold", 1.0));
+            configCache.put("teleport.cancel-on-damage", teleportConfig.getBoolean("cancel.on-damage", true));
+            configCache.put("teleport.default-allow-teleport", teleportConfig.getBoolean("default-allow-teleport", true));
+        }
         
         configCache.put("settings.debug", config.getBoolean("settings.debug", false));
         configCache.put("settings.language", config.getString("settings.language", "zh-CN"));
@@ -105,6 +157,7 @@ public class ConfigManager {
                     new InputStreamReader(defaultStream, StandardCharsets.UTF_8));
             config.setDefaults(defaultConfig);
         }
+        loadModuleConfigs();
         loadCachedValues();
     }
     
@@ -124,6 +177,16 @@ public class ConfigManager {
      */
     public FileConfiguration getConfig() {
         return config;
+    }
+    
+    /**
+     * 获取模块配置文件
+     * 
+     * @param moduleName 模块名称 (friend, mail, relation, teleport, gifts, etc.)
+     * @return 模块配置文件，如果不存在则返回 null
+     */
+    public FileConfiguration getModuleConfig(String moduleName) {
+        return moduleConfigs.get(moduleName);
     }
     
     /**

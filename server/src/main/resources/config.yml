@@ -1,4 +1,5 @@
-# WooSocial
+# WooSocial Main Configuration
+# WooSocial 主配置文件
 
 # Settings
 # 设置
@@ -20,7 +21,7 @@ settings:
 # 数据库配置
 database:
   # Database type: sqlite or mysql
-  # 数据库类型: sqlite 或 mysql
+  # 数据库类型：sqlite 或 mysql
   type: sqlite
   
   # MySQL Configuration (only used when type is mysql)
@@ -79,7 +80,35 @@ cache:
   # 关系缓存最大条目数
   relation-max-size: 500
   # Whether to warmup cache on plugin enable
-  # Preloads data for online players when plugin starts
   # 是否在插件启用时预热缓存
+  # Preloads data for online players when plugin starts
   # 预加载在线玩家的数据
   warmup-on-enable: true
+
+# Cross-Server Sync Configuration
+# 跨服同步配置
+cross-server:
+  # Enable cross-server sync
+  # 启用跨服同步
+  enabled: false
+  # Sync mode: bungee, velocity, redis, mysql
+  # 同步模式：bungee, velocity, redis, mysql
+  mode: "bungee"
+  
+  # Redis Configuration (only used when mode is redis)
+  # Redis 配置（仅当 mode 为 redis 时使用）
+  redis:
+    enabled: false
+    # Redis connection URI
+    # Redis 连接 URI
+    uri: "redis://localhost:6379"
+    # Redis password (leave empty if no password)
+    # Redis 密码（无密码则留空）
+    password: ""
+  
+  # MySQL Polling Configuration (only used when mode is mysql)
+  # MySQL 轮询配置（仅当 mode 为 mysql 时使用）
+  mysql-poll:
+    # Poll interval in seconds
+    # 轮询间隔（秒）
+    interval: 5

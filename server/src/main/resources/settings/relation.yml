@@ -1,0 +1,93 @@
+# Relation module configuration
+# 关系模块配置文件
+
+# Basic settings
+# 基础设置
+daily-free-coins: 100
+max-intimacy: 10000
+coins-intimacy-per-unit: 1
+
+# Relation coins settings
+# 关系币设置
+coins:
+  # Enable relation coins
+  # 启用关系币
+  enabled: true
+  # Daily free coins limit
+  # 每日免费关系币上限
+  daily-limit: 100
+  # Coins gained per gift
+  # 每次赠送获得的关系币
+  per-gift: 10
+
+# Intimacy settings
+# 亲密度设置
+intimacy:
+  # Enable intimacy system
+  # 启用亲密度系统
+  enabled: true
+  # Intimacy gained per coin spent
+  # 每花费 1 关系币获得的亲密度
+  per-coin: 1
+  # Intimacy gained per gift
+  # 每次赠送获得的亲密度
+  per-gift: 1
+
+# Proposal settings
+# 求婚设置
+proposal:
+  # Enable proposal system
+  # 启用求婚系统
+  enabled: true
+  # Required intimacy for proposal
+  # 求婚所需亲密度
+  required-intimacy: 1000
+  # Proposal expire time in seconds
+  # 求婚请求过期时间（秒）
+  expire-time: 300
+
+# GUI settings
+# GUI 界面设置
+gui:
+  # Filler item for empty slots
+  # 空白槽位填充物品
+  filler:
+    material: GRAY_STAINED_GLASS_PANE
+    name: " "
+  
+  # Button items
+  # 按钮物品配置
+  buttons:
+    send-coins:
+      material: GOLD_INGOT
+      name: "&e赠送关系币"
+      lore:
+        - "&7向好友赠送关系币"
+    
+    view-intimacy:
+      material: BOOK
+      name: "&b查看亲密度"
+      lore:
+        - "&7查看与好友的亲密度"
+    
+    propose:
+      material: DIAMOND
+      name: "&d求婚"
+      lore:
+        - "&7向好友求婚建立特殊关系"
+
+# Sound settings
+# 声音设置
+sounds:
+  # Sound when receiving coins
+  # 收到关系币时的声音
+  receive-coins: BLOCK_NOTE_BLOCK_PLING
+  # Sound when intimacy increases
+  # 亲密度提升时的声音
+  intimacy-increase: ENTITY_EXPERIENCE_ORB_PICKUP
+  # Sound when proposal is accepted
+  # 求婚被接受时的声音
+  proposal-accept: UI_BUTTON_CLICK
+  # Sound when proposal is rejected
+  # 求婚被拒绝时的声音
+  proposal-reject: ENTITY_ITEM_BREAK

@@ -1,0 +1,72 @@
+# Mail module configuration
+# 邮件模块配置文件
+
+# Basic settings
+# 基础设置
+max-send-count: 64
+notify-on-receive: true
+max-mails-per-player: 100
+expire-days: 30
+max-item-size: 65535
+
+# Bulk mail settings
+# 批量邮件设置
+bulk:
+  enabled: true
+  permission: "woosocial.mail.bulk"
+
+# Scheduled mail settings
+# 定时邮件设置
+scheduled:
+  check-interval: 5
+  max-per-player: 10
+  max-days: 30
+
+# Notification settings
+# 通知设置
+notifications:
+  # Show notification when receiving mail
+  # 收到邮件时显示通知
+  show-message: true
+  # Sound when receiving mail
+  # 收到邮件时播放的声音
+  receive-sound: BLOCK_NOTE_BLOCK_PLING
+  # Sound when mail expires
+  # 邮件过期时播放的声音
+  expire-sound: ENTITY_ITEM_BREAK
+
+# GUI settings
+# GUI 界面设置
+gui:
+  # Filler item for empty slots
+  # 空白槽位填充物品
+  filler:
+    material: GRAY_STAINED_GLASS_PANE
+    name: " "
+  
+  # Button items
+  # 按钮物品配置
+  buttons:
+    read:
+      material: BOOK
+      name: "&a查看邮件"
+      lore:
+        - "&7点击查看邮件内容"
+    
+    delete:
+      material: BARRIER
+      name: "&c删除邮件"
+      lore:
+        - "&7删除选中的邮件"
+    
+    take-item:
+      material: CHEST
+      name: "&e取出物品"
+      lore:
+        - "&7取出邮件中的物品"
+    
+    take-all:
+      material: ENDER_CHEST
+      name: "&6取出所有物品"
+      lore:
+        - "&7取出所有邮件中的物品"
