@@ -29,7 +29,7 @@ public class GiftConfig extends ConfigLoader {
             return;
         }
         
-        plugin.getLogger().info("开始加载礼物配置...");
+        plugin.getLogger().info(() -> "开始加载礼物配置...");
         
         for (String giftId : giftsSection.getKeys(false)) {
             ConfigurationSection giftSection = giftsSection.getConfigurationSection(giftId);
@@ -43,7 +43,7 @@ public class GiftConfig extends ConfigLoader {
             int dailyLimit = giftSection.getInt("daily-limit", 0);
             gift.setDailyLimit(dailyLimit);
             
-            plugin.getLogger().info("加载礼物: " + giftId + ", daily-limit: " + dailyLimit + ", hasDailyLimit: " + gift.hasDailyLimit());
+            plugin.getLogger().info(() -> "加载礼物: " + giftId + ", daily-limit: " + dailyLimit + ", hasDailyLimit: " + gift.hasDailyLimit());
             
             gift.setAmountPerSend(giftSection.getInt("amount-per-send", 1));
             
@@ -57,14 +57,14 @@ public class GiftConfig extends ConfigLoader {
             try {
                 gift.setIcon(Material.valueOf(iconStr.toUpperCase()));
             } catch (IllegalArgumentException e) {
-                plugin.getLogger().warning("无效的礼品图标材质: " + iconStr + "，使用默认值 GOLD_INGOT");
+                plugin.getLogger().warning(() -> "无效的礼品图标材质: " + iconStr + "，使用默认值 GOLD_INGOT");
                 gift.setIcon(Material.GOLD_INGOT);
             }
             
             gifts.put(giftId.toLowerCase(), gift);
         }
         
-        plugin.getLogger().info("礼物配置加载完成，共 " + gifts.size() + " 个礼物");
+        plugin.getLogger().info(() -> "礼物配置加载完成，共 " + gifts.size() + " 个礼物");
     }
     
     public GiftType getGift(String id) {
