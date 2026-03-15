@@ -4,6 +4,7 @@ import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.database.RelationDAO;
 import com.oolonghoo.woosocial.model.DailyGiftData;
 import com.oolonghoo.woosocial.model.GiftData;
+import com.oolonghoo.woosocial.model.GlobalDailyGiftData;
 import com.oolonghoo.woosocial.model.RelationData;
 import com.oolonghoo.woosocial.util.LRUCache;
 
@@ -171,6 +172,27 @@ public class RelationDataManager {
     
     public CompletableFuture<Boolean> saveDailyGiftData(DailyGiftData data) {
         return relationDAO.saveDailyGiftData(data);
+    }
+    
+    public CompletableFuture<GlobalDailyGiftData> getGlobalDailyGiftData(UUID playerUuid) {
+        String today = LocalDate.now().format(DATE_FORMATTER);
+        return relationDAO.getGlobalDailyGiftData(playerUuid, today).thenApply(opt -> 
+                opt.orElseGet(() -> new GlobalDailyGiftData(playerUuid, today)));
+    }
+    
+    public GlobalDailyGiftData getGlobalDailyGiftDataSync(UUID playerUuid) {
+        String today = LocalDate.now().format(DATE_FORMATTER);
+        
+        try {
+            return relationDAO.getGlobalDailyGiftData(playerUuid, today).join()
+                    .orElseGet(() -> new GlobalDailyGiftData(playerUuid, today));
+        } catch (Exception e) {
+            return new GlobalDailyGiftData(playerUuid, today);
+        }
+    }
+    
+    public CompletableFuture<Boolean> saveGlobalDailyGiftData(GlobalDailyGiftData data) {
+        return relationDAO.saveGlobalDailyGiftData(data);
     }
     
     public CompletableFuture<List<GiftData>> getGiftHistory(UUID senderUuid, UUID receiverUuid, int limit) {

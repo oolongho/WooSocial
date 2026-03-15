@@ -489,8 +489,11 @@ public class FriendDataManager {
      * @return 是否开启
      */
     public boolean isNotifyOnlineForFriend(UUID playerUuid, UUID friendUuid) {
-        // 目前使用全局设置，后续可以扩展为针对单个好友的设置
-        return isNotifyOnline(playerUuid);
+        FriendData friendData = getFriendData(playerUuid, friendUuid);
+        if (friendData != null) {
+            return friendData.isNotifyOnline();
+        }
+        return true;
     }
     
     /**
@@ -502,8 +505,15 @@ public class FriendDataManager {
      * @return CompletableFuture<Boolean>
      */
     public CompletableFuture<Boolean> setNotifyOnlineForFriend(UUID playerUuid, UUID friendUuid, boolean notifyOnline) {
-        // 目前使用全局设置，后续可以扩展为针对单个好友的设置
-        return setNotifyOnline(playerUuid, notifyOnline);
+        return friendDAO.setNotifyOnlineForFriend(playerUuid, friendUuid, notifyOnline).thenApply(success -> {
+            if (success) {
+                FriendData friendData = getFriendData(playerUuid, friendUuid);
+                if (friendData != null) {
+                    friendData.setNotifyOnline(notifyOnline);
+                }
+            }
+            return success;
+        });
     }
     
     // ==================== 屏蔽功能 ====================

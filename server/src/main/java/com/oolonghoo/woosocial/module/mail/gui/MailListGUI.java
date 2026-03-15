@@ -4,7 +4,6 @@ import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.gui.BaseGUI;
 import com.oolonghoo.woosocial.gui.FriendSelectGUI;
 import com.oolonghoo.woosocial.gui.LoadingState;
-import com.oolonghoo.woosocial.gui.SocialMainGUI;
 import com.oolonghoo.woosocial.model.MailData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -40,6 +39,7 @@ public class MailListGUI extends BaseGUI {
         this.totalMailPages = totalPages;
         this.loadingState = loadingState;
         
+        initInventory();
         setupItems();
     }
     
@@ -246,14 +246,18 @@ public class MailListGUI extends BaseGUI {
         }
         
         if (slot == BACK_SLOT) {
-            new SocialMainGUI(plugin, player).open(player);
+            goBack(player);
             return;
         }
         
         if (slot == SEND_MAIL_SLOT) {
-            new FriendSelectGUI(plugin, player, FriendSelectGUI.SelectMode.SEND_MAIL, (p, friend) -> {
-                new SendMailGUI(plugin, p, friend.getFriendUuid(), friend.getFriendName(), loadingState).open(p);
-            }).open(player);
+            FriendSelectGUI gui = new FriendSelectGUI(plugin, player, FriendSelectGUI.SelectMode.SEND_MAIL, (p, friend) -> {
+                SendMailGUI sendGui = new SendMailGUI(plugin, p, friend.getFriendUuid(), friend.getFriendName(), loadingState);
+                sendGui.setPreviousGUI(this);
+                sendGui.open(p);
+            });
+            gui.setPreviousGUI(this);
+            gui.open(player);
             return;
         }
         
@@ -270,19 +274,19 @@ public class MailListGUI extends BaseGUI {
         }
         
         if (slot == PREV_PAGE_SLOT && currentMailPage > 1) {
-            plugin.getModuleManager().getMailModule().getMailManager().openMailListGUI(player, currentMailPage - 1);
+            plugin.getModuleManager().getMailModule().getMailManager().openMailListGUI(player, currentMailPage - 1, previousGUI);
             return;
         }
         
         if (slot == NEXT_PAGE_SLOT && currentMailPage < totalMailPages) {
-            plugin.getModuleManager().getMailModule().getMailManager().openMailListGUI(player, currentMailPage + 1);
+            plugin.getModuleManager().getMailModule().getMailManager().openMailListGUI(player, currentMailPage + 1, previousGUI);
             return;
         }
         
         int mailIndex = getMailIndexFromSlot(slot);
         if (mailIndex >= 0 && mailIndex < mailList.size()) {
             MailData mail = mailList.get(mailIndex);
-            plugin.getModuleManager().getMailModule().getMailManager().openMailDetailGUI(player, mail.getId());
+            plugin.getModuleManager().getMailModule().getMailManager().openMailDetailGUI(player, mail.getId(), this);
         }
     }
     
@@ -302,18 +306,21 @@ public class MailListGUI extends BaseGUI {
     
     private void handleClaimAll(Player player) {
         loadingState.setLoading(player.getUniqueId(), true);
-        player.closeInventory();
         
         plugin.getModuleManager().getMailModule().getMailManager()
                 .claimAllMails(player)
                 .thenAccept(count -> {
                     loadingState.clearLoading(player.getUniqueId());
                     
-                    if (count > 0) {
-                        messageManager.send(player, "mail.claim-all-success", "count", String.valueOf(count));
-                    } else {
-                        messageManager.send(player, "mail.no-unclaimed");
-                    }
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        if (count > 0) {
+                            messageManager.send(player, "mail.claim-all-success", "count", String.valueOf(count));
+                        } else {
+                            messageManager.send(player, "mail.no-unclaimed");
+                        }
+                        
+                        plugin.getModuleManager().getMailModule().getMailManager().openMailListGUI(player, currentMailPage, previousGUI);
+                    });
                 });
     }
     

@@ -2,6 +2,7 @@ package com.oolonghoo.woosocial.module.mail;
 
 import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.config.MessageManager;
+import com.oolonghoo.woosocial.gui.BaseGUI;
 import com.oolonghoo.woosocial.gui.LoadingState;
 import com.oolonghoo.woosocial.model.MailData;
 import com.oolonghoo.woosocial.util.ItemSerializer;
@@ -212,6 +213,10 @@ public class MailManager {
     }
     
     public void openMailListGUI(Player player, int page) {
+        openMailListGUI(player, page, null);
+    }
+    
+    public void openMailListGUI(Player player, int page, BaseGUI previousGUI) {
         final int finalPage = page;
         final UUID playerUuid = player.getUniqueId();
         
@@ -228,12 +233,21 @@ public class MailManager {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 // 清除加载状态
                 loadingState.clearLoading(playerUuid);
-                new com.oolonghoo.woosocial.module.mail.gui.MailListGUI(plugin, player, finalMails, finalPage, finalTotalPages, loadingState).open(player);
+                com.oolonghoo.woosocial.module.mail.gui.MailListGUI gui = 
+                        new com.oolonghoo.woosocial.module.mail.gui.MailListGUI(plugin, player, finalMails, finalPage, finalTotalPages, loadingState);
+                if (previousGUI != null) {
+                    gui.setPreviousGUI(previousGUI);
+                }
+                gui.open(player);
             });
         });
     }
     
     public void openMailDetailGUI(Player player, int mailId) {
+        openMailDetailGUI(player, mailId, null);
+    }
+    
+    public void openMailDetailGUI(Player player, int mailId, BaseGUI previousGUI) {
         final UUID playerUuid = player.getUniqueId();
         
         // 设置加载状态
@@ -246,7 +260,12 @@ public class MailManager {
                     loadingState.clearLoading(playerUuid);
                     
                     if (mail != null && mail.getReceiverUuid().equals(playerUuid)) {
-                        new com.oolonghoo.woosocial.module.mail.gui.MailDetailGUI(plugin, player, mail, loadingState).open(player);
+                        com.oolonghoo.woosocial.module.mail.gui.MailDetailGUI gui = 
+                                new com.oolonghoo.woosocial.module.mail.gui.MailDetailGUI(plugin, player, mail, loadingState);
+                        if (previousGUI != null) {
+                            gui.setPreviousGUI(previousGUI);
+                        }
+                        gui.open(player);
                     } else {
                         messageManager.send(player, "mail.not-found");
                     }
@@ -379,7 +398,16 @@ public class MailManager {
      * @param receiverName 收件人名称
      */
     public void openSendMailGUI(Player player, UUID receiverUuid, String receiverName) {
-        new com.oolonghoo.woosocial.module.mail.gui.SendMailGUI(plugin, player, receiverUuid, receiverName, loadingState).open(player);
+        com.oolonghoo.woosocial.module.mail.gui.SendMailGUI gui = 
+                new com.oolonghoo.woosocial.module.mail.gui.SendMailGUI(plugin, player, receiverUuid, receiverName, loadingState);
+        gui.open(player);
+    }
+    
+    public void openSendMailGUI(Player player, UUID receiverUuid, String receiverName, BaseGUI previousGUI) {
+        com.oolonghoo.woosocial.module.mail.gui.SendMailGUI gui = 
+                new com.oolonghoo.woosocial.module.mail.gui.SendMailGUI(plugin, player, receiverUuid, receiverName, loadingState);
+        gui.setPreviousGUI(previousGUI);
+        gui.open(player);
     }
     
     /**

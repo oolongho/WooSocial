@@ -106,7 +106,7 @@ public class GiftCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         
-        int remaining = giftManager.getRemainingDailyLimit(player, target.getUniqueId(), "coins");
+        int remaining = giftManager.getRemainingDailyLimit(player, "coins");
         
         if (remaining == -1) {
             messageManager.send(player, "gift.remaining-daily", "count", "∞");

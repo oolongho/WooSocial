@@ -45,6 +45,7 @@ public class MailDetailGUI extends BaseGUI {
             mailDataManager.markAsRead(viewer.getUniqueId(), mail.getId());
         }
         
+        initInventory();
         setupItems();
     }
     
@@ -261,14 +262,13 @@ public class MailDetailGUI extends BaseGUI {
         }
         
         if (slot == MAIL_DETAIL_BACK_SLOT) {
-            plugin.getModuleManager().getMailModule().getMailManager().openMailListGUI(player, 1);
+            goBack(player);
             return;
         }
         
         if (slot == CLAIM_SLOT) {
             if (!mail.isClaimed() && mail.getItemData() != null && !mail.getItemData().isEmpty()) {
                 loadingState.setLoading(player.getUniqueId(), true);
-                player.closeInventory();
                 plugin.getModuleManager().getMailModule().getMailManager().claimMail(player, mail.getId());
             }
             return;
@@ -276,7 +276,6 @@ public class MailDetailGUI extends BaseGUI {
         
         if (slot == DELETE_SLOT) {
             if (clickType == 1) {
-                player.closeInventory();
                 plugin.getModuleManager().getMailModule().getMailManager().forceDeleteMail(player, mail.getId());
             }
             return;
@@ -284,10 +283,9 @@ public class MailDetailGUI extends BaseGUI {
         
         if (slot == REPLY_SLOT) {
             if (mail.getSenderUuid() != null) {
-                player.closeInventory();
                 String senderName = mail.getSenderName() != null ? mail.getSenderName() : "未知";
                 plugin.getModuleManager().getMailModule().getMailManager()
-                        .openSendMailGUI(player, mail.getSenderUuid(), senderName);
+                        .openSendMailGUI(player, mail.getSenderUuid(), senderName, this);
             }
         }
     }

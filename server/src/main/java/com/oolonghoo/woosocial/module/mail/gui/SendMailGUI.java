@@ -44,6 +44,7 @@ public class SendMailGUI extends BaseGUI {
         this.receiverName = receiverName;
         this.mailLoadingState = loadingState;
         
+        initInventory();
         setupItems();
     }
     
@@ -205,7 +206,7 @@ public class SendMailGUI extends BaseGUI {
         
         if (slot == SEND_MAIL_BACK_SLOT) {
             closedBySend = false;
-            player.closeInventory();
+            goBack(player);
             return;
         }
         
