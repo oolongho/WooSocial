@@ -1,38 +1,47 @@
-title: "<dark_gray>收到的礼物"
+﻿title: "<black>收到的礼物"
 
 layout:
   - '#1######'
   - '#ggggggg#'
   - '#ggggggg#'
   - '#ggggggg#'
-  - '#########'
+  - '#ggggggg#'
   - '#<#####>#'
 
 icons:
   '#':
-    material: YELLOW_STAINED_GLASS_PANE
+    material: LIME_STAINED_GLASS_PANE
     name: ""
   
   '1':
     material: BOOK
     name: "<yellow>返回"
     lore:
-      - "<gray>返回社交菜单"
+      - "<black>返回关系列表"
     actions:
-      left: [open_gui:social_main, sound:entity_mule_chest]
+      left: "[close, sound:entity_mule_chest]"
+  
+  'g':
+    material: PLAYER_HEAD
+    skull_owner: "{sender_name}"
+    name: "<gold>{gift_name}"
+    lore:
+      - "<black>来自: <white>{sender_name}"
+      - "<black>时间: <white>{send_time}"
+      - "<black>亲密度: <yellow>+{intimacy}"
   
   '<':
-    material: SPECTRAL_ARROW
+    material: ARROW
     name: "<yellow>上一页"
     lore:
-      - "<gray>点击翻页"
+      - "<black>当前: <white>{page}/{total_pages}"
     actions:
-      left: [prev_page, sound:entity_mule_chest]
+      left: "[prev_page, sound:entity_mule_chest]"
   
   '>':
-    material: SPECTRAL_ARROW
+    material: ARROW
     name: "<yellow>下一页"
     lore:
-      - "<gray>点击翻页"
+      - "<black>当前: <white>{page}/{total_pages}"
     actions:
-      left: [next_page, sound:entity_mule_chest]
+      left: "[next_page, sound:entity_mule_chest]"

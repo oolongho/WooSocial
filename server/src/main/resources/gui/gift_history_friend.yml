@@ -1,39 +1,39 @@
-title: "<dark_gray>与 {friend_name} 的礼物记录"
+﻿title: "<black>与 {friend_name} 的礼物记录"
 
 layout:
   - '#########'
   - '####i####'
-  - '#1111111#'
-  - '#1111111#'
-  - '#########'
+  - '#ggggggg#'
+  - '#ggggggg#'
+  - '#ggggggg#'
   - '#<#####>#'
 
 icons:
   '#':
-    material: YELLOW_STAINED_GLASS_PANE
+    material: LIME_STAINED_GLASS_PANE
     name: ""
   
   'i':
     material: PLAYER_HEAD
     skull_owner: "{friend_name}"
-    name: "<gold>{friend_name}"
+    name: "<yellow>{friend_name}"
     lore:
-      - "<gray>查看与TA的礼物往来"
+      - "<black>查看你们之间的礼物记录"
   
-  '1':
-    material: GOLD_INGOT
+  'g':
+    material: PLAYER_HEAD
+    skull_owner: "{sender_name}"
     name: "<gold>{gift_name}"
     lore:
-      - "<gray>发送者: <yellow>{sender_name}"
-      - "<gray>接收者: <yellow>{receiver_name}"
-      - "<gray>时间: <yellow>{send_time}"
-      - "<gray>亲密度: <yellow>+{intimacy_gained}"
+      - "<black>发送者: <white>{sender_name}"
+      - "<black>时间: <white>{send_time}"
+      - "<black>亲密度: <yellow>+{intimacy}"
   
   '<':
     material: ARROW
     name: "<yellow>上一页"
     lore:
-      - "<gray>当前: <white>{page}/{total_pages}"
+      - "<black>当前: <white>{page}/{total_pages}"
     actions:
       left: "[prev_page, sound:entity_mule_chest]"
   
@@ -41,6 +41,6 @@ icons:
     material: ARROW
     name: "<yellow>下一页"
     lore:
-      - "<gray>当前: <white>{page}/{total_pages}"
+      - "<black>当前: <white>{page}/{total_pages}"
     actions:
       left: "[next_page, sound:entity_mule_chest]"

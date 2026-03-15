@@ -1,4 +1,4 @@
-title: "<dark_gray>社交菜单"
+﻿title: "<black>社交菜单"
 
 layout:
   - '####p####'
@@ -18,76 +18,76 @@ icons:
     skull_owner: "{player_name}"
     name: "<green>{player_name}"
     lore:
-      - "<gray>查看社交设置"
+      - "<black>查看社交设置"
       - ""
-      - "<gray>好友数量: <yellow>{friend_count}"
-      - "<gray>屏蔽数量: <yellow>{blocked_count}"
-      - "<gray>未读邮件: <yellow>{unread_mail_count}"
+      - "<black>好友数量: <yellow>{friend_count}"
+      - "<black>屏蔽数量: <yellow>{blocked_count}"
+      - "<black>未读邮件: <yellow>{unread_mail_count}"
       - ""
-      - "<gray>传送权限: <yellow>{teleport_status}"
+      - "<black>传送权限: <yellow>{teleport_status}"
       - ""
       - "<aqua>点击打开设置"
     actions:
-      left: [open_gui:social_settings, sound:entity_mule_chest]
+      left: "[open_gui:social_settings, sound:entity_mule_chest]"
   
   '1':
     material: PLAYER_HEAD
     name: "<green>好友列表"
     lore:
-      - "<gray>查看你的好友列表"
+      - "<black>查看你的好友列表"
       - ""
-      - "<gray>好友数量: <yellow>{friend_count}"
+      - "<black>好友数量: <yellow>{friend_count}"
     actions:
-      left: [open_gui:friend_list, sound:entity_mule_chest]
+      left: "[open_gui:friend_list, sound:entity_mule_chest]"
   
   '2':
     material: GOLDEN_APPLE
     name: "<gold>好友请求"
     lore:
-      - "<gray>处理待处理的好友请求"
+      - "<black>处理待处理的好友请求"
       - ""
-      - "<gray>待处理: <yellow>{request_count}"
+      - "<black>待处理: <yellow>{request_count}"
     actions:
-      left: [open_gui:friend_requests, sound:entity_mule_chest]
+      left: "[open_gui:friend_requests, sound:entity_mule_chest]"
   
   '3':
     material: CHEST
     name: "<yellow>邮箱"
     lore:
-      - "<gray>查看你的邮件"
+      - "<black>查看你的邮件"
       - ""
-      - "<gray>未读邮件: <yellow>{unread_mail_count}"
+      - "<black>未读邮件: <yellow>{unread_mail_count}"
       - ""
       - "<aqua>点击打开邮箱"
     actions:
-      left: [open_gui:mail_list, sound:entity_mule_chest]
+      left: "[open_gui:mail_list, sound:entity_mule_chest]"
   
   '4':
     material: ROSE_BUSH
     name: "<light_purple>我的关系"
     lore:
-      - "<gray>查看和管理好友关系"
+      - "<black>查看和管理好友关系"
       - ""
       - "<aqua>点击查看"
     actions:
-      left: [open_gui:relation_list, sound:entity_mule_chest]
+      left: "[open_gui:relation_list, sound:entity_mule_chest]"
   
   '5':
     material: GOLD_INGOT
     name: "<gold>礼物记录"
     lore:
-      - "<gray>查看收到的礼物"
+      - "<black>查看收到的礼物"
       - ""
       - "<aqua>点击查看"
     actions:
-      left: [open_gui:gift_history, sound:entity_mule_chest]
+      left: "[open_gui:gift_history, sound:entity_mule_chest]"
   
   '6':
     material: NETHER_STAR
     name: "<yellow>礼物商店"
     lore:
-      - "<gray>购买礼物送给好友"
+      - "<black>购买礼物送给好友"
       - ""
       - "<aqua>点击打开"
     actions:
-      left: [open_gui:gift_shop, sound:entity_mule_chest]
+      left: "[open_gui:gift_shop, sound:entity_mule_chest]"

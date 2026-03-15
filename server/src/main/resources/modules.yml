@@ -1,5 +1,4 @@
-# WooSocial Module Configuration
-# WooSocial 模块配置文件
+# WooSocial Module
 
 modules:
   # Teleport module (depends on friend module)

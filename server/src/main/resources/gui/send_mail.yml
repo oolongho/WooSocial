@@ -1,4 +1,4 @@
-title: "<yellow>发送邮件"
+﻿title: "<black>发送邮件"
 
 layout:
   - '#1###r###'
@@ -17,31 +17,31 @@ icons:
     material: BOOK
     name: "<yellow>返回"
     lore:
-      - "<gray>返回好友详情"
+      - "<black>返回好友详情"
     actions:
-      left: [close, sound:entity_mule_chest]
+      left: "[close, sound:entity_mule_chest]"
   
   'r':
     material: PLAYER_HEAD
     skull_owner: "{receiver_name}"
-    name: "<gray>收件人: <green>{receiver_name}"
+    name: "<black>收件人: <green>{receiver_name}"
     lore:
       - ""
       - "<yellow>将物品放入下方格子发送"
-      - "<gray>最多可放入 10 个物品"
+      - "<black>最多可放入 10 个物品"
   
   'i':
     material: AIR
     name: "<yellow>放入物品"
     lore:
       - ""
-      - "<gray>将你要发送的物品"
-      - "<gray>放入这个格子"
+      - "<black>将你要发送的物品"
+      - "<black>放入这个格子"
   
   's':
     material: LIME_DYE
     name: "<green>发送邮件"
     lore:
-      - "<gray>发送物品给 <green>{receiver_name}"
+      - "<black>发送物品给 <green>{receiver_name}"
       - ""
       - "<aqua>点击发送"
