@@ -43,6 +43,7 @@ public class FriendSelectGUI extends BaseGUI {
         this.friends = friendDataManager.getFriendList(viewerUUID);
         this.totalPages = calculateTotalPages(friends.size(), ITEMS_PER_PAGE);
         
+        initInventory();
         setupItems();
     }
     
@@ -157,11 +158,7 @@ public class FriendSelectGUI extends BaseGUI {
     @Override
     public void handleClick(int slot, Player player, int clickType) {
         if (slot == BACK_SLOT) {
-            if (mode == SelectMode.SEND_MAIL) {
-                plugin.getModuleManager().getMailModule().getMailManager().openMailListGUI(player, 1);
-            } else {
-                new RelationListGUI(plugin, player).open(player);
-            }
+            goBack(player);
             return;
         }
         

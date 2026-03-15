@@ -3,6 +3,7 @@ package com.oolonghoo.woosocial.database;
 import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.model.DailyGiftData;
 import com.oolonghoo.woosocial.model.GiftData;
+import com.oolonghoo.woosocial.model.GlobalDailyGiftData;
 import com.oolonghoo.woosocial.model.RelationData;
 
 import java.sql.*;
@@ -465,6 +466,95 @@ public class RelationDAO {
         data.setId(id);
         data.setCoinsSent(resultSet.getInt("coins_sent"));
         data.setGiftsSent(DailyGiftData.parseGiftsJson(resultSet.getString("gifts_sent")));
+        
+        return data;
+    }
+    
+    public CompletableFuture<Optional<GlobalDailyGiftData>> getGlobalDailyGiftData(UUID playerUuid, String date) {
+        return CompletableFuture.supplyAsync(() -> {
+            String sql = "SELECT * FROM `" + tablePrefix + "global_daily_gifts` " +
+                    "WHERE `player_uuid` = ? AND `date` = ?";
+            
+            try (Connection connection = databaseManager.getConnection();
+                 PreparedStatement statement = connection.prepareStatement(sql)) {
+                
+                statement.setString(1, playerUuid.toString());
+                statement.setString(2, date);
+                
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    if (resultSet.next()) {
+                        return Optional.of(mapResultSetToGlobalDailyGiftData(resultSet));
+                    }
+                }
+            } catch (SQLException e) {
+                plugin.getLogger().log(Level.SEVERE, "获取全局每日赠礼数据失败", e);
+            }
+            return Optional.empty();
+        });
+    }
+    
+    public CompletableFuture<Boolean> saveGlobalDailyGiftData(GlobalDailyGiftData data) {
+        return CompletableFuture.supplyAsync(() -> {
+            if (data.getId() > 0) {
+                return updateGlobalDailyGiftData(data);
+            } else {
+                return createGlobalDailyGiftData(data);
+            }
+        });
+    }
+    
+    private boolean createGlobalDailyGiftData(GlobalDailyGiftData data) {
+        String sql = "INSERT INTO `" + tablePrefix + "global_daily_gifts` " +
+                "(`player_uuid`, `date`, `gifts_sent`) " +
+                "VALUES (?, ?, ?)";
+        
+        try (Connection connection = databaseManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            
+            statement.setString(1, data.getPlayerUuid().toString());
+            statement.setString(2, data.getDate());
+            statement.setString(3, data.getGiftsJson());
+            
+            int affected = statement.executeUpdate();
+            if (affected > 0) {
+                try (ResultSet keys = statement.getGeneratedKeys()) {
+                    if (keys.next()) {
+                        data.setId(keys.getInt(1));
+                    }
+                }
+                return true;
+            }
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.SEVERE, "创建全局每日赠礼数据失败", e);
+        }
+        return false;
+    }
+    
+    private boolean updateGlobalDailyGiftData(GlobalDailyGiftData data) {
+        String sql = "UPDATE `" + tablePrefix + "global_daily_gifts` SET " +
+                "`gifts_sent` = ? WHERE `id` = ?";
+        
+        try (Connection connection = databaseManager.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setString(1, data.getGiftsJson());
+            statement.setInt(2, data.getId());
+            
+            return statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            plugin.getLogger().log(Level.SEVERE, "更新全局每日赠礼数据失败", e);
+            return false;
+        }
+    }
+    
+    private GlobalDailyGiftData mapResultSetToGlobalDailyGiftData(ResultSet resultSet) throws SQLException {
+        int id = resultSet.getInt("id");
+        UUID playerUuid = UUID.fromString(resultSet.getString("player_uuid"));
+        String date = resultSet.getString("date");
+        
+        GlobalDailyGiftData data = new GlobalDailyGiftData(playerUuid, date);
+        data.setId(id);
+        data.setGiftsSent(GlobalDailyGiftData.parseGiftsJson(resultSet.getString("gifts_sent")));
         
         return data;
     }

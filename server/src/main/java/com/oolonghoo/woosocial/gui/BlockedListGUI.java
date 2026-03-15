@@ -31,6 +31,7 @@ public class BlockedListGUI extends BaseGUI {
         this.blockedPlayers = new ArrayList<>(dataManager.getBlockedList(viewerUUID));
         this.totalPages = calculateTotalPages(blockedPlayers.size(), ITEMS_PER_PAGE);
         
+        initInventory();
         setupItems();
     }
     
@@ -102,7 +103,7 @@ public class BlockedListGUI extends BaseGUI {
     @Override
     public void handleClick(int slot, Player player, int clickType) {
         if (slot == BACK_SLOT) {
-            new SocialMainGUI(plugin, player).open(player);
+            goBack(player);
             return;
         }
         

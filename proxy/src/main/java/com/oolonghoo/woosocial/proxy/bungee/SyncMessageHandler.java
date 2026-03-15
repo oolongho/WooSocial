@@ -7,19 +7,19 @@ import java.util.logging.Logger;
 
 public class SyncMessageHandler {
     
-    private final ProxyServer proxy;
-    private final Logger logger;
+    private static final Logger LOGGER = Logger.getLogger("WooSocialProxy");
     
-    public SyncMessageHandler(ProxyServer proxy, Logger logger) {
+    private final ProxyServer proxy;
+    
+    public SyncMessageHandler(ProxyServer proxy) {
         this.proxy = proxy;
-        this.logger = logger;
     }
     
     public void handleSyncMessage(String sourceServer, byte[] data) {
         try {
             broadcastToAllServers(sourceServer, data);
         } catch (Exception e) {
-            logger.warning("[WooSocialProxy] 处理消息失败: " + e.getMessage());
+            LOGGER.warning(() -> "[WooSocialProxy] 处理消息失败: " + e.getMessage());
         }
     }
     

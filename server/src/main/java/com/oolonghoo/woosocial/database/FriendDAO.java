@@ -281,6 +281,26 @@ public class FriendDAO {
         });
     }
     
+    public CompletableFuture<Boolean> setNotifyOnlineForFriend(UUID playerUuid, UUID friendUuid, boolean notifyOnline) {
+        return CompletableFuture.supplyAsync(() -> {
+            String sql = "UPDATE `" + tablePrefix + "friends` SET `notify_online` = ? " +
+                    "WHERE `player_uuid` = ? AND `friend_uuid` = ?";
+            
+            try (Connection connection = databaseManager.getConnection();
+                 PreparedStatement statement = connection.prepareStatement(sql)) {
+                
+                statement.setBoolean(1, notifyOnline);
+                statement.setString(2, playerUuid.toString());
+                statement.setString(3, friendUuid.toString());
+                
+                return statement.executeUpdate() > 0;
+            } catch (SQLException e) {
+                plugin.getLogger().log(Level.SEVERE, "设置好友上线提醒失败", e);
+                return false;
+            }
+        });
+    }
+    
     // ==================== 好友请求操作 ====================
     
     /**
@@ -586,8 +606,13 @@ public class FriendDAO {
         boolean favorite = resultSet.getBoolean("favorite");
         String nickname = resultSet.getString("nickname");
         boolean receiveMessages = resultSet.getBoolean("receive_messages");
+        boolean notifyOnline = true;
+        try {
+            notifyOnline = resultSet.getBoolean("notify_online");
+        } catch (SQLException ignored) {
+        }
         
-        return new FriendData(playerUuid, friendUuid, addTime, friendName, favorite, nickname, receiveMessages);
+        return new FriendData(playerUuid, friendUuid, addTime, friendName, favorite, nickname, receiveMessages, notifyOnline);
     }
     
     /**

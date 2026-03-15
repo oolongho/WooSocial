@@ -38,6 +38,7 @@ public class GiftHistoryGUI extends BaseGUI {
         this.relationManager = plugin.getModuleManager().getRelationModule().getRelationManager();
         this.gifts = new ArrayList<>();
         
+        initInventory();
         loadGifts();
     }
     
@@ -140,7 +141,7 @@ public class GiftHistoryGUI extends BaseGUI {
     @Override
     public void handleClick(int slot, Player player, int clickType) {
         if (slot == BACK_SLOT) {
-            new RelationListGUI(plugin, player).open(player);
+            goBack(player);
             return;
         }
         

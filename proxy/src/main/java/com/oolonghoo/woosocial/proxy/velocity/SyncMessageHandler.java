@@ -32,8 +32,8 @@ public class SyncMessageHandler {
             }
             
             broadcastToAllServers(sourceServer, data);
-        } catch (Exception e) {
-            logger.error("[WooSocialProxy] 处理消息失败: " + e.getMessage());
+        } catch (RuntimeException e) {
+            logger.error("[WooSocialProxy] 处理消息失败: {}", e.getMessage());
         }
     }
     
@@ -53,7 +53,7 @@ public class SyncMessageHandler {
         private String type;
         private String sourceServer;
         private long timestamp;
-        private Map<String, Object> data = new HashMap<>();
+        private final Map<String, Object> data = new HashMap<>();
         
         public String getType() {
             return type;

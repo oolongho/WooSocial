@@ -23,8 +23,8 @@ public class DatabaseManager {
     private final WooSocial plugin;
     private final ConfigManager configManager;
     private HikariDataSource dataSource;
-    private String tablePrefix;
-    private String databaseType;
+    private final String tablePrefix;
+    private final String databaseType;
     
     public DatabaseManager(WooSocial plugin, ConfigManager configManager) {
         this.plugin = plugin;
@@ -182,6 +182,11 @@ public class DatabaseManager {
                     : getSQLiteDailyGiftsTableSQL();
             statement.executeUpdate(createDailyGiftsTable);
             
+            String createGlobalDailyGiftsTable = databaseType.equals("mysql")
+                    ? getMySQLGlobalDailyGiftsTableSQL()
+                    : getSQLiteGlobalDailyGiftsTableSQL();
+            statement.executeUpdate(createGlobalDailyGiftsTable);
+            
             String createScheduledMailsTable = databaseType.equals("mysql")
                     ? getMySQLScheduledMailsTableSQL()
                     : getSQLiteScheduledMailsTableSQL();
@@ -214,7 +219,7 @@ public class DatabaseManager {
                 plugin.getLogger().info("[数据库迁移] 成功添加 gifts.receiver_name 字段");
             }
         } catch (SQLException e) {
-            plugin.getLogger().warning("[数据库迁移] gifts表迁移失败: " + e.getMessage());
+            plugin.getLogger().warning(() -> "[数据库迁移] gifts表迁移失败: " + e.getMessage());
         }
     }
     
@@ -315,7 +320,7 @@ public class DatabaseManager {
                 if (rs.next() && rs.getInt(1) == 0) {
                     try (Statement alterStmt = connection.createStatement()) {
                         alterStmt.executeUpdate("ALTER TABLE `" + tableName + "` ADD INDEX `" + indexName + "` (`" + columnName + "`)");
-                        plugin.getLogger().info("[数据库迁移] 已添加索引 " + indexName + " 到邮件表");
+                        plugin.getLogger().info(() -> "[数据库迁移] 已添加索引 " + indexName + " 到邮件表");
                     }
                 }
             }
@@ -368,6 +373,7 @@ public class DatabaseManager {
                 "`favorite` TINYINT(1) NOT NULL DEFAULT 0, " +
                 "`nickname` VARCHAR(32), " +
                 "`receive_messages` TINYINT(1) NOT NULL DEFAULT 1, " +
+                "`notify_online` TINYINT(1) NOT NULL DEFAULT 1, " +
                 "UNIQUE KEY `uk_player_friend` (`player_uuid`, `friend_uuid`), " +
                 "INDEX `idx_player_uuid` (`player_uuid`), " +
                 "INDEX `idx_friend_uuid` (`friend_uuid`)" +
@@ -384,6 +390,7 @@ public class DatabaseManager {
                 "`favorite` INTEGER NOT NULL DEFAULT 0, " +
                 "`nickname` TEXT, " +
                 "`receive_messages` INTEGER NOT NULL DEFAULT 1, " +
+                "`notify_online` INTEGER NOT NULL DEFAULT 1, " +
                 "UNIQUE (`player_uuid`, `friend_uuid`));";
     }
     
@@ -614,6 +621,27 @@ public class DatabaseManager {
                 "`coins_sent` INTEGER NOT NULL DEFAULT 0, " +
                 "`gifts_sent` TEXT, " +
                 "UNIQUE (`player_uuid`, `target_uuid`, `date`));";
+    }
+    
+    private String getMySQLGlobalDailyGiftsTableSQL() {
+        return "CREATE TABLE IF NOT EXISTS `" + tablePrefix + "global_daily_gifts` (" +
+                "`id` INT AUTO_INCREMENT PRIMARY KEY, " +
+                "`player_uuid` VARCHAR(36) NOT NULL, " +
+                "`date` DATE NOT NULL, " +
+                "`gifts_sent` TEXT, " +
+                "UNIQUE KEY `uk_player_date` (`player_uuid`, `date`), " +
+                "INDEX `idx_player_uuid` (`player_uuid`), " +
+                "INDEX `idx_date` (`date`)" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+    }
+    
+    private String getSQLiteGlobalDailyGiftsTableSQL() {
+        return "CREATE TABLE IF NOT EXISTS `" + tablePrefix + "global_daily_gifts` (" +
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "`player_uuid` TEXT NOT NULL, " +
+                "`date` TEXT NOT NULL, " +
+                "`gifts_sent` TEXT, " +
+                "UNIQUE (`player_uuid`, `date`));";
     }
     
     /**

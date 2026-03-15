@@ -32,6 +32,7 @@ public class FriendListGUI extends BaseGUI {
         this.teleportManager = plugin.getModuleManager().getTeleportModule().getTeleportManager();
         this.viewerUUID = viewer.getUniqueId();
         
+        initInventory();
         this.friends = dataManager.getFriendList(viewerUUID);
         this.totalPages = calculateTotalPages(friends.size(), ITEMS_PER_PAGE);
         
@@ -141,7 +142,7 @@ public class FriendListGUI extends BaseGUI {
     @Override
     public void handleClick(int slot, Player player, int clickType) {
         if (slot == BACK_SLOT) {
-            new SocialMainGUI(plugin, player).open(player);
+            goBack(player);
             return;
         }
         
@@ -168,7 +169,9 @@ public class FriendListGUI extends BaseGUI {
                     if (clickType == GUIListener.RIGHT_CLICK) {
                         handleTeleport(player, friend);
                     } else {
-                        new FriendDetailGUI(plugin, player, friend.getFriendUuid(), friend.getFriendName()).open(player);
+                        FriendDetailGUI gui = new FriendDetailGUI(plugin, player, friend.getFriendUuid(), friend.getFriendName());
+                        gui.setPreviousGUI(this);
+                        gui.open(player);
                     }
                 }
                 return;

@@ -113,7 +113,7 @@ public class GiftShopGUI extends BaseGUI {
                     .append(Component.text(gift.getAmountPerSend() + " 金币", NamedTextColor.YELLOW)));
         }
         
-        int remaining = giftManager.getRemainingDailyLimit(viewer, receiverUuid, gift.getId());
+        int remaining = giftManager.getRemainingDailyLimit(viewer, gift.getId());
         if (remaining >= 0) {
             lore.add(Component.text("今日剩余: ", NamedTextColor.GRAY)
                     .append(Component.text(remaining + " 次", NamedTextColor.AQUA)));
@@ -168,7 +168,7 @@ public class GiftShopGUI extends BaseGUI {
     @Override
     public void handleClick(int slot, Player player, int clickType) {
         if (slot == BACK_SLOT) {
-            new FriendDetailGUI(plugin, player, receiverUuid, receiverName).open(player);
+            goBack(player);
             return;
         }
         

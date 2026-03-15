@@ -43,6 +43,7 @@ public class GiftHistoryWithFriendGUI extends BaseGUI {
         this.relationManager = plugin.getModuleManager().getRelationModule().getRelationManager();
         this.gifts = new ArrayList<>();
         
+        initInventory();
         loadGifts();
     }
     
@@ -177,12 +178,14 @@ public class GiftHistoryWithFriendGUI extends BaseGUI {
     @Override
     public void handleClick(int slot, Player player, int clickType) {
         if (slot == BACK_SLOT) {
-            new RelationDetailGUI(plugin, player, friendUuid, friendName).open(player);
+            goBack(player);
             return;
         }
         
         if (slot == SEND_GIFT_SLOT) {
-            new GiftShopGUI(plugin, player, friendUuid, friendName).open(player);
+            GiftShopGUI gui = new GiftShopGUI(plugin, player, friendUuid, friendName);
+            gui.setPreviousGUI(this);
+            gui.open(player);
             return;
         }
         

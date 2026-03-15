@@ -54,6 +54,7 @@ public class FriendDetailGUI extends BaseGUI {
         this.friendUUID = friendUuid;
         this.friendName = friendName;
         
+        initInventory();
         loadFriendData();
         setupItems();
     }
@@ -290,8 +291,6 @@ public class FriendDetailGUI extends BaseGUI {
         List<Component> lore = new ArrayList<>();
         lore.add(messageManager.getComponent("gui.lore-send-mail"));
         lore.add(Component.empty());
-        lore.add(Component.text("发送邮件给此好友", NamedTextColor.GRAY));
-        lore.add(Component.empty());
         lore.add(Component.text("点击发送", NamedTextColor.AQUA));
         
         meta.lore(lore);
@@ -367,43 +366,28 @@ public class FriendDetailGUI extends BaseGUI {
     @Override
     public void handleClick(int slot, Player player, int clickType) {
         switch (slot) {
-            case BACK_SLOT:
-                new FriendListGUI(plugin, player).open(player);
-                break;
-                
-            case TELEPORT_SLOT:
-                handleTeleport(player);
-                break;
-                
-            case NOTIFY_ONLINE_SLOT:
-                toggleNotifyOnline(player);
-                break;
-                
-            case ALLOW_TELEPORT_SLOT:
-                toggleAllowTeleport(player);
-                break;
-                
-            case FAVORITE_SLOT:
-                toggleFavorite(player);
-                break;
-                
-            case SEND_MAIL_SLOT:
-                handleSendMail(player);
-                break;
-                
-            case GIFT_SLOT:
-                new GiftShopGUI(plugin, player, friendUUID, friendName).open(player);
-                break;
-                
-            case RELATION_SLOT:
-                new RelationDetailFromFriendGUI(plugin, player, friendUUID, friendName).open(player);
-                break;
-                
-            case REMOVE_FRIEND_SLOT:
+            case BACK_SLOT -> goBack(player);
+            case TELEPORT_SLOT -> handleTeleport(player);
+            case NOTIFY_ONLINE_SLOT -> toggleNotifyOnline(player);
+            case ALLOW_TELEPORT_SLOT -> toggleAllowTeleport(player);
+            case FAVORITE_SLOT -> toggleFavorite(player);
+            case SEND_MAIL_SLOT -> handleSendMail(player);
+            case GIFT_SLOT -> {
+                GiftShopGUI gui = new GiftShopGUI(plugin, player, friendUUID, friendName);
+                gui.setPreviousGUI(this);
+                gui.open(player);
+            }
+            case RELATION_SLOT -> {
+                RelationDetailFromFriendGUI gui = new RelationDetailFromFriendGUI(plugin, player, friendUUID, friendName);
+                gui.setPreviousGUI(this);
+                gui.open(player);
+            }
+            case REMOVE_FRIEND_SLOT -> {
                 if (clickType == GUIListener.SHIFT_CLICK) {
                     handleRemoveFriend(player);
                 }
-                break;
+            }
+            default -> {}
         }
     }
     
@@ -494,8 +478,8 @@ public class FriendDetailGUI extends BaseGUI {
     }
     
     private void handleSendMail(Player player) {
-        player.closeInventory();
-        plugin.getModuleManager().getMailModule().getMailManager().openSendMailGUI(player, friendUUID, friendName);
+        plugin.getModuleManager().getMailModule().getMailManager()
+                .openSendMailGUI(player, friendUUID, friendName, this);
     }
     
     public UUID getViewerUUID() {

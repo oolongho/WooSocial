@@ -26,7 +26,7 @@ public class WooSocialBungeePlugin extends Plugin {
         
         getProxy().registerChannel(SYNC_CHANNEL);
         
-        messageHandler = new SyncMessageHandler(getProxy(), getLogger());
+        messageHandler = new SyncMessageHandler(getProxy());
         
         getProxy().getPluginManager().registerListener(this, new PluginMessageListener(getProxy(), getLogger(), messageHandler));
         
@@ -57,7 +57,7 @@ public class WooSocialBungeePlugin extends Plugin {
             
             config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(configFile);
         } catch (IOException e) {
-            getLogger().warning("[WooSocialProxy] 加载配置失败: " + e.getMessage());
+            getLogger().warning(() -> "[WooSocialProxy] 加载配置失败: " + e.getMessage());
         }
     }
     

@@ -29,6 +29,8 @@ public class GiftConfig extends ConfigLoader {
             return;
         }
         
+        plugin.getLogger().info("开始加载礼物配置...");
+        
         for (String giftId : giftsSection.getKeys(false)) {
             ConfigurationSection giftSection = giftsSection.getConfigurationSection(giftId);
             if (giftSection == null) continue;
@@ -37,7 +39,12 @@ public class GiftConfig extends ConfigLoader {
             gift.setName(giftSection.getString("name", giftId));
             gift.setDescription(giftSection.getString("description", ""));
             gift.setIntimacy(giftSection.getInt("intimacy", 1));
-            gift.setDailyLimit(giftSection.getInt("daily-limit", 0));
+            
+            int dailyLimit = giftSection.getInt("daily-limit", 0);
+            gift.setDailyLimit(dailyLimit);
+            
+            plugin.getLogger().info("加载礼物: " + giftId + ", daily-limit: " + dailyLimit + ", hasDailyLimit: " + gift.hasDailyLimit());
+            
             gift.setAmountPerSend(giftSection.getInt("amount-per-send", 1));
             
             ConfigurationSection costSection = giftSection.getConfigurationSection("cost");
@@ -56,6 +63,8 @@ public class GiftConfig extends ConfigLoader {
             
             gifts.put(giftId.toLowerCase(), gift);
         }
+        
+        plugin.getLogger().info("礼物配置加载完成，共 " + gifts.size() + " 个礼物");
     }
     
     public GiftType getGift(String id) {
