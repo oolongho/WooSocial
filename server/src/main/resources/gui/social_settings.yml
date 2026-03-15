@@ -1,4 +1,4 @@
-title: "<dark_gray>社交设置"
+﻿title: "<black>社交设置"
 
 layout:
   - '#1######'
@@ -17,17 +17,17 @@ icons:
     material: BOOK
     name: "<yellow>返回"
     lore:
-      - "<gray>返回主菜单"
+      - "<black>返回主菜�?
     actions:
       left: [open_gui:social_main, sound:entity_mule_chest]
   
   '2':
     material: "{allow_friend_teleport ? LIME_DYE : GRAY_DYE}"
-    name: "<gold>好友传送权限"
+    name: "<gold>好友传送权�?
     lore:
-      - "<gray>是否允许好友传送到你"
+      - "<black>是否允许好友传送到�?
       - ""
-      - "<gray>状态: {allow_friend_teleport ? <green>允许 : <red>禁止}"
+      - "<black>状�? {allow_friend_teleport ? <green>允许 : <red>禁止}"
       - ""
       - "<aqua>点击切换"
     actions:
