@@ -52,6 +52,8 @@ public class SocialMainGUI extends BaseGUI {
         this.teleportManager = plugin.getModuleManager().getTeleportModule().getTeleportManager();
         this.viewerUUID = viewer.getUniqueId();
         
+        initInventory();
+        
         this.friends = friendDataManager.getFriendList(viewerUUID);
         this.totalPages = calculateTotalPages(friends.size(), ITEMS_PER_PAGE);
         
@@ -280,27 +282,33 @@ public class SocialMainGUI extends BaseGUI {
     @Override
     public void handleClick(int slot, Player player, int clickType) {
         if (slot == BACK_SLOT) {
-            player.closeInventory();
+            goBack(player);
             return;
         }
         
         if (slot == PERSONAL_INFO_SLOT) {
-            new SocialSettingsGUI(plugin, player).open(player);
+            SocialSettingsGUI gui = new SocialSettingsGUI(plugin, player);
+            gui.setPreviousGUI(this);
+            gui.open(player);
             return;
         }
         
         if (slot == FRIEND_REQUESTS_SLOT) {
-            new FriendRequestsGUI(plugin, player).open(player);
+            FriendRequestsGUI gui = new FriendRequestsGUI(plugin, player);
+            gui.setPreviousGUI(this);
+            gui.open(player);
             return;
         }
         
         if (slot == MAIL_SLOT) {
-            plugin.getModuleManager().getMailModule().getMailManager().openMailListGUI(player, 1);
+            plugin.getModuleManager().getMailModule().getMailManager().openMailListGUI(player, 1, this);
             return;
         }
         
         if (slot == RELATION_LIST_SLOT) {
-            new RelationListGUI(plugin, player).open(player);
+            RelationListGUI gui = new RelationListGUI(plugin, player);
+            gui.setPreviousGUI(this);
+            gui.open(player);
             return;
         }
         
@@ -325,7 +333,9 @@ public class SocialMainGUI extends BaseGUI {
                     if (clickType == GUIListener.RIGHT_CLICK) {
                         handleTeleport(player, friend);
                     } else {
-                        new FriendDetailGUI(plugin, player, friend.getFriendUuid(), friend.getFriendName()).open(player);
+                        FriendDetailGUI gui = new FriendDetailGUI(plugin, player, friend.getFriendUuid(), friend.getFriendName());
+                        gui.setPreviousGUI(this);
+                        gui.open(player);
                     }
                 }
                 return;

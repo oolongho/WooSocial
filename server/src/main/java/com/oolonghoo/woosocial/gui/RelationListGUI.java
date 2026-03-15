@@ -40,6 +40,7 @@ public class RelationListGUI extends BaseGUI {
         this.relationManager = plugin.getModuleManager().getRelationModule().getRelationManager();
         this.relations = new ArrayList<>();
         
+        initInventory();
         loadRelations();
     }
     
@@ -167,19 +168,25 @@ public class RelationListGUI extends BaseGUI {
     @Override
     public void handleClick(int slot, Player player, int clickType) {
         if (slot == BACK_SLOT) {
-            new SocialMainGUI(plugin, player).open(player);
+            goBack(player);
             return;
         }
         
         if (slot == PROPOSAL_SLOT) {
-            new FriendSelectGUI(plugin, player, FriendSelectGUI.SelectMode.APPLY_RELATION, (p, friend) -> {
-                new RelationProposalGUI(plugin, p, friend.getFriendUuid(), friend.getFriendName()).open(p);
-            }).open(player);
+            FriendSelectGUI gui = new FriendSelectGUI(plugin, player, FriendSelectGUI.SelectMode.APPLY_RELATION, (p, friend) -> {
+                RelationProposalGUI proposalGUI = new RelationProposalGUI(plugin, p, friend.getFriendUuid(), friend.getFriendName());
+                proposalGUI.setPreviousGUI(this);
+                proposalGUI.open(p);
+            });
+            gui.setPreviousGUI(this);
+            gui.open(player);
             return;
         }
         
         if (slot == GIFT_HISTORY_SLOT) {
-            new GiftHistoryGUI(plugin, player).open(player);
+            GiftHistoryGUI gui = new GiftHistoryGUI(plugin, player);
+            gui.setPreviousGUI(this);
+            gui.open(player);
             return;
         }
         
@@ -204,7 +211,9 @@ public class RelationListGUI extends BaseGUI {
             if (actualIndex < relations.size()) {
                 RelationData relation = relations.get(actualIndex);
                 String friendName = relation.getFriendName() != null ? relation.getFriendName() : "未知";
-                new RelationDetailGUI(plugin, player, relation.getFriendUuid(), friendName).open(player);
+                RelationDetailGUI gui = new RelationDetailGUI(plugin, player, relation.getFriendUuid(), friendName);
+                gui.setPreviousGUI(this);
+                gui.open(player);
             }
         }
     }

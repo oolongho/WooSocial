@@ -39,6 +39,7 @@ public class GUIConfigManager {
             "friend_list",
             "friend_detail",
             "friend_requests",
+            "friend_select",
             "social_settings",
             "blocked_list",
             "mail_list",
@@ -47,7 +48,9 @@ public class GUIConfigManager {
             "relation_list",
             "relation_detail",
             "relation_proposal",
-            "gift_shop"
+            "gift_shop",
+            "gift_history",
+            "gift_history_friend"
     );
     
     public GUIConfigManager(WooSocial plugin) {

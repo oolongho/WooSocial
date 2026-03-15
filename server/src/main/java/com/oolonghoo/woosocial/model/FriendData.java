@@ -15,6 +15,7 @@ public class FriendData {
     private boolean favorite;
     private String nickname;
     private boolean receiveMessages;
+    private boolean notifyOnline;
     
     public FriendData(UUID playerUuid, UUID friendUuid) {
         this.playerUuid = playerUuid;
@@ -23,6 +24,7 @@ public class FriendData {
         this.favorite = false;
         this.nickname = null;
         this.receiveMessages = true;
+        this.notifyOnline = true;
     }
     
     public FriendData(UUID playerUuid, UUID friendUuid, long addTime, String friendName) {
@@ -33,6 +35,7 @@ public class FriendData {
         this.favorite = false;
         this.nickname = null;
         this.receiveMessages = true;
+        this.notifyOnline = true;
     }
     
     public FriendData(UUID playerUuid, UUID friendUuid, long addTime, String friendName, boolean favorite, String nickname) {
@@ -43,6 +46,7 @@ public class FriendData {
         this.favorite = favorite;
         this.nickname = nickname;
         this.receiveMessages = true;
+        this.notifyOnline = true;
     }
     
     public FriendData(UUID playerUuid, UUID friendUuid, long addTime, String friendName, 
@@ -54,6 +58,19 @@ public class FriendData {
         this.favorite = favorite;
         this.nickname = nickname;
         this.receiveMessages = receiveMessages;
+        this.notifyOnline = true;
+    }
+    
+    public FriendData(UUID playerUuid, UUID friendUuid, long addTime, String friendName, 
+                      boolean favorite, String nickname, boolean receiveMessages, boolean notifyOnline) {
+        this.playerUuid = playerUuid;
+        this.friendUuid = friendUuid;
+        this.addTime = addTime;
+        this.friendName = friendName;
+        this.favorite = favorite;
+        this.nickname = nickname;
+        this.receiveMessages = receiveMessages;
+        this.notifyOnline = notifyOnline;
     }
     
     // Getters
@@ -89,6 +106,10 @@ public class FriendData {
         return receiveMessages;
     }
     
+    public boolean isNotifyOnline() {
+        return notifyOnline;
+    }
+    
     // Setters
     public void setAddTime(long addTime) {
         this.addTime = addTime;
@@ -108,6 +129,10 @@ public class FriendData {
     
     public void setReceiveMessages(boolean receiveMessages) {
         this.receiveMessages = receiveMessages;
+    }
+    
+    public void setNotifyOnline(boolean notifyOnline) {
+        this.notifyOnline = notifyOnline;
     }
     
     @Override

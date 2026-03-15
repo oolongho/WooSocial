@@ -28,6 +28,7 @@ public class SocialSettingsGUI extends BaseGUI {
         this.friendDataManager = plugin.getModuleManager().getFriendModule().getDataManager();
         this.viewerUUID = viewer.getUniqueId();
         
+        initInventory();
         setupItems();
     }
     
@@ -103,7 +104,7 @@ public class SocialSettingsGUI extends BaseGUI {
     @Override
     public void handleClick(int slot, Player player, int clickType) {
         if (slot == BACK_SLOT) {
-            new SocialMainGUI(plugin, player).open(player);
+            goBack(player);
             return;
         }
         
@@ -122,8 +123,9 @@ public class SocialSettingsGUI extends BaseGUI {
         }
         
         if (slot == BLOCKED_LIST_SLOT) {
-            new BlockedListGUI(plugin, player).open(player);
-            return;
+            BlockedListGUI gui = new BlockedListGUI(plugin, player);
+            gui.setPreviousGUI(this);
+            gui.open(player);
         }
     }
     

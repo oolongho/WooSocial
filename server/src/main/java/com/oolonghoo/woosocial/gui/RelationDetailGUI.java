@@ -45,6 +45,7 @@ public class RelationDetailGUI extends BaseGUI {
         this.dataManager = plugin.getModuleManager().getRelationModule().getDataManager();
         this.relationManager = plugin.getModuleManager().getRelationModule().getRelationManager();
         
+        initInventory();
         loadRelationData();
     }
     
@@ -226,22 +227,28 @@ public class RelationDetailGUI extends BaseGUI {
     @Override
     public void handleClick(int slot, Player player, int clickType) {
         if (slot == BACK_SLOT) {
-            new RelationListGUI(plugin, player).open(player);
+            goBack(player);
             return;
         }
         
         if (slot == GIFT_SLOT) {
-            new GiftShopGUI(plugin, player, friendUuid, friendName).open(player);
+            GiftShopGUI gui = new GiftShopGUI(plugin, player, friendUuid, friendName);
+            gui.setPreviousGUI(this);
+            gui.open(player);
             return;
         }
         
         if (slot == PROPOSAL_SLOT) {
-            new RelationProposalGUI(plugin, player, friendUuid, friendName).open(player);
+            RelationProposalGUI gui = new RelationProposalGUI(plugin, player, friendUuid, friendName);
+            gui.setPreviousGUI(this);
+            gui.open(player);
             return;
         }
         
         if (slot == HISTORY_SLOT) {
-            new GiftHistoryWithFriendGUI(plugin, player, friendUuid, friendName).open(player);
+            GiftHistoryWithFriendGUI gui = new GiftHistoryWithFriendGUI(plugin, player, friendUuid, friendName);
+            gui.setPreviousGUI(this);
+            gui.open(player);
             return;
         }
         

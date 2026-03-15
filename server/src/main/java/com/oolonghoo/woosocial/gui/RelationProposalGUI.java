@@ -42,6 +42,7 @@ public class RelationProposalGUI extends BaseGUI {
         this.dataManager = plugin.getModuleManager().getRelationModule().getDataManager();
         this.relationManager = plugin.getModuleManager().getRelationModule().getRelationManager();
         
+        initInventory();
         if (targetUuid != null) {
             loadRelationData();
         } else {
@@ -194,11 +195,7 @@ public class RelationProposalGUI extends BaseGUI {
     @Override
     public void handleClick(int slot, Player player, int clickType) {
         if (slot == BACK_SLOT) {
-            if (relationExists && targetUuid != null) {
-                new RelationDetailGUI(plugin, player, targetUuid, targetName).open(player);
-            } else {
-                new RelationListGUI(plugin, player).open(player);
-            }
+            goBack(player);
             return;
         }
         
