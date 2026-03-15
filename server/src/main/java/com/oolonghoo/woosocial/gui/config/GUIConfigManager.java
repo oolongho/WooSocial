@@ -111,7 +111,7 @@ public class GUIConfigManager {
                 configs.put(name, guiConfig);
                 layouts.put(name, new GUILayout(guiConfig));
             } else {
-                plugin.getLogger().warning("[GUI] 配置解析失败: " + name + ".yml");
+                plugin.getLogger().warning(() -> "[GUI] 配置解析失败: " + name + ".yml");
             }
         }
     }
@@ -121,7 +121,7 @@ public class GUIConfigManager {
      */
     public boolean reloadConfig(String name) {
         if (!registeredGUIs.contains(name)) {
-            plugin.getLogger().warning("[GUI] 未注册的GUI: " + name);
+            plugin.getLogger().warning(() -> "[GUI] 未注册的GUI: " + name);
             return false;
         }
         
@@ -137,7 +137,7 @@ public class GUIConfigManager {
         InputStream stream = plugin.getResource(resourcePath);
         
         if (stream == null) {
-            plugin.getLogger().warning("[GUI] 未找到默认配置: " + resourcePath);
+            plugin.getLogger().warning(() -> "[GUI] 未找到默认配置: " + resourcePath);
             return null;
         }
         
@@ -408,13 +408,13 @@ public class GUIConfigManager {
      */
     public void printStatus() {
         plugin.getLogger().info("=== GUI Config Manager Status ===");
-        plugin.getLogger().info("Registered GUIs: " + registeredGUIs.size());
-        plugin.getLogger().info("Loaded Configs: " + configs.size());
+        plugin.getLogger().info(() -> "Registered GUIs: " + registeredGUIs.size());
+        plugin.getLogger().info(() -> "Loaded Configs: " + configs.size());
         
         for (String name : registeredGUIs) {
             GUIConfig config = configs.get(name);
             String status = config != null ? "loaded" : "not loaded";
-            plugin.getLogger().info("  - " + name + ": " + status);
+            plugin.getLogger().info(() -> "  - " + name + ": " + status);
         }
         
         plugin.getLogger().info("=================================");

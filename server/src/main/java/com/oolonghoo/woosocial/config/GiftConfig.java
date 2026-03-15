@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class GiftConfig extends ConfigLoader {
@@ -55,7 +56,7 @@ public class GiftConfig extends ConfigLoader {
             
             String iconStr = giftSection.getString("icon", "GOLD_INGOT");
             try {
-                gift.setIcon(Material.valueOf(iconStr.toUpperCase()));
+                gift.setIcon(Material.valueOf(Objects.requireNonNullElse(iconStr, "GOLD_INGOT").toUpperCase()));
             } catch (IllegalArgumentException e) {
                 plugin.getLogger().warning(() -> "无效的礼品图标材质: " + iconStr + "，使用默认值 GOLD_INGOT");
                 gift.setIcon(Material.GOLD_INGOT);

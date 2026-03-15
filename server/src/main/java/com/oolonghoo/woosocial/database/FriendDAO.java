@@ -700,7 +700,7 @@ public class FriendDAO {
                 
                 return statement.executeUpdate() > 0;
             } catch (SQLException e) {
-                plugin.getLogger().severe("[FriendDAO] 保存传送设置失败: " + e.getMessage());
+                plugin.getLogger().severe(() -> "[FriendDAO] 保存传送设置失败: " + e.getMessage());
                 return false;
             }
         });
@@ -739,7 +739,7 @@ public class FriendDAO {
                     }
                 }
             } catch (SQLException e) {
-                plugin.getLogger().severe("[FriendDAO] 加载传送设置失败: " + e.getMessage());
+                plugin.getLogger().severe(() -> "[FriendDAO] 加载传送设置失败: " + e.getMessage());
             }
             
             return java.util.Optional.empty();
@@ -771,7 +771,7 @@ public class FriendDAO {
                 }
             }
         } catch (Exception e) {
-            plugin.getLogger().warning("[FriendDAO] 解析好友权限JSON失败: " + e.getMessage());
+            plugin.getLogger().warning(() -> "[FriendDAO] 解析好友权限JSON失败: " + e.getMessage());
         }
     }
     
@@ -804,7 +804,7 @@ public class FriendDAO {
                     }
                 }
             } catch (SQLException e) {
-                plugin.getLogger().severe("[FriendDAO] 加载屏蔽列表失败: " + e.getMessage());
+                plugin.getLogger().severe(() -> "[FriendDAO] 加载屏蔽列表失败: " + e.getMessage());
             }
             
             return blockedSet;
@@ -835,7 +835,7 @@ public class FriendDAO {
                 
                 return statement.executeUpdate() > 0;
             } catch (SQLException e) {
-                plugin.getLogger().severe("[FriendDAO] 添加屏蔽失败: " + e.getMessage());
+                plugin.getLogger().severe(() -> "[FriendDAO] 添加屏蔽失败: " + e.getMessage());
                 return false;
             }
         });
@@ -860,7 +860,7 @@ public class FriendDAO {
                 
                 return statement.executeUpdate() > 0;
             } catch (SQLException e) {
-                plugin.getLogger().severe("[FriendDAO] 移除屏蔽失败: " + e.getMessage());
+                plugin.getLogger().severe(() -> "[FriendDAO] 移除屏蔽失败: " + e.getMessage());
                 return false;
             }
         });
@@ -918,7 +918,7 @@ public class FriendDAO {
                     }
                 }
             } catch (SQLException e) {
-                plugin.getLogger().severe("[FriendDAO] 获取需要通知的好友列表失败: " + e.getMessage());
+                plugin.getLogger().severe(() -> "[FriendDAO] 获取需要通知的好友列表失败: " + e.getMessage());
             }
             
             return friendsToNotify;
