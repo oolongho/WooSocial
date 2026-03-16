@@ -18,13 +18,13 @@ icons:
     skull_owner: "{player_name}"
     name: "<green>{player_name}"
     lore:
-      - "<black>查看社交设置"
+      - "<gray>查看社交设置"
       - ""
-      - "<black>好友数量: <yellow>{friend_count}"
-      - "<black>屏蔽数量: <yellow>{blocked_count}"
-      - "<black>未读邮件: <yellow>{unread_mail_count}"
+      - "<gray>好友数量: <yellow>{friend_count}"
+      - "<gray>屏蔽数量: <yellow>{blocked_count}"
+      - "<gray>未读邮件: <yellow>{unread_mail_count}"
       - ""
-      - "<black>传送权限: <yellow>{teleport_status}"
+      - "<gray>传送权限: <yellow>{teleport_status}"
       - ""
       - "<aqua>点击打开设置"
     actions:
@@ -34,9 +34,9 @@ icons:
     material: PLAYER_HEAD
     name: "<green>好友列表"
     lore:
-      - "<black>查看你的好友列表"
+      - "<gray>查看你的好友列表"
       - ""
-      - "<black>好友数量: <yellow>{friend_count}"
+      - "<gray>好友数量: <yellow>{friend_count}"
     actions:
       left: "[open_gui:friend_list, sound:entity_mule_chest]"
   
@@ -44,9 +44,9 @@ icons:
     material: GOLDEN_APPLE
     name: "<gold>好友请求"
     lore:
-      - "<black>处理待处理的好友请求"
+      - "<gray>处理待处理的好友请求"
       - ""
-      - "<black>待处理: <yellow>{request_count}"
+      - "<gray>待处理: <yellow>{request_count}"
     actions:
       left: "[open_gui:friend_requests, sound:entity_mule_chest]"
   
@@ -54,9 +54,9 @@ icons:
     material: CHEST
     name: "<yellow>邮箱"
     lore:
-      - "<black>查看你的邮件"
+      - "<gray>查看你的邮件"
       - ""
-      - "<black>未读邮件: <yellow>{unread_mail_count}"
+      - "<gray>未读邮件: <yellow>{unread_mail_count}"
       - ""
       - "<aqua>点击打开邮箱"
     actions:
@@ -66,7 +66,7 @@ icons:
     material: ROSE_BUSH
     name: "<light_purple>我的关系"
     lore:
-      - "<black>查看和管理好友关系"
+      - "<gray>查看和管理好友关系"
       - ""
       - "<aqua>点击查看"
     actions:
@@ -76,7 +76,7 @@ icons:
     material: GOLD_INGOT
     name: "<gold>礼物记录"
     lore:
-      - "<black>查看收到的礼物"
+      - "<gray>查看收到的礼物"
       - ""
       - "<aqua>点击查看"
     actions:
@@ -86,7 +86,7 @@ icons:
     material: NETHER_STAR
     name: "<yellow>礼物商店"
     lore:
-      - "<black>购买礼物送给好友"
+      - "<gray>购买礼物送给好友"
       - ""
       - "<aqua>点击打开"
     actions:

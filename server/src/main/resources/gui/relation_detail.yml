@@ -1,4 +1,4 @@
-﻿title: "<black>关系详情"
+﻿﻿title: "<black>关系详情"
 
 layout:
   - '#1######'
@@ -17,48 +17,48 @@ icons:
     material: BOOK
     name: "<yellow>返回"
     lore:
-      - "<black>返回关系列表"
+      - "<gray>返回关系列表"
     actions:
-      left: [open_gui:relation_list, sound:entity_mule_chest]
+      left: "[open_gui:relation_list, sound:entity_mule_chest]"
   
   'i':
     material: PLAYER_HEAD
     skull_owner: "{friend_name}"
     name: "{relation_color}{friend_name}"
     lore:
-      - "<black>关系: <yellow>{relation_name}"
-      - "<black>亲密�? <yellow>{intimacy} <black>({intimacy_level})"
-      - "<black>建立时间: <yellow>{create_time}"
+      - "<gray>关系: <yellow>{relation_name}"
+      - "<gray>亲密度: <yellow>{intimacy} <gray>({intimacy_level})"
+      - "<gray>建立时间: <yellow>{create_time}"
       - ""
-      - "<black>状�? {is_mutual ? <green>已确�?: <yellow>待确认}"
+      - "<gray>状态: {is_mutual ? <green>已确认 : <yellow>待确认}"
   
   '2':
     material: GOLD_INGOT
-    name: "<gold>赠送金�?
+    name: "<gold>赠送金币"
     lore:
-      - "<black>每日免费赠送金�?
-      - "<black>已赠�? <yellow>{coins_sent}/{daily_limit}"
+      - "<gray>每日免费赠送金币"
+      - "<gray>已赠送: <yellow>{coins_sent}/{daily_limit}"
       - ""
-      - "<aqua>点击赠�?
+      - "<aqua>点击赠送"
     actions:
-      left: [send_coins, sound:entity_mule_chest]
+      left: "[send_coins, sound:entity_mule_chest]"
   
   '3':
     material: CHEST
     name: "<green>礼品商店"
     lore:
-      - "<black>购买礼品赠�?
-      - "<black>增加亲密�?
+      - "<gray>购买礼品赠送"
+      - "<gray>增加亲密度"
       - ""
       - "<aqua>点击打开"
     actions:
-      left: [open_gui:gift_shop, sound:entity_mule_chest]
+      left: "[open_gui:gift_shop, sound:entity_mule_chest]"
   
   '4':
     material: REDSTONE_BLOCK
     name: "<red>解除关系"
     lore:
-      - "<black>解除与此好友的关�?
+      - "<gray>解除与此好友的关系"
       - "<red>Shift+点击确认"
     actions:
-      shift_left: [remove_relation, sound:entity_mule_chest]
+      shift_left: "[remove_relation, sound:entity_mule_chest]"

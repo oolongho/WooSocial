@@ -1,4 +1,4 @@
-﻿title: "<black>屏蔽列表 <black>{page}/{total_pages}"
+title: "<black>屏蔽列表 <gray>{page}/{total_pages}"
 
 layout:
   - '#1######'
@@ -18,24 +18,24 @@ icons:
     skull_owner: "{blocked_name}"
     name: "<red>{blocked_name}"
     lore:
-      - "<black>状�? <red>已屏�?
+      - "<gray>状态: <red>已屏蔽"
       - ""
       - "<green>点击取消屏蔽"
     actions:
-      left: [unblock_player, sound:entity_mule_chest]
+      left: "[unblock_player, sound:entity_mule_chest]"
   
   '<':
     material: SPECTRAL_ARROW
-    name: "<yellow>上一�?
+    name: "<yellow>上一页"
     lore:
-      - "<black>点击翻页"
+      - "<gray>点击翻页"
     actions:
-      left: [prev_page, sound:entity_mule_chest]
+      left: "[prev_page, sound:entity_mule_chest]"
   
   '>':
     material: SPECTRAL_ARROW
-    name: "<yellow>下一�?
+    name: "<yellow>下一页"
     lore:
-      - "<black>点击翻页"
+      - "<gray>点击翻页"
     actions:
-      left: [next_page, sound:entity_mule_chest]
+      left: "[next_page, sound:entity_mule_chest]"

@@ -17,31 +17,31 @@ icons:
     material: BOOK
     name: "<yellow>返回"
     lore:
-      - "<black>返回好友详情"
+      - "<gray>返回好友详情"
     actions:
       left: "[close, sound:entity_mule_chest]"
   
   'r':
     material: PLAYER_HEAD
     skull_owner: "{receiver_name}"
-    name: "<black>收件人: <green>{receiver_name}"
+    name: "<gray>收件人: <green>{receiver_name}"
     lore:
       - ""
       - "<yellow>将物品放入下方格子发送"
-      - "<black>最多可放入 10 个物品"
+      - "<gray>最多可放入 10 个物品"
   
   'i':
     material: AIR
     name: "<yellow>放入物品"
     lore:
       - ""
-      - "<black>将你要发送的物品"
-      - "<black>放入这个格子"
+      - "<gray>将你要发送的物品"
+      - "<gray>放入这个格子"
   
   's':
     material: LIME_DYE
     name: "<green>发送邮件"
     lore:
-      - "<black>发送物品给 <green>{receiver_name}"
+      - "<gray>发送物品给 <green>{receiver_name}"
       - ""
       - "<aqua>点击发送"

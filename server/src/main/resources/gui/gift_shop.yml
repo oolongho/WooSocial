@@ -1,4 +1,4 @@
-﻿title: "<black>礼物商店 - 赠送给 {receiver_name}"
+﻿﻿title: "<black>礼物商店 - 赠送给 {receiver_name}"
 
 layout:
   - '#1######'
@@ -17,22 +17,22 @@ icons:
     material: BOOK
     name: "<yellow>返回"
     lore:
-      - "<black>返回好友详情"
+      - "<gray>返回好友详情"
     actions:
-      left: [open_gui:friend_detail, sound:entity_mule_chest]
+      left: "[open_gui:friend_detail, sound:entity_mule_chest]"
   
   '<':
     material: SPECTRAL_ARROW
-    name: "<yellow>上一�?
+    name: "<yellow>上一页"
     lore:
-      - "<black>点击翻页"
+      - "<gray>点击翻页"
     actions:
-      left: [prev_page, sound:entity_mule_chest]
+      left: "[prev_page, sound:entity_mule_chest]"
   
   '>':
     material: SPECTRAL_ARROW
-    name: "<yellow>下一�?
+    name: "<yellow>下一页"
     lore:
-      - "<black>点击翻页"
+      - "<gray>点击翻页"
     actions:
-      left: [next_page, sound:entity_mule_chest]
+      left: "[next_page, sound:entity_mule_chest]"

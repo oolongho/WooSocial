@@ -18,22 +18,22 @@ icons:
     skull_owner: "{friend_name}"
     name: "<yellow>{friend_name}"
     lore:
-      - "<black>查看你们之间的礼物记录"
+      - "<gray>查看你们之间的礼物记录"
   
   'g':
     material: PLAYER_HEAD
     skull_owner: "{sender_name}"
     name: "<gold>{gift_name}"
     lore:
-      - "<black>发送者: <white>{sender_name}"
-      - "<black>时间: <white>{send_time}"
-      - "<black>亲密度: <yellow>+{intimacy}"
+      - "<gray>发送者: <white>{sender_name}"
+      - "<gray>时间: <white>{send_time}"
+      - "<gray>亲密度: <yellow>+{intimacy}"
   
   '<':
     material: ARROW
     name: "<yellow>上一页"
     lore:
-      - "<black>当前: <white>{page}/{total_pages}"
+      - "<gray>当前: <white>{page}/{total_pages}"
     actions:
       left: "[prev_page, sound:entity_mule_chest]"
   
@@ -41,6 +41,6 @@ icons:
     material: ARROW
     name: "<yellow>下一页"
     lore:
-      - "<black>当前: <white>{page}/{total_pages}"
+      - "<gray>当前: <white>{page}/{total_pages}"
     actions:
       left: "[next_page, sound:entity_mule_chest]"

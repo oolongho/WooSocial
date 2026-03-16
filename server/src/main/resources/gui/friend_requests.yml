@@ -1,4 +1,4 @@
-﻿title: "<black>好友请求 <black>{page}/{total_pages}"
+title: "<black>好友请求 <gray>{page}/{total_pages}"
 
 layout:
   - '#1######'
@@ -18,27 +18,27 @@ icons:
     skull_owner: "{sender_name}"
     name: "<gold>{sender_name}"
     lore:
-      - "<black>发送时�? <yellow>{send_time}"
-      - "<black>剩余时间: <yellow>{remaining_time}"
+      - "<gray>发送时间: <yellow>{send_time}"
+      - "<gray>剩余时间: <yellow>{remaining_time}"
       - ""
-      - "<green>左键 <black>接受请求"
-      - "<red>右键 <black>拒绝请求"
+      - "<green>左键 <gray>接受请求"
+      - "<red>右键 <gray>拒绝请求"
     actions:
-      left: [accept_friend_request, sound:entity_mule_chest]
-      right: [deny_friend_request, sound:entity_mule_chest]
+      left: "[accept_friend_request, sound:entity_mule_chest]"
+      right: "[deny_friend_request, sound:entity_mule_chest]"
   
   '<':
     material: SPECTRAL_ARROW
-    name: "<yellow>上一�?
+    name: "<yellow>上一页"
     lore:
-      - "<black>点击翻页"
+      - "<gray>点击翻页"
     actions:
-      left: [prev_page, sound:entity_mule_chest]
+      left: "[prev_page, sound:entity_mule_chest]"
   
   '>':
     material: SPECTRAL_ARROW
-    name: "<yellow>下一�?
+    name: "<yellow>下一页"
     lore:
-      - "<black>点击翻页"
+      - "<gray>点击翻页"
     actions:
-      left: [next_page, sound:entity_mule_chest]
+      left: "[next_page, sound:entity_mule_chest]"

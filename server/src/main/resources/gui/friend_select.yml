@@ -1,4 +1,4 @@
-﻿title: "<black>选择好友"
+title: "<black>选择好友"
 
 layout:
   - '#########'
@@ -17,14 +17,14 @@ icons:
     material: BOOK
     name: "<yellow>选择好友"
     lore:
-      - "<black>点击好友头像选择"
+      - "<gray>点击好友头像选择"
   
   '1':
     material: PLAYER_HEAD
     skull_owner: "{friend_name}"
-    name: "{is_online ? <green> : <black>}{friend_name}"
+    name: "{is_online ? <green> : <gray>}{friend_name}"
     lore:
-      - "<black>状�? {is_online ? <green>在线 : <red>离线}"
+      - "<gray>状态: {is_online ? <green>在线 : <red>离线}"
       - ""
       - "<aqua>点击选择"
     actions:
@@ -32,16 +32,16 @@ icons:
   
   '<':
     material: ARROW
-    name: "<yellow>上一�?
+    name: "<yellow>上一页"
     lore:
-      - "<black>当前: <white>{page}/{total_pages}"
+      - "<gray>当前: <white>{page}/{total_pages}"
     actions:
       left: "[prev_page, sound:entity_mule_chest]"
   
   '>':
     material: ARROW
-    name: "<yellow>下一�?
+    name: "<yellow>下一页"
     lore:
-      - "<black>当前: <white>{page}/{total_pages}"
+      - "<gray>当前: <white>{page}/{total_pages}"
     actions:
       left: "[next_page, sound:entity_mule_chest]"
