@@ -1,5 +1,6 @@
 package com.oolonghoo.woosocial.module.mail;
 
+import com.oolonghoo.woosocial.Perms;
 import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.config.MessageManager;
 import com.oolonghoo.woosocial.model.MailData;
@@ -58,8 +59,16 @@ public class SystemMailManager {
      * @return 异步操作结果
      */
     public CompletableFuture<SystemMailResult> sendToAllPlayers(CommandSender sender, ItemStack item) {
+        // ✅ 权限检查
+        if (!hasPermission(sender)) {
+            messageManager.send(sender, "general.no-permission");
+            plugin.getLogger().warning(() -> 
+                "[Audit] 玩家 " + getSenderName(sender) + " 尝试无权限发送系统邮件给全服玩家");
+            return CompletableFuture.completedFuture(new SystemMailResult(0, 0, "no-permission"));
+        }
+        
         // 记录审计日志
-        String senderName = sender instanceof Player ? ((Player) sender).getName() : "Console";
+        String senderName = getSenderName(sender);
         plugin.getLogger().info(String.format(
                 "[Audit] 管理员 %s 发送系统邮件给全服玩家，物品：%s x%d",
                 senderName, item.getType().name(), item.getAmount()));
@@ -117,8 +126,16 @@ public class SystemMailManager {
      * @return 异步操作结果
      */
     public CompletableFuture<SystemMailResult> sendToOnlinePlayers(CommandSender sender, ItemStack item) {
+        // ✅ 权限检查
+        if (!hasPermission(sender)) {
+            messageManager.send(sender, "general.no-permission");
+            plugin.getLogger().warning(() -> 
+                "[Audit] 玩家 " + getSenderName(sender) + " 尝试无权限发送系统邮件给在线玩家");
+            return CompletableFuture.completedFuture(new SystemMailResult(0, 0, "no-permission"));
+        }
+        
         // 记录审计日志
-        String senderName = sender instanceof Player ? ((Player) sender).getName() : "Console";
+        String senderName = getSenderName(sender);
         plugin.getLogger().info(String.format(
                 "[Audit] 管理员 %s 发送系统邮件给在线玩家，物品：%s x%d",
                 senderName, item.getType().name(), item.getAmount()));
@@ -166,6 +183,14 @@ public class SystemMailManager {
      * @return 异步操作结果
      */
     public CompletableFuture<SystemMailResult> sendToSpecificPlayers(CommandSender sender, ItemStack item, List<String> playerNames) {
+        // ✅ 权限检查
+        if (!hasPermission(sender)) {
+            messageManager.send(sender, "general.no-permission");
+            plugin.getLogger().warning(() -> 
+                "[Audit] 玩家 " + getSenderName(sender) + " 尝试无权限发送系统邮件给指定玩家");
+            return CompletableFuture.completedFuture(new SystemMailResult(0, 0, "no-permission"));
+        }
+        
         // 验证物品
         if (!validateItem(sender, item)) {
             return CompletableFuture.completedFuture(new SystemMailResult(0, 0, "invalid-item"));
@@ -385,6 +410,29 @@ public class SystemMailManager {
         
         public boolean isSuccess() { return success; }
         public String getErrorCode() { return errorCode; }
+    }
+    
+    /**
+     * 检查发送者是否有系统邮件权限
+     * 
+     * @param sender 命令发送者
+     * @return 是否有权限
+     */
+    private boolean hasPermission(CommandSender sender) {
+        if (sender instanceof Player) {
+            return sender.hasPermission(Perms.MAIL_ADMIN) || sender.hasPermission(Perms.ADMIN);
+        }
+        return true; // Console 始终有权限
+    }
+    
+    /**
+     * 获取发送者名称
+     * 
+     * @param sender 命令发送者
+     * @return 发送者名称
+     */
+    private String getSenderName(CommandSender sender) {
+        return sender instanceof Player ? ((Player) sender).getName() : "Console";
     }
     
     /**

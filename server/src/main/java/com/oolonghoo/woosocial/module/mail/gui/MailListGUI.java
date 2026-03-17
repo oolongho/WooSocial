@@ -321,6 +321,15 @@ public class MailListGUI extends BaseGUI {
                         
                         plugin.getModuleManager().getMailModule().getMailManager().openMailListGUI(player, currentMailPage, previousGUI);
                     });
+                })
+                .exceptionally(throwable -> {
+                    loadingState.clearLoading(player.getUniqueId());
+                    plugin.getLogger().warning(() -> "[Mail] claimAllMails 异常：" + throwable.getMessage());
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        messageManager.send(player, "mail.operation-failed");
+                        plugin.getModuleManager().getMailModule().getMailManager().openMailListGUI(player, currentMailPage, previousGUI);
+                    });
+                    return null;
                 });
     }
     
@@ -338,6 +347,14 @@ public class MailListGUI extends BaseGUI {
                     } else {
                         messageManager.send(player, "mail.no-read-to-delete");
                     }
+                })
+                .exceptionally(throwable -> {
+                    loadingState.clearLoading(player.getUniqueId());
+                    plugin.getLogger().warning(() -> "[Mail] deleteReadMails 异常：" + throwable.getMessage());
+                    Bukkit.getScheduler().runTask(plugin, () -> {
+                        messageManager.send(player, "mail.operation-failed");
+                    });
+                    return null;
                 });
     }
 }

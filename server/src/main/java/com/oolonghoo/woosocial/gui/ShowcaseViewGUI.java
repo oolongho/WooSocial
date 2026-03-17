@@ -236,7 +236,26 @@ public class ShowcaseViewGUI extends BaseGUI {
     }
     
     @Override
+    public boolean isInputSlot(int slot) {
+        // 展示槽位完全禁止交互
+        for (int showcaseSlot : SHOWCASE_SLOTS) {
+            if (slot == showcaseSlot) {
+                return true; // 标记为 input slot，让 GUIListener 跳过取消事件
+            }
+        }
+        return false;
+    }
+    
+    @Override
     public void handleClick(int slot, Player player, int clickType) {
+        // 额外检查：防止通过其他方式修改展示物品
+        for (int showcaseSlot : SHOWCASE_SLOTS) {
+            if (slot == showcaseSlot) {
+                messageManager.send(player, "showcase.cannot-modify-others");
+                return;
+            }
+        }
+        
         if (slot == BACK_SLOT) {
             if (getPreviousGUI() != null) {
                 goBack(player);

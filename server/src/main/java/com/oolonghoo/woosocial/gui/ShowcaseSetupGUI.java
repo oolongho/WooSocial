@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class ShowcaseSetupGUI extends BaseGUI {
@@ -212,14 +213,27 @@ public class ShowcaseSetupGUI extends BaseGUI {
         
         ItemStack cursor = player.getItemOnCursor();
         if (cursor != null && cursor.getType() != Material.AIR) {
-            showcaseManager.addItem(player, cursor, index);
+            // 从玩家手中移除物品
+            ItemStack itemToAdd = cursor.clone();
+            cursor.setAmount(0); // 清空 cursor
+            
+            showcaseManager.addItem(player, itemToAdd, index);
             messageManager.send(player, "showcase.item-added");
             refresh();
             player.openInventory(inventory);
         } else {
             ItemStack currentItem = showcaseData.getItem(index);
             if (currentItem != null && currentItem.getType() != Material.AIR) {
+                // 将物品返还给玩家
+                ItemStack itemToRemove = currentItem.clone();
                 showcaseManager.removeItem(player, index);
+                
+                // 给玩家物品
+                Map<Integer, ItemStack> leftover = player.getInventory().addItem(itemToRemove);
+                for (ItemStack drop : leftover.values()) {
+                    player.getWorld().dropItem(player.getLocation(), drop);
+                }
+                
                 messageManager.send(player, "showcase.item-removed");
                 refresh();
                 player.openInventory(inventory);

@@ -269,7 +269,22 @@ public class MailDetailGUI extends BaseGUI {
         if (slot == CLAIM_SLOT) {
             if (!mail.isClaimed() && mail.getItemData() != null && !mail.getItemData().isEmpty()) {
                 loadingState.setLoading(player.getUniqueId(), true);
-                plugin.getModuleManager().getMailModule().getMailManager().claimMail(player, mail.getId());
+                plugin.getModuleManager().getMailModule().getMailManager()
+                    .claimMail(player, mail.getId())
+                    .thenAccept(success -> {
+                        loadingState.clearLoading(player.getUniqueId());
+                        
+                        org.bukkit.Bukkit.getScheduler().runTask(plugin, () -> {
+                            if (success) {
+                                mail.setClaimed(true);
+                                refresh();
+                                player.openInventory(inventory);
+                                messageManager.send(player, "mail.claimed");
+                            } else {
+                                messageManager.send(player, "mail.claim-failed");
+                            }
+                        });
+                    });
             }
             return;
         }
