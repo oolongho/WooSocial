@@ -50,7 +50,9 @@ public class GUIConfigManager {
             "relation_proposal",
             "gift_shop",
             "gift_history",
-            "gift_history_friend"
+            "gift_history_friend",
+            "showcase_setup",
+            "showcase_view"
     );
     
     public GUIConfigManager(WooSocial plugin) {
