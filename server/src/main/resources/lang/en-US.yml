@@ -407,3 +407,15 @@ gift:
   cost-free: "Free"
   cost-coins: "%amount% Coins"
   cost-points: "%amount% Points"
+
+# ==================== Showcase System ====================
+showcase:
+  saved: "&aShowcase settings saved!"
+  cleared: "&aShowcase cleared!"
+  item-added: "&aShowcase item added!"
+  item-removed: "&aShowcase item removed!"
+  like-added: "&aLike added!"
+  like-removed: "&cLike removed!"
+  like-cooldown: "&cLike on cooldown, please wait {seconds} seconds"
+  like-daily-limit: "&cDaily like limit reached, remaining: {remaining}"
+  like-player-limit: "&cDaily like limit for this player reached"

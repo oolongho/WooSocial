@@ -430,3 +430,12 @@ gift:
   cost-points: "%amount% 点券"
   
   remaining-daily: "&7今日剩余赠送次数: &e%count%"
+
+# ==================== 展示柜系统 ====================
+showcase:
+  saved: "&a展示柜设置已保存！"
+  cleared: "&a展示柜已清空！"
+  item-added: "&a已添加展示物品！"
+  item-removed: "&a已移除展示物品！"
+  like-added: "&a点赞成功！"
+  like-removed: "&c已取消点赞！"
