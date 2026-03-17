@@ -11,6 +11,7 @@ import com.oolonghoo.woosocial.manager.ModuleManager;
 import com.oolonghoo.woosocial.module.friend.FriendModule;
 import com.oolonghoo.woosocial.module.mail.MailModule;
 import com.oolonghoo.woosocial.module.relation.RelationModule;
+import com.oolonghoo.woosocial.module.showcase.ShowcaseModule;
 import com.oolonghoo.woosocial.module.teleport.TeleportModule;
 import com.oolonghoo.woosocial.sync.SyncManager;
 import com.oolonghoo.woosocial.sync.SyncMessage;
@@ -298,6 +299,9 @@ public class WooSocial extends JavaPlugin {
         
         // 注册关系模块
         moduleManager.registerModule("relation", () -> new RelationModule(this));
+        
+        // 注册展示柜模块
+        moduleManager.registerModule("showcase", () -> new ShowcaseModule(this));
     }
     
     /**
