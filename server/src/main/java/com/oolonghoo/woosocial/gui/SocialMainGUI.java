@@ -40,6 +40,7 @@ public class SocialMainGUI extends BaseGUI {
     private static final int FRIEND_REQUESTS_SLOT = 37;
     private static final int MAIL_SLOT = 40;
     private static final int RELATION_LIST_SLOT = 43;
+    private static final int SHOWCASE_SLOT = 49;
     
     private static final int ITEMS_PER_PAGE = FRIEND_SLOTS.length;
     
@@ -90,6 +91,7 @@ public class SocialMainGUI extends BaseGUI {
         inventory.setItem(FRIEND_REQUESTS_SLOT, createFriendRequestsButton());
         inventory.setItem(MAIL_SLOT, createMailButton());
         inventory.setItem(RELATION_LIST_SLOT, createRelationListButton());
+        inventory.setItem(SHOWCASE_SLOT, createShowcaseButton());
     }
     
     private ItemStack createPageSwitchButton() {
@@ -267,6 +269,24 @@ public class SocialMainGUI extends BaseGUI {
         return item;
     }
     
+    private ItemStack createShowcaseButton() {
+        ItemStack item = new ItemStack(Material.ITEM_FRAME);
+        var meta = item.getItemMeta();
+        meta.displayName(Component.text("展示柜", NamedTextColor.GOLD));
+        
+        List<Component> lore = new ArrayList<>();
+        lore.add(Component.text("设置你的展示柜", NamedTextColor.GRAY));
+        lore.add(Component.empty());
+        lore.add(Component.text("展示你的装备和物品", NamedTextColor.GRAY));
+        lore.add(Component.text("其他玩家可以查看和点赞", NamedTextColor.GRAY));
+        lore.add(Component.empty());
+        lore.add(Component.text("点击打开", NamedTextColor.AQUA));
+        
+        meta.lore(lore);
+        item.setItemMeta(meta);
+        return item;
+    }
+    
     @Override
     public void refresh() {
         this.friends = friendDataManager.getFriendList(viewerUUID);
@@ -307,6 +327,13 @@ public class SocialMainGUI extends BaseGUI {
         
         if (slot == RELATION_LIST_SLOT) {
             RelationListGUI gui = new RelationListGUI(plugin, player);
+            gui.setPreviousGUI(this);
+            gui.open(player);
+            return;
+        }
+        
+        if (slot == SHOWCASE_SLOT) {
+            ShowcaseSetupGUI gui = new ShowcaseSetupGUI(plugin, player);
             gui.setPreviousGUI(this);
             gui.open(player);
             return;
