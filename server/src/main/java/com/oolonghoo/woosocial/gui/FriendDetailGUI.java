@@ -17,7 +17,9 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class FriendDetailGUI extends BaseGUI {
     
@@ -44,6 +46,10 @@ public class FriendDetailGUI extends BaseGUI {
     private static final int GIFT_SLOT = 15;
     private static final int RELATION_SLOT = 16;
     private static final int REMOVE_FRIEND_SLOT = 8;
+    
+    // 删除好友二次确认缓存（玩家 UUID -> 请求时间戳）
+    private static final Map<UUID, Long> pendingRemoveRequests = new ConcurrentHashMap<>();
+    private static final long CONFIRM_TIMEOUT_MS = 10000; // 10 秒确认超时
     
     public FriendDetailGUI(WooSocial plugin, Player viewer, UUID friendUuid, String friendName) {
         super(plugin, viewer, "friend_detail");
@@ -463,18 +469,38 @@ public class FriendDetailGUI extends BaseGUI {
     }
     
     private void handleRemoveFriend(Player player) {
-        friendDataManager.removeFriend(viewerUUID, friendUUID)
-                .thenAccept(success -> {
-                    if (success) {
-                        messageManager.send(player, "friend.friend-removed", "player", friendName);
-                        plugin.getServer().getScheduler().runTask(plugin, () -> {
-                            player.closeInventory();
-                            new FriendListGUI(plugin, player).open(player);
-                        });
-                    } else {
-                        messageManager.send(player, "friend.not-friend");
-                    }
-                });
+        UUID playerUuid = player.getUniqueId();
+        Long requestTime = pendingRemoveRequests.get(playerUuid);
+        long currentTime = System.currentTimeMillis();
+        
+        // 检查是否有待确认请求且在有效期内
+        if (requestTime != null && (currentTime - requestTime) <= CONFIRM_TIMEOUT_MS) {
+            // ✅ 第二次点击，执行删除
+            pendingRemoveRequests.remove(playerUuid);
+            
+            friendDataManager.removeFriend(viewerUUID, friendUUID)
+                    .thenAccept(success -> {
+                        if (success) {
+                            messageManager.send(player, "friend.friend-removed", "player", friendName);
+                            plugin.getServer().getScheduler().runTask(plugin, () -> {
+                                player.closeInventory();
+                                new FriendListGUI(plugin, player).open(player);
+                            });
+                        } else {
+                            messageManager.send(player, "friend.not-friend");
+                        }
+                    });
+        } else {
+            // ✅ 第一次点击，要求确认
+            pendingRemoveRequests.put(playerUuid, currentTime);
+            messageManager.send(player, "friend.remove-confirm", "player", friendName);
+            messageManager.send(player, "friend.remove-confirm-instruction");
+            
+            // 10 秒后自动清除待确认请求
+            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
+                pendingRemoveRequests.remove(playerUuid);
+            }, 200L); // 200 ticks = 10 seconds
+        }
     }
     
     private void handleSendMail(Player player) {

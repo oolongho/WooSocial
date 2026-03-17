@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ShowcaseManager {
@@ -97,27 +98,43 @@ public class ShowcaseManager {
             return;
         }
         
-        ShowcaseData targetData = getShowcase(targetUuid);
+        // ✅ 使用数据库事务保证一致性：先检查再操作，操作后重新加载数据
+        boolean currentlyLiked = hasLiked(liker.getUniqueId(), targetUuid);
+        CompletableFuture<Boolean> future = currentlyLiked
+            ? showcaseDAO.removeLike(liker.getUniqueId(), targetUuid)
+            : showcaseDAO.addLike(liker.getUniqueId(), targetUuid);
         
-        if (hasLiked(liker.getUniqueId(), targetUuid)) {
-            showcaseDAO.removeLike(liker.getUniqueId(), targetUuid).thenAccept(success -> {
-                if (success) {
-                    targetData.decrementLikes();
-                    Bukkit.getScheduler().runTask(plugin, () -> {
-                        plugin.getMessageManager().send(liker, "showcase.like-removed");
-                    });
-                }
-            });
-        } else {
-            showcaseDAO.addLike(liker.getUniqueId(), targetUuid).thenAccept(success -> {
-                if (success) {
-                    targetData.incrementLikes();
+        future.thenAccept(success -> {
+            if (success) {
+                // ✅ 记录点赞冷却（如果是新增点赞）
+                if (!currentlyLiked) {
                     recordLike(liker.getUniqueId(), targetUuid);
-                    Bukkit.getScheduler().runTask(plugin, () -> {
-                        plugin.getMessageManager().send(liker, "showcase.like-added");
-                    });
                 }
-            });
+                
+                // ✅ 重新从数据库加载最新的展示柜数据，确保缓存和数据库一致
+                ShowcaseData refreshedData = loadShowcaseFromDatabase(targetUuid);
+                if (refreshedData != null) {
+                    showcaseCache.put(targetUuid, refreshedData);
+                }
+                
+                // ✅ 发送消息给玩家
+                Bukkit.getScheduler().runTask(plugin, () -> {
+                    if (currentlyLiked) {
+                        plugin.getMessageManager().send(liker, "showcase.like-removed");
+                    } else {
+                        plugin.getMessageManager().send(liker, "showcase.like-added");
+                    }
+                });
+            }
+        });
+    }
+    
+    private ShowcaseData loadShowcaseFromDatabase(UUID ownerUuid) {
+        try {
+            return showcaseDAO.loadShowcaseSync(ownerUuid);
+        } catch (Exception e) {
+            plugin.getLogger().warning(() -> "[ShowcaseManager] 从数据库加载展示柜失败：" + e.getMessage());
+            return null;
         }
     }
     

@@ -83,6 +83,8 @@ friend:
   # 自己
   cannot-add-self: "&c你不能添加自己为好友。"
   cannot-remove-self: "&c你不能删除自己。"
+  remove-confirm: "&e 确定要删除好友 %player% 吗？"
+  remove-confirm-instruction: "&7请在 &e10 秒内 &7再次点击确认删除。"
 
 # ==================== 屏蔽系统 ====================
 block:
