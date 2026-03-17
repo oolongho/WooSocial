@@ -192,6 +192,21 @@ public class DatabaseManager {
                     : getSQLiteScheduledMailsTableSQL();
             statement.executeUpdate(createScheduledMailsTable);
             
+            String createShowcaseTable = databaseType.equals("mysql")
+                    ? getMySQLShowcaseTableSQL()
+                    : getSQLiteShowcaseTableSQL();
+            statement.executeUpdate(createShowcaseTable);
+            
+            String createShowcaseLikesTable = databaseType.equals("mysql")
+                    ? getMySQLShowcaseLikesTableSQL()
+                    : getSQLiteShowcaseLikesTableSQL();
+            statement.executeUpdate(createShowcaseLikesTable);
+            
+            String createShowcaseLikeCooldownTable = databaseType.equals("mysql")
+                    ? getMySQLShowcaseLikeCooldownTableSQL()
+                    : getSQLiteShowcaseLikeCooldownTableSQL();
+            statement.executeUpdate(createShowcaseLikeCooldownTable);
+            
             // 执行数据库迁移（复用同一个连接）
             migrateMailsTable(connection);
             migrateGiftsTable(connection);
@@ -678,6 +693,69 @@ public class DatabaseManager {
                 "`scheduled_time` INTEGER NOT NULL DEFAULT 0, " +
                 "`create_time` INTEGER NOT NULL DEFAULT 0, " +
                 "`status` TEXT NOT NULL DEFAULT 'PENDING');";
+    }
+    
+    private String getMySQLShowcaseTableSQL() {
+        return "CREATE TABLE IF NOT EXISTS `" + tablePrefix + "showcase` (" +
+                "`id` INT AUTO_INCREMENT PRIMARY KEY, " +
+                "`owner_uuid` VARCHAR(36) NOT NULL UNIQUE, " +
+                "`owner_name` VARCHAR(64), " +
+                "`items` TEXT, " +
+                "`likes` INT NOT NULL DEFAULT 0, " +
+                "`last_updated` BIGINT NOT NULL DEFAULT 0, " +
+                "INDEX `idx_owner_uuid` (`owner_uuid`)" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+    }
+    
+    private String getSQLiteShowcaseTableSQL() {
+        return "CREATE TABLE IF NOT EXISTS `" + tablePrefix + "showcase` (" +
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "`owner_uuid` TEXT NOT NULL UNIQUE, " +
+                "`owner_name` TEXT, " +
+                "`items` TEXT, " +
+                "`likes` INTEGER NOT NULL DEFAULT 0, " +
+                "`last_updated` INTEGER NOT NULL DEFAULT 0);";
+    }
+    
+    private String getMySQLShowcaseLikesTableSQL() {
+        return "CREATE TABLE IF NOT EXISTS `" + tablePrefix + "showcase_likes` (" +
+                "`id` INT AUTO_INCREMENT PRIMARY KEY, " +
+                "`liker_uuid` VARCHAR(36) NOT NULL, " +
+                "`target_uuid` VARCHAR(36) NOT NULL, " +
+                "`like_time` BIGINT NOT NULL DEFAULT 0, " +
+                "UNIQUE KEY `uk_liker_target` (`liker_uuid`, `target_uuid`), " +
+                "INDEX `idx_liker_uuid` (`liker_uuid`), " +
+                "INDEX `idx_target_uuid` (`target_uuid`)" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+    }
+    
+    private String getSQLiteShowcaseLikesTableSQL() {
+        return "CREATE TABLE IF NOT EXISTS `" + tablePrefix + "showcase_likes` (" +
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "`liker_uuid` TEXT NOT NULL, " +
+                "`target_uuid` TEXT NOT NULL, " +
+                "`like_time` INTEGER NOT NULL DEFAULT 0, " +
+                "UNIQUE (`liker_uuid`, `target_uuid`));";
+    }
+    
+    private String getMySQLShowcaseLikeCooldownTableSQL() {
+        return "CREATE TABLE IF NOT EXISTS `" + tablePrefix + "showcase_like_cooldown` (" +
+                "`id` INT AUTO_INCREMENT PRIMARY KEY, " +
+                "`player_uuid` VARCHAR(36) NOT NULL UNIQUE, " +
+                "`last_like_time` BIGINT NOT NULL DEFAULT 0, " +
+                "`daily_count` INT NOT NULL DEFAULT 0, " +
+                "`daily_reset_time` BIGINT NOT NULL DEFAULT 0, " +
+                "INDEX `idx_player_uuid` (`player_uuid`)" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
+    }
+    
+    private String getSQLiteShowcaseLikeCooldownTableSQL() {
+        return "CREATE TABLE IF NOT EXISTS `" + tablePrefix + "showcase_like_cooldown` (" +
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "`player_uuid` TEXT NOT NULL UNIQUE, " +
+                "`last_like_time` INTEGER NOT NULL DEFAULT 0, " +
+                "`daily_count` INTEGER NOT NULL DEFAULT 0, " +
+                "`daily_reset_time` INTEGER NOT NULL DEFAULT 0);";
     }
     
     /**
