@@ -1,4 +1,4 @@
-﻿title: "<black>社交菜单"
+﻿﻿﻿﻿﻿﻿title: "<black>社交菜单"
 
 layout:
   - '####p####'
@@ -6,7 +6,7 @@ layout:
   - '#########'
   - '#########'
   - '#########'
-  - '#########'
+  - '####7####'
 
 icons:
   '#':
@@ -91,3 +91,16 @@ icons:
       - "<aqua>点击打开"
     actions:
       left: "[open_gui:gift_shop, sound:entity_mule_chest]"
+  
+  '7':
+    material: ITEM_FRAME
+    name: "<gold>展示柜"
+    lore:
+      - "<gray>设置你的展示柜"
+      - ""
+      - "<gray>展示你的装备和物品"
+      - "<gray>其他玩家可以查看和点赞"
+      - ""
+      - "<aqua>点击打开"
+    actions:
+      left: "[open_gui:showcase_setup, sound:entity_mule_chest]"

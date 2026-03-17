@@ -1,0 +1,101 @@
+title: "<black>{owner_name} 的展示柜"
+
+icons:
+  '#':
+    material: LIME_STAINED_GLASS_PANE
+    name: ""
+  
+  '1':
+    material: BOOK
+    name: "<yellow>返回"
+    lore:
+      - "<gray>返回上一级菜单"
+    actions:
+      left: "[close, sound:entity_mule_chest]"
+  
+  'l':
+    material: "{has_liked ? LIME_DYE : GRAY_DYE}"
+    name: "{has_liked ? <green>已点赞 : <yellow>点赞}"
+    lore:
+      - "<gray>点赞数: <yellow>{likes}"
+      - ""
+      - "<aqua>点击{has_liked ? 取消 : 点赞}"
+    actions:
+      left: "[toggle_like, sound:entity_mule_chest]"
+  
+  'a':
+    material: PLAYER_HEAD
+    name: "<green>添加好友"
+    lore:
+      - "<gray>向 {owner_name} 发送好友请求"
+      - ""
+      - "<aqua>点击添加"
+    actions:
+      left: "[add_friend, sound:entity_mule_chest]"
+  
+  't':
+    material: GOLD_INGOT
+    name: "<gold>发起交易"
+    lore:
+      - "<gray>向 {owner_name} 发起交易请求"
+      - ""
+      - "<gray>功能开发中..."
+  
+  'b':
+    material: REDSTONE_BLOCK
+    name: "<red>屏蔽此人"
+    lore:
+      - "<gray>屏蔽 {owner_name}"
+      - ""
+      - "<red>点击屏蔽"
+    actions:
+      left: "[block_player, sound:entity_mule_chest]"
+  
+  'h':
+    material: PLAYER_HEAD
+    skull_owner: "{owner_name}"
+    name: "<green>{owner_name}"
+    lore:
+      - "<gray>点赞数: <yellow>{likes}"
+  
+  'he':
+    material: "{helmet_material}"
+    name: "<gray>头盔"
+    lore:
+      - "<gray>当前穿戴的装备"
+  
+  'ch':
+    material: "{chestplate_material}"
+    name: "<gray>胸甲"
+    lore:
+      - "<gray>当前穿戴的装备"
+  
+  'le':
+    material: "{leggings_material}"
+    name: "<gray>护腿"
+    lore:
+      - "<gray>当前穿戴的装备"
+  
+  'i':
+    material: AIR
+    name: "<yellow>展示物品"
+    lore:
+      - "<gray>玩家展示的物品"
+
+showcase_slots:
+  - 30
+  - 31
+  - 32
+  - 33
+  - 34
+  - 39
+  - 40
+  - 41
+  - 42
+  - 43
+
+equipment_slots:
+  helmet: 19
+  chestplate: 28
+  leggings: 37
+  boots: 46

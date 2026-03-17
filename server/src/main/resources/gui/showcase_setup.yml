@@ -1,0 +1,87 @@
+title: "<black>展示柜设置"
+
+icons:
+  '#':
+    material: LIME_STAINED_GLASS_PANE
+    name: ""
+  
+  '1':
+    material: BOOK
+    name: "<yellow>返回"
+    lore:
+      - "<gray>返回社交菜单"
+    actions:
+      left: "[open_gui:social_main, sound:entity_mule_chest]"
+  
+  's':
+    material: LIME_DYE
+    name: "<green>保存设置"
+    lore:
+      - "<gray>保存当前展示柜设置"
+      - ""
+      - "<aqua>点击保存"
+    actions:
+      left: "[save_showcase, sound:entity_mule_chest]"
+  
+  'c':
+    material: REDSTONE_BLOCK
+    name: "<red>清空展示柜"
+    lore:
+      - "<gray>清空所有展示物品"
+      - ""
+      - "<red>Shift+点击确认"
+    actions:
+      shift_left: "[clear_showcase, sound:entity_mule_chest]"
+  
+  'h':
+    material: PLAYER_HEAD
+    skull_owner: "{player_name}"
+    name: "<green>{player_name}"
+    lore:
+      - "<gray>点赞数: <yellow>{likes}"
+      - ""
+      - "<gray>点击背包物品添加到展示柜"
+      - "<gray>点击展示柜物品移除"
+  
+  'he':
+    material: "{helmet_material}"
+    name: "<gray>头盔"
+    lore:
+      - "<gray>当前穿戴的装备"
+  
+  'l':
+    material: "{chestplate_material}"
+    name: "<gray>胸甲"
+    lore:
+      - "<gray>当前穿戴的装备"
+  
+  'b':
+    material: "{leggings_material}"
+    name: "<gray>护腿"
+    lore:
+      - "<gray>当前穿戴的装备"
+  
+  'i':
+    material: AIR
+    name: "<yellow>展示格子"
+    lore:
+      - "<gray>点击背包物品添加"
+      - "<gray>点击此格子移除物品"
+
+showcase_slots:
+  - 30
+  - 31
+  - 32
+  - 33
+  - 34
+  - 39
+  - 40
+  - 41
+  - 42
+  - 43
+
+equipment_slots:
+  helmet: 19
+  chestplate: 28
+  leggings: 37
+  boots: 46
