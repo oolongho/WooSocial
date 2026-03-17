@@ -8,10 +8,8 @@ import com.oolonghoo.woosocial.module.mail.MailModule;
 import com.oolonghoo.woosocial.module.teleport.TeleportModule;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -66,10 +64,8 @@ public class ModuleManager {
         }
         
         FileConfiguration modulesConfig = modulesLoader.getConfig();
-        List<String> enabledModules = new ArrayList<>();
         
         loadModule("friend");
-        enabledModules.add("friend");
         
         for (Map.Entry<String, Supplier<Module>> entry : moduleFactories.entrySet()) {
             String moduleName = entry.getKey();
@@ -82,7 +78,6 @@ public class ModuleManager {
             
             if (enabled) {
                 loadModule(moduleName);
-                enabledModules.add(moduleName);
             }
         }
     }
@@ -93,26 +88,25 @@ public class ModuleManager {
      * @param name 模块名称
      */
     public void loadModule(String name) {
-        name = name.toLowerCase();
+        final String moduleName = name.toLowerCase();
         
-        if (loadedModules.containsKey(name)) {
-            plugin.getLogger().warning("模块 " + name + " 已经加载");
+        if (loadedModules.containsKey(moduleName)) {
+            plugin.getLogger().warning(() -> "模块 " + moduleName + " 已经加载");
             return;
         }
         
-        Supplier<Module> factory = moduleFactories.get(name);
+        Supplier<Module> factory = moduleFactories.get(moduleName);
         if (factory == null) {
-            plugin.getLogger().warning("未知模块: " + name);
+            plugin.getLogger().warning(() -> "未知模块：" + moduleName);
             return;
         }
         
         try {
             Module module = factory.get();
             module.onEnable();
-            loadedModules.put(name, module);
+            loadedModules.put(moduleName, module);
         } catch (Exception e) {
-            plugin.getLogger().severe("加载模块 " + name + " 时发生错误: " + e.getMessage());
-            e.printStackTrace();
+            plugin.getLogger().severe(() -> "加载模块 " + moduleName + " 时发生错误：" + e.getMessage());
         }
     }
     
@@ -122,15 +116,14 @@ public class ModuleManager {
      * @param name 模块名称
      */
     public void unloadModule(String name) {
-        name = name.toLowerCase();
+        final String moduleName = name.toLowerCase();
         
-        Module module = loadedModules.remove(name);
+        Module module = loadedModules.remove(moduleName);
         if (module != null) {
             try {
                 module.onDisable();
             } catch (Exception e) {
-                plugin.getLogger().severe("卸载模块 " + name + " 时发生错误: " + e.getMessage());
-                e.printStackTrace();
+                plugin.getLogger().severe(() -> "卸载模块 " + moduleName + " 时发生错误：" + e.getMessage());
             }
         }
     }
@@ -179,8 +172,7 @@ public class ModuleManager {
                 try {
                     entry.getValue().onDisable();
                 } catch (Exception e) {
-                    plugin.getLogger().severe("禁用模块 " + entry.getKey() + " 时发生错误: " + e.getMessage());
-                    e.printStackTrace();
+                    plugin.getLogger().severe(() -> "禁用模块 " + entry.getKey() + " 时发生错误：" + e.getMessage());
                 }
             }
             loadedModules.clear();
@@ -195,8 +187,7 @@ public class ModuleManager {
             try {
                 module.saveAll();
             } catch (Exception e) {
-                plugin.getLogger().severe("保存模块 " + module.getName() + " 数据时发生错误: " + e.getMessage());
-                e.printStackTrace();
+                plugin.getLogger().severe(() -> "保存模块 " + module.getName() + " 数据时发生错误：" + e.getMessage());
             }
         }
     }
@@ -289,5 +280,14 @@ public class ModuleManager {
      */
     public com.oolonghoo.woosocial.module.relation.RelationModule getRelationModule() {
         return getModule("relation", com.oolonghoo.woosocial.module.relation.RelationModule.class);
+    }
+    
+    /**
+     * 获取展示柜模块
+     * 
+     * @return 展示柜模块实例，如果未加载则返回null
+     */
+    public com.oolonghoo.woosocial.module.showcase.ShowcaseModule getShowcaseModule() {
+        return getModule("showcase", com.oolonghoo.woosocial.module.showcase.ShowcaseModule.class);
     }
 }
