@@ -42,7 +42,7 @@ public class ShowcaseManager {
     
     public ShowcaseData getShowcase(UUID ownerUuid, String ownerName) {
         ShowcaseData data = getShowcase(ownerUuid);
-        if (data.getOwnerName() == null || data.getOwnerName().isEmpty()) {
+        if (data != null && (data.getOwnerName() == null || data.getOwnerName().isEmpty())) {
             data.setOwnerName(ownerName);
         }
         return data;
@@ -62,7 +62,18 @@ public class ShowcaseManager {
     }
     
     public void addItem(Player player, ItemStack item, int slot) {
+        // ✅ 数据验证：检查物品有效性
+        if (item == null || item.getType() == org.bukkit.Material.AIR) {
+            plugin.getLogger().warning(() -> "[Showcase] 玩家 " + player.getName() + " 尝试添加无效物品");
+            return;
+        }
+        
         ShowcaseData data = getShowcase(player.getUniqueId(), player.getName());
+        if (data == null) {
+            plugin.getLogger().warning(() -> "[Showcase] 无法获取玩家 " + player.getName() + " 的展示柜数据");
+            return;
+        }
+        
         data.setItem(slot, item.clone());
         showcaseDAO.saveShowcase(data);
     }
