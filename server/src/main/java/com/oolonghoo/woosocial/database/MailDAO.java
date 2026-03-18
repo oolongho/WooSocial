@@ -377,9 +377,8 @@ public class MailDAO {
                 "`is_bulk`, `bulk_id`, `is_system`, `scheduled_time`) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
-        Connection connection = null;
-        try {
-            connection = databaseManager.getConnection();
+        // ✅ 使用 try-with-resources 确保连接自动关闭
+        try (Connection connection = databaseManager.getConnection()) {
             connection.setAutoCommit(false); // 开启事务
             
             try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -417,15 +416,7 @@ public class MailDAO {
                 return mails.size();
             }
         } catch (SQLException e) {
-            plugin.getLogger().log(Level.SEVERE, "SQLite批量插入邮件失败", e);
-            // 回滚事务
-            if (connection != null) {
-                try {
-                    connection.rollback();
-                } catch (SQLException rollbackEx) {
-                    plugin.getLogger().log(Level.SEVERE, "事务回滚失败", rollbackEx);
-                }
-            }
+            plugin.getLogger().log(Level.SEVERE, "SQLite 批量插入邮件失败", e);
             // 回退到逐条插入
             int successCount = 0;
             for (MailData mail : mails) {
@@ -434,15 +425,6 @@ public class MailDAO {
                 }
             }
             return successCount;
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.setAutoCommit(true); // 恢复自动提交
-                    connection.close();
-                } catch (SQLException e) {
-                    plugin.getLogger().log(Level.WARNING, "关闭连接失败", e);
-                }
-            }
         }
     }
     
