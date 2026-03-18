@@ -208,6 +208,13 @@ public class GiftShopGUI extends BaseGUI {
     }
     
     private void handleSendGift(Player player, GiftType gift) {
+        // ✅ 前置每日限制检查
+        int remaining = giftManager.getRemainingDailyLimit(player, gift.getId());
+        if (remaining <= 0) {
+            messageManager.send(player, "gift.daily-limit-reached", "value", "0");
+            return;
+        }
+        
         giftManager.sendGift(player, receiverUuid, gift.getId()).thenAccept(result -> {
             Bukkit.getScheduler().runTask(plugin, () -> {
                 if (result.isSuccess()) {
