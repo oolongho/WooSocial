@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿title: "<black>邮箱 <gray>{page}/{total_pages}"
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿title: "<black>邮箱 <gray>{page}/{total_pages}"
 
 layout:
   - '#1######'
