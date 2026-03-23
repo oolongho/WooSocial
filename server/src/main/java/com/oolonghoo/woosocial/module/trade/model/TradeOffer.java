@@ -53,7 +53,7 @@ public class TradeOffer {
         }
     }
     
-    public ItemStack removeSlot(int slot) {
+    public ItemStack removeItem(int slot) {
         if (slot >= 0 && slot < items.size()) {
             ItemStack removed = items.remove(slot);
             updateTime = System.currentTimeMillis();
