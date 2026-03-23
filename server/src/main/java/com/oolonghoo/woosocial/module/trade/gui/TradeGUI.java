@@ -4,6 +4,7 @@ import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.config.MessageManager;
 import com.oolonghoo.woosocial.gui.BaseGUI;
 import com.oolonghoo.woosocial.module.trade.TradeConfig;
+import com.oolonghoo.woosocial.module.trade.TradeEconomyManager;
 import com.oolonghoo.woosocial.module.trade.TradeManager;
 import com.oolonghoo.woosocial.module.trade.model.TradeOffer;
 import com.oolonghoo.woosocial.module.trade.model.TradeSession;
@@ -41,6 +42,7 @@ public class TradeGUI implements InventoryHolder {
     private final WooSocial plugin;
     private final TradeManager tradeManager;
     private final TradeConfig config;
+    private final TradeEconomyManager economyManager;
     private final MessageManager messageManager;
     
     private final Player player;
@@ -129,8 +131,8 @@ public class TradeGUI implements InventoryHolder {
         meta.displayName(Component.text("§6金币: §e" + String.format("%.2f", money)));
         List<Component> lore = new ArrayList<>();
         lore.add(Component.text("§7点击输入金币数量"));
-        if (config.isVaultEnabled() && plugin.getVaultHook() != null) {
-            double balance = plugin.getVaultHook().getBalance(player);
+        if (config.isVaultEnabled() && economyManager.hasVault()) {
+            double balance = economyManager.getBalance(player);
             lore.add(Component.text("§7当前余额: §e" + String.format("%.2f", balance)));
         }
         meta.lore(lore);
