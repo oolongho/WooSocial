@@ -31,6 +31,10 @@ public class TradeManager {
     private final Map<UUID, BukkitTask> countdownTasks = new ConcurrentHashMap<>();
     private final Map<UUID, Integer> countdownRemaining = new ConcurrentHashMap<>();
     
+    public Map<UUID, TradeSession> getActiveSessions() {
+        return activeSessions;
+    }
+    
     public TradeManager(WooSocial plugin, TradeConfig config) {
         this.plugin = plugin;
         this.config = config;

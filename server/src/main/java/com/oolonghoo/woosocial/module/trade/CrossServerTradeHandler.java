@@ -2,6 +2,8 @@ package com.oolonghoo.woosocial.module.trade;
 
 import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.config.MessageManager;
+import com.oolonghoo.woosocial.module.trade.gui.TradeGUI;
+import com.oolonghoo.woosocial.module.trade.model.TradeSession;
 import com.oolonghoo.woosocial.sync.SyncManager;
 import com.oolonghoo.woosocial.sync.SyncMessage;
 import com.oolonghoo.woosocial.sync.SyncMessageType;
@@ -124,6 +126,46 @@ public class CrossServerTradeHandler {
         Player player = Bukkit.getPlayer(playerUuid);
         if (player != null) {
             messageManager.send(player, "trade.remote-accepted", "player", request.getPartnerName());
+            
+            // 在本地创建交易会话并打开 GUI
+            startCrossServerTrade(player, request);
+        }
+    }
+    
+    /**
+     * 开始跨服交易
+     */
+    private void startCrossServerTrade(Player player, PendingCrossServerRequest request) {
+        if (!config.isVaultEnabled()) {
+            plugin.getLogger().warning("[Trade] 跨服交易需要启用 Vault 支持");
+            return;
+        }
+        
+        UUID playerUuid = player.getUniqueId();
+        UUID partnerUuid = request.getSenderUuid();
+        
+        // 创建跨服交易会话
+        CrossServerTradeSession crossSession = new CrossServerTradeSession(
+                partnerUuid, request.getSenderName(), request.getTargetServer(),
+                playerUuid, player.getName(), getServerName()
+        );
+        
+        // 创建本地交易会话
+        TradeSession session = crossSession.toLocalSession(false);
+        tradeManager.getActiveSessions().put(playerUuid, session);
+        
+        // 获取经济管理器
+        var tradeModule = plugin.getModuleManager().getModule("trade", TradeModule.class);
+        TradeEconomyManager economyManager = tradeModule != null ? 
+                tradeModule.getEconomyManager() : new TradeEconomyManager(plugin);
+        
+        // 打开 GUI
+        TradeGUI gui = TradeGUI.create(plugin, tradeManager, config, economyManager, player, session);
+        player.openInventory(gui.getInventory());
+        
+        // 广播交易开始
+        if (syncManager != null && syncManager.isInitialized()) {
+            syncManager.broadcastTradeStart(crossSession);
         }
     }
     
@@ -222,6 +264,10 @@ public class CrossServerTradeHandler {
     
     public PendingCrossServerRequest getPendingRequest(UUID playerUuid) {
         return pendingRequests.get(playerUuid);
+    }
+    
+    private String getServerName() {
+        return plugin.getConfig().getString("server.name", "unknown");
     }
     
     public void cleanup() {

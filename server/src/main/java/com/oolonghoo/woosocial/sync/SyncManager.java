@@ -1,6 +1,7 @@
 package com.oolonghoo.woosocial.sync;
 
 import com.oolonghoo.woosocial.WooSocial;
+import com.oolonghoo.woosocial.module.trade.CrossServerTradeSession;
 import com.oolonghoo.woosocial.sync.handler.BungeeSyncHandler;
 import com.oolonghoo.woosocial.sync.handler.MySQLSyncHandler;
 import com.oolonghoo.woosocial.sync.handler.RedisSyncHandler;
@@ -231,6 +232,18 @@ public class SyncManager {
                 .set("player_uuid", playerUuid.toString())
                 .set("partner_uuid", partnerUuid.toString())
                 .set("reason", reason);
+        broadcast(message);
+    }
+    
+    public void broadcastTradeStart(CrossServerTradeSession session) {
+        SyncMessage message = new SyncMessage(SyncMessageType.TRADE_START, config.getServerName())
+                .set("session_id", session.getSessionId())
+                .set("player1_uuid", session.getPlayer1Uuid().toString())
+                .set("player1_name", session.getPlayer1Name())
+                .set("player1_server", session.getPlayer1Server())
+                .set("player2_uuid", session.getPlayer2Uuid().toString())
+                .set("player2_name", session.getPlayer2Name())
+                .set("player2_server", session.getPlayer2Server());
         broadcast(message);
     }
     

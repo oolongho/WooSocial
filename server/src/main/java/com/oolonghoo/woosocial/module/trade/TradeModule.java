@@ -105,6 +105,10 @@ public class TradeModule extends Module {
         return requestManager;
     }
     
+    public TradeEconomyManager getEconomyManager() {
+        return economyManager;
+    }
+    
     public CrossServerTradeHandler getCrossServerHandler() {
         return crossServerHandler;
     }
