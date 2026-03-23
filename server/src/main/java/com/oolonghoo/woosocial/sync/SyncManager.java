@@ -204,6 +204,36 @@ public class SyncManager {
         broadcast(message);
     }
     
+    public void broadcastTradeRequest(UUID senderUuid, String senderName, UUID receiverUuid) {
+        SyncMessage message = new SyncMessage(SyncMessageType.TRADE_REQUEST, config.getServerName())
+                .set("sender_uuid", senderUuid.toString())
+                .set("sender_name", senderName)
+                .set("receiver_uuid", receiverUuid.toString());
+        broadcast(message);
+    }
+    
+    public void broadcastTradeAccept(UUID playerUuid, UUID partnerUuid) {
+        SyncMessage message = new SyncMessage(SyncMessageType.TRADE_ACCEPT, config.getServerName())
+                .set("player_uuid", playerUuid.toString())
+                .set("partner_uuid", partnerUuid.toString());
+        broadcast(message);
+    }
+    
+    public void broadcastTradeDeny(UUID playerUuid, UUID partnerUuid) {
+        SyncMessage message = new SyncMessage(SyncMessageType.TRADE_DENY, config.getServerName())
+                .set("player_uuid", playerUuid.toString())
+                .set("partner_uuid", partnerUuid.toString());
+        broadcast(message);
+    }
+    
+    public void broadcastTradeCancel(UUID playerUuid, UUID partnerUuid, String reason) {
+        SyncMessage message = new SyncMessage(SyncMessageType.TRADE_CANCEL, config.getServerName())
+                .set("player_uuid", playerUuid.toString())
+                .set("partner_uuid", partnerUuid.toString())
+                .set("reason", reason);
+        broadcast(message);
+    }
+    
     public void handleIncomingMessage(SyncMessage message) {
         if (messageHandler != null) {
             messageHandler.accept(message);

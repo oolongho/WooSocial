@@ -24,5 +24,13 @@ public enum SyncMessageType {
     RELATION_INTIMACY_UPDATE,
     
     GIFT_SEND,
-    GIFT_CLAIM
+    GIFT_CLAIM,
+    
+    TRADE_REQUEST,
+    TRADE_ACCEPT,
+    TRADE_DENY,
+    TRADE_CANCEL,
+    TRADE_START,
+    TRADE_UPDATE,
+    TRADE_COMPLETE
 }

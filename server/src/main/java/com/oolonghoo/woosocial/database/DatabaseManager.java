@@ -207,6 +207,11 @@ public class DatabaseManager {
                     : getSQLiteShowcaseLikeCooldownTableSQL();
             statement.executeUpdate(createShowcaseLikeCooldownTable);
             
+            String createTradeLogTable = databaseType.equals("mysql")
+                    ? getMySQLTradeLogTableSQL()
+                    : getSQLiteTradeLogTableSQL();
+            statement.executeUpdate(createTradeLogTable);
+            
             // 执行数据库迁移（复用同一个连接）
             migrateMailsTable(connection);
             migrateGiftsTable(connection);
@@ -756,6 +761,47 @@ public class DatabaseManager {
                 "`last_like_time` INTEGER NOT NULL DEFAULT 0, " +
                 "`daily_count` INTEGER NOT NULL DEFAULT 0, " +
                 "`daily_reset_time` INTEGER NOT NULL DEFAULT 0);";
+    }
+    
+    private String getMySQLTradeLogTableSQL() {
+        return "CREATE TABLE IF NOT EXISTS `" + tablePrefix + "trade_log` (" +
+                "`id` BIGINT PRIMARY KEY AUTO_INCREMENT, " +
+                "`player1_uuid` CHAR(36) NOT NULL, " +
+                "`player1_name` VARCHAR(16) NOT NULL, " +
+                "`player2_uuid` CHAR(36) NOT NULL, " +
+                "`player2_name` VARCHAR(16) NOT NULL, " +
+                "`player1_items` MEDIUMTEXT, " +
+                "`player2_items` MEDIUMTEXT, " +
+                "`player1_money` DOUBLE DEFAULT 0, " +
+                "`player2_money` DOUBLE DEFAULT 0, " +
+                "`player1_points` INT DEFAULT 0, " +
+                "`player2_points` INT DEFAULT 0, " +
+                "`status` VARCHAR(16) NOT NULL DEFAULT 'completed', " +
+                "`cancel_reason` VARCHAR(255), " +
+                "`server` VARCHAR(64), " +
+                "`timestamp` BIGINT NOT NULL, " +
+                "INDEX `idx_player1_uuid` (`player1_uuid`), " +
+                "INDEX `idx_player2_uuid` (`player2_uuid`), " +
+                "INDEX `idx_timestamp` (`timestamp`));";
+    }
+    
+    private String getSQLiteTradeLogTableSQL() {
+        return "CREATE TABLE IF NOT EXISTS `" + tablePrefix + "trade_log` (" +
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "`player1_uuid` TEXT NOT NULL, " +
+                "`player1_name` TEXT NOT NULL, " +
+                "`player2_uuid` TEXT NOT NULL, " +
+                "`player2_name` TEXT NOT NULL, " +
+                "`player1_items` TEXT, " +
+                "`player2_items` TEXT, " +
+                "`player1_money` REAL DEFAULT 0, " +
+                "`player2_money` REAL DEFAULT 0, " +
+                "`player1_points` INTEGER DEFAULT 0, " +
+                "`player2_points` INTEGER DEFAULT 0, " +
+                "`status` TEXT NOT NULL DEFAULT 'completed', " +
+                "`cancel_reason` TEXT, " +
+                "`server` TEXT, " +
+                "`timestamp` INTEGER NOT NULL);";
     }
     
     /**
