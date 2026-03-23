@@ -230,6 +230,33 @@ public class Perms {
      */
     public static final String GIFT_UNLIMITED = "woosocial.gift.unlimited";
     
+    // ==================== 交易系统权限 ====================
+    
+    /**
+     * 交易基础权限
+     */
+    public static final String TRADE = "woosocial.trade";
+    
+    /**
+     * 发起交易权限
+     */
+    public static final String TRADE_INITIATE = "woosocial.trade.initiate";
+    
+    /**
+     * 接受交易权限
+     */
+    public static final String TRADE_ACCEPT = "woosocial.trade.accept";
+    
+    /**
+     * 远程交易权限（好友跨服交易）
+     */
+    public static final String TRADE_REMOTE = "woosocial.trade.remote";
+    
+    /**
+     * 绕过交易冷却权限
+     */
+    public static final String TRADE_COOLDOWN_BYPASS = "woosocial.trade.cooldown.bypass";
+    
     // ==================== 私有构造函数 ====================
     
     private Perms() {
