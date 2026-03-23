@@ -44,7 +44,14 @@ public class TradeGUI implements InventoryHolder {
     
     private final Inventory inventory;
     
-    public TradeGUI(WooSocial plugin, TradeManager tradeManager, TradeConfig config, 
+    public static TradeGUI create(WooSocial plugin, TradeManager tradeManager, TradeConfig config,
+                                  TradeEconomyManager economyManager, Player player, TradeSession session) {
+        TradeGUI gui = TradeGUI.create(plugin, tradeManager, config, economyManager, player, session);
+        gui.initializeGUI();
+        return gui;
+    }
+    
+    private TradeGUI(WooSocial plugin, TradeManager tradeManager, TradeConfig config, 
                     TradeEconomyManager economyManager, Player player, TradeSession session) {
         this.plugin = plugin;
         this.tradeManager = tradeManager;
@@ -57,8 +64,6 @@ public class TradeGUI implements InventoryHolder {
         
         this.inventory = Bukkit.createInventory(this, GUI_SIZE, 
             Component.text("§8交易 - §e" + session.getOtherPlayerName(playerUuid)));
-        
-        initializeGUI();
     }
     
     private void initializeGUI() {
