@@ -6,7 +6,6 @@ import com.oolonghoo.woosocial.module.trade.command.TradeCommand;
 import com.oolonghoo.woosocial.module.trade.listener.TradeListener;
 import com.oolonghoo.woosocial.module.trade.listener.TradeSecurityListener;
 import com.oolonghoo.woosocial.sync.SyncMessage;
-import org.bukkit.Bukkit;
 
 public class TradeModule extends Module {
     

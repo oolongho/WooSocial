@@ -9,7 +9,6 @@ import com.oolonghoo.woosocial.module.trade.model.TradeState;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -227,9 +226,6 @@ public class TradeManager {
     private void executeTrade(TradeSession session) {
         session.setState(TradeState.COMPLETING);
         
-        TradeOffer offer1 = session.getOffer1();
-        TradeOffer offer2 = session.getOffer2();
-        
         Player player1 = Bukkit.getPlayer(session.getPlayer1Uuid());
         Player player2 = Bukkit.getPlayer(session.getPlayer2Uuid());
         
@@ -351,8 +347,8 @@ public class TradeManager {
             }
             
             return true;
-        } catch (Exception e) {
-            plugin.getLogger().severe("[Trade] 交易处理异常: " + e.getMessage());
+        } catch (RuntimeException e) {
+            plugin.getLogger().severe(() -> "[Trade] 交易处理异常: " + e.getMessage());
             return false;
         }
     }
@@ -465,7 +461,7 @@ public class TradeManager {
                 offer1.getPoints(), offer2.getPoints(),
                 serverName
         ).exceptionally(e -> {
-            plugin.getLogger().warning("[Trade] 记录交易日志失败: " + e.getMessage());
+            plugin.getLogger().warning(() -> "[Trade] 记录交易日志失败: " + e.getMessage());
             return null;
         });
     }
@@ -480,7 +476,7 @@ public class TradeManager {
                 session.getPlayer2Uuid(), session.getPlayer2Name(),
                 reason, serverName
         ).exceptionally(e -> {
-            plugin.getLogger().warning("[Trade] 记录取消日志失败: " + e.getMessage());
+            plugin.getLogger().warning(() -> "[Trade] 记录取消日志失败: " + e.getMessage());
             return null;
         });
     }
