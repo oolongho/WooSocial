@@ -5,6 +5,7 @@ import com.oolonghoo.woosocial.Perms;
 import com.oolonghoo.woosocial.config.MessageManager;
 import com.oolonghoo.woosocial.module.friend.FriendDataManager;
 import com.oolonghoo.woosocial.module.trade.TradeConfig;
+import com.oolonghoo.woosocial.module.trade.TradeEconomyManager;
 import com.oolonghoo.woosocial.module.trade.TradeManager;
 import com.oolonghoo.woosocial.module.trade.TradeRequestManager;
 import com.oolonghoo.woosocial.module.trade.gui.TradeGUI;
@@ -32,15 +33,18 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
     private final TradeManager tradeManager;
     private final TradeRequestManager requestManager;
     private final TradeConfig config;
+    private final TradeEconomyManager economyManager;
     private final MessageManager messageManager;
     
     private final Map<UUID, Boolean> tradeToggle = new HashMap<>();
     
-    public TradeCommand(WooSocial plugin, TradeManager tradeManager, TradeRequestManager requestManager, TradeConfig config) {
+    public TradeCommand(WooSocial plugin, TradeManager tradeManager, TradeRequestManager requestManager, 
+                        TradeConfig config, TradeEconomyManager economyManager) {
         this.plugin = plugin;
         this.tradeManager = tradeManager;
         this.requestManager = requestManager;
         this.config = config;
+        this.economyManager = economyManager;
         this.messageManager = plugin.getMessageManager();
     }
     
@@ -185,8 +189,8 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         
-        TradeGUI senderGUI = new TradeGUI(plugin, tradeManager, config, sender, session);
-        TradeGUI receiverGUI = new TradeGUI(plugin, tradeManager, config, player, session);
+        TradeGUI senderGUI = new TradeGUI(plugin, tradeManager, config, economyManager, sender, session);
+        TradeGUI receiverGUI = new TradeGUI(plugin, tradeManager, config, economyManager, player, session);
         
         sender.openInventory(senderGUI.getInventory());
         player.openInventory(receiverGUI.getInventory());

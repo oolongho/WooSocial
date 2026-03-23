@@ -66,7 +66,7 @@ public class TradeEconomyManager {
     
     public int getPoints(Player player) {
         if (!hasPlayerPoints()) return 0;
-        return playerPointsHook.getBalance(player);
+        return (int) playerPointsHook.getBalance(player);
     }
     
     public boolean withdrawMoney(Player player, double amount) {
