@@ -9,7 +9,6 @@ import com.oolonghoo.woosocial.module.trade.TradeRequestManager;
 import com.oolonghoo.woosocial.module.trade.gui.TradeGUI;
 import com.oolonghoo.woosocial.module.trade.model.TradeRequest;
 import com.oolonghoo.woosocial.module.trade.model.TradeSession;
-import com.oolonghoo.woosocial.permission.Perms;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,7 +17,9 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -31,6 +32,8 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
     private final TradeRequestManager requestManager;
     private final TradeConfig config;
     private final MessageManager messageManager;
+    
+    private final Map<UUID, Boolean> tradeToggle = new HashMap<>();
     
     public TradeCommand(WooSocial plugin, TradeManager tradeManager, TradeRequestManager requestManager, TradeConfig config) {
         this.plugin = plugin;
@@ -50,7 +53,7 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
         Player player = (Player) sender;
         UUID playerUuid = player.getUniqueId();
         
-        if (config.isRequirePermission() && !player.hasPermission(Perms.TRADE_USE)) {
+        if (config.isRequirePermission() && !player.hasPermission("woosocial.trade")) {
             messageManager.send(player, "general.no-permission");
             return true;
         }
@@ -70,8 +73,10 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
             case "d":
                 return handleDeny(player);
             case "toggle":
+            case "t":
                 return handleToggle(player);
             case "help":
+            case "?":
                 sendHelp(player);
                 return true;
             default:
@@ -87,6 +92,16 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         
+        if (requestManager.hasPendingRequest(playerUuid)) {
+            messageManager.send(player, "trade.has-pending-request");
+            return true;
+        }
+        
+        if (requestManager.isOnCooldown(playerUuid)) {
+            messageManager.send(player, "trade.cooldown");
+            return true;
+        }
+        
         Player target = Bukkit.getPlayer(targetName);
         if (target == null || !target.isOnline()) {
             messageManager.send(player, "general.player-not-found", "player", targetName);
@@ -98,13 +113,20 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         
-        if (tradeManager.isInTrade(target.getUniqueId())) {
+        UUID targetUuid = target.getUniqueId();
+        
+        if (tradeManager.isInTrade(targetUuid)) {
             messageManager.send(player, "trade.target-in-trade", "player", target.getName());
             return true;
         }
         
-        FriendDataManager friendManager = plugin.getFriendDataManager();
-        boolean isFriend = friendManager != null && friendManager.areFriends(playerUuid, target.getUniqueId());
+        if (isTradeDisabled(targetUuid)) {
+            messageManager.send(player, "trade.target-disabled", "player", target.getName());
+            return true;
+        }
+        
+        boolean isFriend = isFriend(playerUuid, targetUuid);
+        boolean isRemote = isFriend;
         
         if (!isFriend) {
             double distance = player.getLocation().distanceSquared(target.getLocation());
@@ -116,49 +138,17 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
             }
         }
         
-        if (requestManager.hasPendingRequest(playerUuid, target.getUniqueId())) {
-            return handleAcceptFrom(player, target);
-        }
-        
-        if (requestManager.isOnCooldown(playerUuid)) {
-            messageManager.send(player, "trade.request-cooldown");
-            return true;
-        }
-        
-        boolean sent = requestManager.sendRequest(player, target, isFriend);
-        if (!sent) {
+        if (requestManager.sendRequest(player, target, isRemote)) {
+            player.playSound(player.getLocation(), config.getSoundRequestSend(), 1.0f, 1.0f);
+            target.playSound(target.getLocation(), config.getSoundRequestReceive(), 1.0f, 1.0f);
+            
+            messageManager.send(player, "trade.request-sent", "player", target.getName());
+            messageManager.send(target, "trade.request-received", "player", player.getName());
+            
+            messageManager.send(target, "trade.request-hint");
+        } else {
             messageManager.send(player, "trade.request-failed");
-            return true;
         }
-        
-        player.playSound(player.getLocation(), config.getSoundRequestSend(), 1.0f, 1.0f);
-        messageManager.send(player, "trade.request-sent", "player", target.getName());
-        
-        target.playSound(target.getLocation(), config.getSoundRequestReceive(), 1.0f, 1.0f);
-        messageManager.send(target, "trade.request-received", "player", player.getName());
-        messageManager.send(target, "trade.request-hint");
-        
-        return true;
-    }
-    
-    private boolean handleAcceptFrom(Player player, Player target) {
-        TradeRequest request = requestManager.acceptRequest(player.getUniqueId());
-        if (request == null) {
-            messageManager.send(player, "trade.no-pending-request");
-            return true;
-        }
-        
-        TradeSession session = tradeManager.createSession(target, player);
-        if (session == null) {
-            messageManager.send(player, "trade.start-failed");
-            return true;
-        }
-        
-        TradeGUI playerGUI = new TradeGUI(plugin, tradeManager, config, player, session);
-        TradeGUI targetGUI = new TradeGUI(plugin, tradeManager, config, target, session);
-        
-        player.openInventory(playerGUI.getInventory());
-        target.openInventory(targetGUI.getInventory());
         
         return true;
     }
@@ -183,28 +173,30 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         
-        if (tradeManager.isInTrade(sender.getUniqueId())) {
-            messageManager.send(player, "trade.target-in-trade", "player", sender.getName());
+        if (tradeManager.isInTrade(request.getSenderUuid())) {
+            messageManager.send(player, "trade.target-in-trade", "player", request.getSenderName());
             return true;
         }
         
         TradeSession session = tradeManager.createSession(sender, player);
         if (session == null) {
-            messageManager.send(player, "trade.start-failed");
+            messageManager.send(player, "trade.session-failed");
             return true;
         }
         
-        TradeGUI playerGUI = new TradeGUI(plugin, tradeManager, config, player, session);
         TradeGUI senderGUI = new TradeGUI(plugin, tradeManager, config, sender, session);
+        TradeGUI receiverGUI = new TradeGUI(plugin, tradeManager, config, player, session);
         
-        player.openInventory(playerGUI.getInventory());
         sender.openInventory(senderGUI.getInventory());
+        player.openInventory(receiverGUI.getInventory());
         
         return true;
     }
     
     private boolean handleDeny(Player player) {
-        TradeRequest request = requestManager.denyRequest(player.getUniqueId());
+        UUID playerUuid = player.getUniqueId();
+        
+        TradeRequest request = requestManager.denyRequest(playerUuid);
         if (request == null) {
             messageManager.send(player, "trade.no-pending-request");
             return true;
@@ -221,8 +213,33 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
     }
     
     private boolean handleToggle(Player player) {
-        messageManager.send(player, "trade.toggle-hint");
+        UUID playerUuid = player.getUniqueId();
+        
+        boolean currentState = isTradeDisabled(playerUuid);
+        tradeToggle.put(playerUuid, !currentState);
+        
+        if (currentState) {
+            messageManager.send(player, "trade.toggle-enabled");
+        } else {
+            messageManager.send(player, "trade.toggle-disabled");
+        }
+        
         return true;
+    }
+    
+    private boolean isTradeDisabled(UUID playerUuid) {
+        return tradeToggle.getOrDefault(playerUuid, false);
+    }
+    
+    private boolean isFriend(UUID player1, UUID player2) {
+        try {
+            FriendDataManager friendManager = plugin.getFriendDataManager();
+            if (friendManager != null) {
+                return friendManager.areFriends(player1, player2);
+            }
+        } catch (Exception e) {
+        }
+        return false;
     }
     
     private void sendHelp(Player player) {
@@ -243,15 +260,15 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
         }
         
         if (args.length == 1) {
-            String prefix = args[0].toLowerCase();
+            String input = args[0].toLowerCase();
             
-            if ("accept".startsWith(prefix)) completions.add("accept");
-            if ("deny".startsWith(prefix)) completions.add("deny");
-            if ("toggle".startsWith(prefix)) completions.add("toggle");
-            if ("help".startsWith(prefix)) completions.add("help");
+            if ("accept".startsWith(input)) completions.add("accept");
+            if ("deny".startsWith(input)) completions.add("deny");
+            if ("toggle".startsWith(input)) completions.add("toggle");
+            if ("help".startsWith(input)) completions.add("help");
             
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                if (!onlinePlayer.equals(sender) && onlinePlayer.getName().toLowerCase().startsWith(prefix)) {
+                if (onlinePlayer.getName().toLowerCase().startsWith(input)) {
                     completions.add(onlinePlayer.getName());
                 }
             }
