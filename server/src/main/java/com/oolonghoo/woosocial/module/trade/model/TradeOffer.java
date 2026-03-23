@@ -1,5 +1,6 @@
 package com.oolonghoo.woosocial.module.trade.model;
 
+import com.oolonghoo.woosocial.module.trade.util.ItemSnapshot;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ public class TradeOffer {
     
     private final UUID playerUuid;
     private final List<ItemStack> items;
+    private final Map<Integer, ItemSnapshot> itemSnapshots;
     private volatile double money;
     private volatile int points;
     private volatile long updateTime;
@@ -21,6 +23,7 @@ public class TradeOffer {
     public TradeOffer(UUID playerUuid) {
         this.playerUuid = playerUuid;
         this.items = new CopyOnWriteArrayList<>();
+        this.itemSnapshots = new HashMap<>();
         this.money = 0;
         this.points = 0;
         this.updateTime = System.currentTimeMillis();
@@ -47,6 +50,7 @@ public class TradeOffer {
                 items.add(null);
             }
             items.set(slot, item.clone());
+            itemSnapshots.put(slot, new ItemSnapshot(item));
             updateTime = System.currentTimeMillis();
         }
     }
@@ -139,5 +143,41 @@ public class TradeOffer {
             }
         }
         return total;
+    }
+    
+    /**
+     * 验证物品是否被调包
+     */
+    public boolean validateItems() {
+        for (int i = 0; i < items.size(); i++) {
+            ItemStack item = items.get(i);
+            if (item == null || item.getType().isAir()) {
+                continue;
+            }
+            
+            ItemSnapshot snapshot = itemSnapshots.get(i);
+            if (snapshot == null) {
+                continue;
+            }
+            
+            if (!snapshot.matches(item)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * 获取物品快照数量
+     */
+    public int getSnapshotCount() {
+        return itemSnapshots.size();
+    }
+    
+    /**
+     * 清除快照
+     */
+    public void clearSnapshots() {
+        itemSnapshots.clear();
     }
 }

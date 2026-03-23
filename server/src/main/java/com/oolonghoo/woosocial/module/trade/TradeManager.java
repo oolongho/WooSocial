@@ -269,6 +269,22 @@ public class TradeManager {
         TradeOffer offer1 = session.getOffer1();
         TradeOffer offer2 = session.getOffer2();
         
+        // 验证物品完整性（防止调包）
+        if (!offer1.validateItems()) {
+            messageManager.send(player1, "trade.item-invalid");
+            return false;
+        }
+        if (!offer2.validateItems()) {
+            messageManager.send(player2, "trade.item-invalid");
+            return false;
+        }
+        
+        // 验证物品黑名单
+        if (!validateItemBlacklist(offer1) || !validateItemBlacklist(offer2)) {
+            return false;
+        }
+        
+        // 验证金钱和点数
         if (offer1.getMoney() > 0 || offer2.getMoney() > 0) {
             if (config.isVaultEnabled() && economyManager.hasVault()) {
                 if (!economyManager.hasMoney(player1, offer1.getMoney())) {
@@ -295,6 +311,20 @@ public class TradeManager {
             }
         }
         
+        return true;
+    }
+    
+    /**
+     * 验证物品黑名单
+     */
+    private boolean validateItemBlacklist(TradeOffer offer) {
+        for (ItemStack item : offer.getItems()) {
+            if (item != null && !item.getType().isAir()) {
+                if (config.isBlacklisted(item.getType())) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
     
