@@ -419,3 +419,55 @@ showcase:
   like-cooldown: "&cLike on cooldown, please wait {seconds} seconds"
   like-daily-limit: "&cDaily like limit reached, remaining: {remaining}"
   like-player-limit: "&cDaily like limit for this player reached"
+
+# ==================== Trade System ====================
+trade:
+  # Request related
+  request-sent: "&aTrade request sent to %player%!"
+  request-received: "&e%player% wants to trade with you!"
+  request-hint: "&7Type &e/trade accept &7to accept, &e/trade deny &7to decline"
+  request-denied: "&cYou denied %player%'s trade request."
+  request-denied-by: "&c%player% denied your trade request."
+  request-expired: "&cTrade request expired."
+  request-cooldown: "&cPlease wait before sending another trade request."
+  request-failed: "&cFailed to send trade request!"
+  has-pending-request: "&cYou have a pending trade request. Please handle it first."
+  no-pending-request: "&cNo pending trade request."
+  
+  # Status related
+  already-in-trade: "&cYou are already in a trade!"
+  target-in-trade: "&c%player% is already in a trade!"
+  target-disabled: "&c%player% has disabled trading."
+  cannot-self: "&cYou cannot trade with yourself!"
+  too-far: "&cToo far away! Non-friends must be within %distance% blocks to trade."
+  sender-offline: "&cThe other player is offline."
+  start-failed: "&cFailed to start trade!"
+  session-failed: "&cFailed to create trade session!"
+  cooldown: "&cPlease wait before trying again."
+  
+  # During trade
+  countdown: "&eTrade will complete in %seconds% seconds..."
+  cancelled: "&cTrade cancelled! Reason: %reason%"
+  completed: "&aTrade completed! Successfully traded with %player%."
+  
+  # Economy related
+  money-input-hint: "&7Enter the amount in chat, type 'cancel' to cancel"
+  money-set: "&aMoney amount set: &e%amount%"
+  not-enough-money: "&cNot enough money!"
+  not-enough-points: "&cNot enough points!"
+  invalid-amount: "&cInvalid amount!"
+  item-blocked: "&cThis item cannot be traded!"
+  
+  # Toggle
+  toggle-enabled: "&aTrading enabled!"
+  toggle-disabled: "&cTrading disabled!"
+  toggle-hint: "&7Use /trade toggle to switch trading on/off"
+  
+  # Help
+  help:
+    header: "&e========== &6Trade Help &e=========="
+    request: "&e/trade <player> &7- Send trade request"
+    accept: "&e/trade accept &7- Accept trade request"
+    deny: "&e/trade deny &7- Deny trade request"
+    toggle: "&e/trade toggle &7- Toggle trading"
+    footer: "&e================================"

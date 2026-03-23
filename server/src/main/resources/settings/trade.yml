@@ -38,6 +38,12 @@ economy:
   playerpoints:
     enabled: true
 
+# Logging settings
+# 日志设置
+logging:
+  enabled: true
+  retention-days: 30
+
 # Sounds
 # 音效
 sounds:
