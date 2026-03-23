@@ -1,0 +1,50 @@
+# Trade module configuration
+# 交易模块配置文件
+
+# Basic settings
+# 基础设置
+request-expire-time: 60
+countdown-seconds: 3
+face-to-face-distance: 50
+
+# Permission settings
+# 权限设置
+require-permission: false
+
+# Security settings
+# 安全设置
+security:
+  cancel-on-damage: true
+  cancel-on-move: false
+  move-threshold: 1.5
+  revoke-ready-on-change: true
+
+# Item blacklist
+# 物品黑名单
+blacklist:
+  enabled: true
+  items:
+    - "BEDROCK"
+    - "BARRIER"
+    - "COMMAND_BLOCK"
+    - "STRUCTURE_BLOCK"
+    - "STRUCTURE_VOID"
+
+# Economy settings
+# 经济设置
+economy:
+  vault:
+    enabled: true
+  playerpoints:
+    enabled: true
+
+# Sounds
+# 音效
+sounds:
+  request-send: "ENTITY_EXPERIENCE_ORB_PICKUP"
+  request-receive: "BLOCK_NOTE_BLOCK_PLING"
+  trade-start: "ENTITY_PLAYER_LEVELUP"
+  trade-complete: "ENTITY_PLAYER_LEVELUP"
+  trade-cancel: "ENTITY_ITEM_BREAK"
+  countdown-tick: "BLOCK_NOTE_BLOCK_PLING"
+  blocked-item: "ENTITY_ITEM_BREAK"
