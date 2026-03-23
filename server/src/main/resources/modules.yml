@@ -20,6 +20,11 @@ modules:
   # 关系模块（依赖好友模块）
   relation:
     enabled: true
+  
+  # Trade module (depends on friend module)
+  # 交易模块（依赖好友模块）
+  trade:
+    enabled: true
 
 # Module Dependencies:
 # 模块依赖说明：
