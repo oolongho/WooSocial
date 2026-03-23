@@ -1,0 +1,50 @@
+title: "<black>交易 - <yellow>{player_name}"
+
+layout:
+  - '##111111##222222##'
+  - '##111111##222222##'
+  - '##111111##222222##'
+  - '##111111##222222##'
+  - '#########c########'
+  - '###r####s#########'
+
+icons:
+  '#':
+    material: GRAY_STAINED_GLASS_PANE
+    name: ""
+  
+  '1':
+    material: AIR
+    name: "<gray>放入物品"
+    lore:
+      - "<gray>点击放入物品"
+  
+  '2':
+    material: AIR
+    name: "<gray>对方物品"
+    lore:
+      - "<gray>对方放入的物品"
+  
+  'r':
+    material: "{is_ready ? LIME_DYE : RED_DYE}"
+    name: "{is_ready ? <green>已准备</green> : <red>未准备</red>}"
+    lore:
+      - "<gray>修改报价会取消准备"
+      - ""
+      - "<aqua>点击切换准备状态"
+  
+  's':
+    material: "{has_money ? GOLD_INGOT : AIR}"
+    name: "<gold>金币: <yellow>{money}"
+    lore:
+      - "<gray>点击输入金币数量"
+      - "<gray>当前余额: <yellow>{balance}"
+  
+  'c':
+    material: REDSTONE_BLOCK
+    name: "<red>取消交易"
+    lore:
+      - "<gray>取消本次交易"
+      - "<red>物品将返还"
+      - ""
+      - "<aqua>点击取消"
