@@ -51,10 +51,11 @@ public class TradeGUI implements InventoryHolder {
     
     private Inventory inventory;
     
-    public TradeGUI(WooSocial plugin, TradeManager tradeManager, TradeConfig config, Player player, TradeSession session) {
+    public TradeGUI(WooSocial plugin, TradeManager tradeManager, TradeConfig config, TradeEconomyManager economyManager, Player player, TradeSession session) {
         this.plugin = plugin;
         this.tradeManager = tradeManager;
         this.config = config;
+        this.economyManager = economyManager;
         this.messageManager = plugin.getMessageManager();
         this.player = player;
         this.playerUuid = player.getUniqueId();
