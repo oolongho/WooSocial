@@ -36,6 +36,9 @@ public class TradeConfig {
     private boolean vaultEnabled;
     private boolean playerPointsEnabled;
     
+    private boolean logTrades;
+    private int logRetentionDays;
+    
     private Sound soundRequestSend;
     private Sound soundRequestReceive;
     private Sound soundTradeStart;
@@ -72,6 +75,9 @@ public class TradeConfig {
         vaultEnabled = config.getBoolean("economy.vault.enabled", true);
         playerPointsEnabled = config.getBoolean("economy.playerpoints.enabled", true);
         
+        logTrades = config.getBoolean("logging.enabled", true);
+        logRetentionDays = config.getInt("logging.retention-days", 30);
+        
         loadSounds();
     }
     
@@ -82,14 +88,12 @@ public class TradeConfig {
         if (!blacklistEnabled) return;
         
         List<String> items = config.getStringList("blacklist.items");
-        if (items != null) {
-            for (String itemStr : items) {
-                try {
-                    Material material = Material.valueOf(itemStr.toUpperCase());
-                    blacklistedMaterials.add(material);
-                } catch (IllegalArgumentException e) {
-                    plugin.getLogger().warning("[Trade] 无效的黑名单物品: " + itemStr);
-                }
+        for (String itemStr : items) {
+            try {
+                Material material = Material.valueOf(itemStr.toUpperCase());
+                blacklistedMaterials.add(material);
+            } catch (IllegalArgumentException e) {
+                plugin.getLogger().warning(() -> "[Trade] 无效的黑名单物品: " + itemStr);
             }
         }
     }
@@ -162,6 +166,14 @@ public class TradeConfig {
     
     public boolean isPlayerPointsEnabled() {
         return playerPointsEnabled;
+    }
+    
+    public boolean isLogTrades() {
+        return logTrades;
+    }
+    
+    public int getLogRetentionDays() {
+        return logRetentionDays;
     }
     
     public Sound getSoundRequestSend() {
