@@ -37,8 +37,18 @@ public class TradeOffer {
     }
     
     public void addItem(ItemStack item) {
-        if (item != null) {
+        if (item != null && !item.getType().isAir()) {
             items.add(item.clone());
+            updateTime = System.currentTimeMillis();
+        }
+    }
+    
+    public void addItem(ItemStack item, int slot) {
+        if (item != null && !item.getType().isAir()) {
+            while (items.size() <= slot) {
+                items.add(null);
+            }
+            items.set(slot, item.clone());
             updateTime = System.currentTimeMillis();
         }
     }
