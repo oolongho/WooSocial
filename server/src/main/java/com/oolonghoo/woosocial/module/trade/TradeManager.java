@@ -25,6 +25,7 @@ public class TradeManager {
     private final WooSocial plugin;
     private final TradeConfig config;
     private final MessageManager messageManager;
+    private final TradeEconomyManager economyManager;
     
     private final Map<UUID, TradeSession> activeSessions = new ConcurrentHashMap<>();
     private final Map<UUID, BukkitTask> countdownTasks = new ConcurrentHashMap<>();
@@ -33,6 +34,7 @@ public class TradeManager {
         this.plugin = plugin;
         this.config = config;
         this.messageManager = plugin.getMessageManager();
+        this.economyManager = new TradeEconomyManager(plugin);
     }
     
     /**
@@ -246,12 +248,12 @@ public class TradeManager {
         TradeOffer offer2 = session.getOffer2();
         
         if (offer1.getMoney() > 0 || offer2.getMoney() > 0) {
-            if (config.isVaultEnabled()) {
-                if (!plugin.getVaultHook().has(player1, offer1.getMoney())) {
+            if (config.isVaultEnabled() && economyManager.hasVault()) {
+                if (!economyManager.hasMoney(player1, offer1.getMoney())) {
                     messageManager.send(player1, "trade.not-enough-money");
                     return false;
                 }
-                if (!plugin.getVaultHook().has(player2, offer2.getMoney())) {
+                if (!economyManager.hasMoney(player2, offer2.getMoney())) {
                     messageManager.send(player2, "trade.not-enough-money");
                     return false;
                 }
@@ -259,12 +261,12 @@ public class TradeManager {
         }
         
         if (offer1.getPoints() > 0 || offer2.getPoints() > 0) {
-            if (config.isPlayerPointsEnabled()) {
-                if (!plugin.getPlayerPointsHook().has(player1, offer1.getPoints())) {
+            if (config.isPlayerPointsEnabled() && economyManager.hasPlayerPoints()) {
+                if (!economyManager.hasPoints(player1, offer1.getPoints())) {
                     messageManager.send(player1, "trade.not-enough-points");
                     return false;
                 }
-                if (!plugin.getPlayerPointsHook().has(player2, offer2.getPoints())) {
+                if (!economyManager.hasPoints(player2, offer2.getPoints())) {
                     messageManager.send(player2, "trade.not-enough-points");
                     return false;
                 }
@@ -300,25 +302,25 @@ public class TradeManager {
                 }
             }
             
-            if (config.isVaultEnabled()) {
+            if (config.isVaultEnabled() && economyManager.hasVault()) {
                 if (offer1.getMoney() > 0) {
-                    plugin.getVaultHook().withdraw(player1, offer1.getMoney());
-                    plugin.getVaultHook().deposit(player2, offer1.getMoney());
+                    economyManager.withdrawMoney(player1, offer1.getMoney());
+                    economyManager.depositMoney(player2, offer1.getMoney());
                 }
                 if (offer2.getMoney() > 0) {
-                    plugin.getVaultHook().withdraw(player2, offer2.getMoney());
-                    plugin.getVaultHook().deposit(player1, offer2.getMoney());
+                    economyManager.withdrawMoney(player2, offer2.getMoney());
+                    economyManager.depositMoney(player1, offer2.getMoney());
                 }
             }
             
-            if (config.isPlayerPointsEnabled()) {
+            if (config.isPlayerPointsEnabled() && economyManager.hasPlayerPoints()) {
                 if (offer1.getPoints() > 0) {
-                    plugin.getPlayerPointsHook().withdraw(player1, offer1.getPoints());
-                    plugin.getPlayerPointsHook().deposit(player2, offer1.getPoints());
+                    economyManager.withdrawPoints(player1, offer1.getPoints());
+                    economyManager.depositPoints(player2, offer1.getPoints());
                 }
                 if (offer2.getPoints() > 0) {
-                    plugin.getPlayerPointsHook().withdraw(player2, offer2.getPoints());
-                    plugin.getPlayerPointsHook().deposit(player1, offer2.getPoints());
+                    economyManager.withdrawPoints(player2, offer2.getPoints());
+                    economyManager.depositPoints(player1, offer2.getPoints());
                 }
             }
             

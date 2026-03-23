@@ -1,6 +1,7 @@
 package com.oolonghoo.woosocial.module.trade.command;
 
 import com.oolonghoo.woosocial.WooSocial;
+import com.oolonghoo.woosocial.Perms;
 import com.oolonghoo.woosocial.config.MessageManager;
 import com.oolonghoo.woosocial.module.friend.FriendDataManager;
 import com.oolonghoo.woosocial.module.trade.TradeConfig;
@@ -53,7 +54,7 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
         Player player = (Player) sender;
         UUID playerUuid = player.getUniqueId();
         
-        if (config.isRequirePermission() && !player.hasPermission("woosocial.trade")) {
+        if (config.isRequirePermission() && !player.hasPermission(Perms.TRADE)) {
             messageManager.send(player, "general.no-permission");
             return true;
         }
@@ -233,13 +234,10 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
     
     private boolean isFriend(UUID player1, UUID player2) {
         try {
-            FriendDataManager friendManager = plugin.getFriendDataManager();
-            if (friendManager != null) {
-                return friendManager.areFriends(player1, player2);
-            }
+            return plugin.getFriendDAO().isFriend(player1, player2).join();
         } catch (Exception e) {
+            return false;
         }
-        return false;
     }
     
     private void sendHelp(Player player) {
