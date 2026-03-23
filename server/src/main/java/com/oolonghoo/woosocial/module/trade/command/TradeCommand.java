@@ -177,8 +177,8 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
             return true;
         }
         
-        TradeGUI senderGUI = new TradeGUI(plugin, tradeManager, config, economyManager, sender, session);
-        TradeGUI receiverGUI = new TradeGUI(plugin, tradeManager, config, economyManager, player, session);
+        TradeGUI senderGUI = TradeGUI.create(plugin, tradeManager, config, economyManager, sender, session);
+        TradeGUI receiverGUI = TradeGUI.create(plugin, tradeManager, config, economyManager, player, session);
         
         sender.openInventory(senderGUI.getInventory());
         player.openInventory(receiverGUI.getInventory());

@@ -240,8 +240,8 @@ public class TradeLogDAO {
                 Map<String, Object> map = gson.fromJson(part, Map.class);
                 ItemStack item = ItemStack.deserialize(map);
                 items.add(item);
-            } catch (Exception e) {
-                plugin.getLogger().warning(() -> "[TradeLog] 反序列化物品失败: " + e.getMessage());
+            } catch (RuntimeException e) {
+                plugin.getLogger().warning(() -> "[TradeLog] 反序列化物品失败：" + e.getMessage());
             }
         }
         

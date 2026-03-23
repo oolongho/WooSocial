@@ -27,7 +27,7 @@ public class TradeListener implements Listener {
     
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player player)) return;
+        if (!(event.getWhoClicked() instanceof Player)) return;
         
         InventoryHolder holder = event.getInventory().getHolder();
         
@@ -61,7 +61,7 @@ public class TradeListener implements Listener {
     
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryClose(InventoryCloseEvent event) {
-        if (!(event.getPlayer() instanceof Player player)) return;
+        if (!(event.getPlayer() instanceof Player)) return;
         
         InventoryHolder holder = event.getInventory().getHolder();
         
