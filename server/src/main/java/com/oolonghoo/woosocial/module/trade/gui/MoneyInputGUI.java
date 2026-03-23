@@ -2,9 +2,10 @@ package com.oolonghoo.woosocial.module.trade.gui;
 
 import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.config.MessageManager;
-import com.oolonghoo.woosocial.module.trade.TradeManager;
+import com.oolonghoo.woosocial.module.trade.TradeEconomyManager;
 import com.oolonghoo.woosocial.module.trade.model.TradeOffer;
 import com.oolonghoo.woosocial.module.trade.model.TradeSession;
+import com.oolonghoo.woosocial.module.trade.model.TradeState;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -14,8 +15,8 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -25,7 +26,7 @@ import java.util.UUID;
 
 /**
  * 金币输入界面
- * 使用铁砧GUI输入金额
+ * 使用聊天栏输入金额
  */
 public class MoneyInputGUI implements InventoryHolder, Listener {
     
@@ -33,17 +34,19 @@ public class MoneyInputGUI implements InventoryHolder, Listener {
     private final Player player;
     private final TradeSession session;
     private final TradeGUI tradeGUI;
+    private final TradeEconomyManager economyManager;
     private final MessageManager messageManager;
     
     private Inventory inventory;
-    private AnvilInventory anvilInventory;
     private boolean completed = false;
     
-    public MoneyInputGUI(WooSocial plugin, Player player, TradeSession session, TradeGUI tradeGUI) {
+    public MoneyInputGUI(WooSocial plugin, Player player, TradeSession session, 
+                         TradeGUI tradeGUI, TradeEconomyManager economyManager) {
         this.plugin = plugin;
         this.player = player;
         this.session = session;
         this.tradeGUI = tradeGUI;
+        this.economyManager = economyManager;
         this.messageManager = plugin.getMessageManager();
         
         createInventory();
@@ -53,28 +56,56 @@ public class MoneyInputGUI implements InventoryHolder, Listener {
     private void createInventory() {
         inventory = Bukkit.createInventory(this, 9, Component.text("§8输入金币数量"));
         
-        ItemStack inputItem = new ItemStack(Material.PAPER);
-        ItemMeta meta = inputItem.getItemMeta();
-        meta.displayName(Component.text("§f输入金额"));
-        inputItem.setItemMeta(meta);
-        
-        inventory.setItem(0, inputItem);
-        
-        ItemStack confirmItem = new ItemStack(Material.LIME_DYE);
-        ItemMeta confirmMeta = confirmItem.getItemMeta();
-        confirmMeta.displayName(Component.text("§a确认"));
-        confirmItem.setItemMeta(confirmMeta);
-        inventory.setItem(8, confirmItem);
+        ItemStack hintItem = new ItemStack(Material.PAPER);
+        ItemMeta hintMeta = hintItem.getItemMeta();
+        hintMeta.displayName(Component.text("§e请在聊天栏输入金额"));
+        hintItem.setItemMeta(hintMeta);
+        inventory.setItem(4, hintItem);
         
         ItemStack cancelItem = new ItemStack(Material.RED_DYE);
         ItemMeta cancelMeta = cancelItem.getItemMeta();
         cancelMeta.displayName(Component.text("§c取消"));
         cancelItem.setItemMeta(cancelMeta);
-        inventory.setItem(7, cancelItem);
+        inventory.setItem(8, cancelItem);
     }
     
     public void open() {
         player.openInventory(inventory);
+    }
+    
+    @EventHandler(priority = org.bukkit.event.EventPriority.LOWEST)
+    public void onPlayerChat(AsyncPlayerChatEvent event) {
+        if (!event.getPlayer().equals(player)) return;
+        if (completed) return;
+        
+        event.setCancelled(true);
+        
+        String message = event.getMessage();
+        
+        if (message.equalsIgnoreCase("cancel") || message.equalsIgnoreCase("取消")) {
+            Bukkit.getScheduler().runTask(plugin, this::cancel);
+            return;
+        }
+        
+        try {
+            double amount = Double.parseDouble(message);
+            
+            if (amount < 0) {
+                messageManager.send(player, "trade.invalid-amount");
+                return;
+            }
+            
+            if (economyManager != null && economyManager.hasVault() && 
+                !economyManager.hasMoney(player, amount)) {
+                messageManager.send(player, "trade.not-enough-money");
+                return;
+            }
+            
+            Bukkit.getScheduler().runTask(plugin, () -> complete(amount));
+            
+        } catch (NumberFormatException e) {
+            messageManager.send(player, "trade.invalid-amount");
+        }
     }
     
     @EventHandler
@@ -90,8 +121,6 @@ public class MoneyInputGUI implements InventoryHolder, Listener {
         int slot = event.getRawSlot();
         
         if (slot == 8) {
-            complete();
-        } else if (slot == 7) {
             cancel();
         }
     }
@@ -103,7 +132,8 @@ public class MoneyInputGUI implements InventoryHolder, Listener {
         
         if (!completed) {
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                if (tradeManager().isInTrade(player.getUniqueId())) {
+                if (tradeGUI.getSession().getState() != TradeState.CANCELLED && 
+                    tradeGUI.getSession().getState() != TradeState.COMPLETED) {
                     player.openInventory(tradeGUI.getInventory());
                     tradeGUI.refresh();
                 }
@@ -116,58 +146,25 @@ public class MoneyInputGUI implements InventoryHolder, Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         if (event.getPlayer().equals(player)) {
+            completed = true;
             HandlerList.unregisterAll(this);
         }
     }
     
-    private void complete() {
+    private void complete(double amount) {
         completed = true;
         
-        ItemStack inputItem = inventory.getItem(0);
-        if (inputItem == null || !inputItem.hasItemMeta()) {
-            messageManager.send(player, "trade.invalid-amount");
-            cancel();
-            return;
-        }
+        TradeOffer offer = session.getOffer(player.getUniqueId());
+        offer.setMoney(amount);
         
-        String input = inputItem.getItemMeta().getDisplayName();
-        input = input.replace("§f", "").replace("§e", "").trim();
+        messageManager.send(player, "trade.money-set", "amount", String.format("%.2f", amount));
         
-        try {
-            double amount = Double.parseDouble(input);
-            
-            if (amount < 0) {
-                messageManager.send(player, "trade.invalid-amount");
-                cancel();
-                return;
-            }
-            
-            if (plugin.getVaultHook() != null && !plugin.getVaultHook().has(player, amount)) {
-                messageManager.send(player, "trade.not-enough-money");
-                cancel();
-                return;
-            }
-            
-            TradeOffer offer = session.getOffer(player.getUniqueId());
-            offer.setMoney(amount);
-            
-            messageManager.send(player, "trade.money-set", "amount", String.format("%.2f", amount));
-            
-            player.closeInventory();
-            
-        } catch (NumberFormatException e) {
-            messageManager.send(player, "trade.invalid-amount");
-            cancel();
-        }
+        player.closeInventory();
     }
     
     private void cancel() {
         completed = true;
         player.closeInventory();
-    }
-    
-    private TradeManager tradeManager() {
-        return plugin.getModuleManager().getModule("trade", com.oolonghoo.woosocial.module.trade.TradeModule.class).getTradeManager();
     }
     
     @Override

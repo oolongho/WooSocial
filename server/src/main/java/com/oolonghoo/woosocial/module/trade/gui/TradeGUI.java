@@ -2,7 +2,6 @@ package com.oolonghoo.woosocial.module.trade.gui;
 
 import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.config.MessageManager;
-import com.oolonghoo.woosocial.gui.BaseGUI;
 import com.oolonghoo.woosocial.module.trade.TradeConfig;
 import com.oolonghoo.woosocial.module.trade.TradeEconomyManager;
 import com.oolonghoo.woosocial.module.trade.TradeManager;
@@ -21,9 +20,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -51,7 +48,8 @@ public class TradeGUI implements InventoryHolder {
     
     private Inventory inventory;
     
-    public TradeGUI(WooSocial plugin, TradeManager tradeManager, TradeConfig config, TradeEconomyManager economyManager, Player player, TradeSession session) {
+    public TradeGUI(WooSocial plugin, TradeManager tradeManager, TradeConfig config, 
+                    TradeEconomyManager economyManager, Player player, TradeSession session) {
         this.plugin = plugin;
         this.tradeManager = tradeManager;
         this.config = config;
@@ -61,7 +59,8 @@ public class TradeGUI implements InventoryHolder {
         this.playerUuid = player.getUniqueId();
         this.session = session;
         
-        this.inventory = Bukkit.createInventory(this, GUI_SIZE, Component.text("§8交易 - §e" + session.getOtherPlayerName(playerUuid)));
+        this.inventory = Bukkit.createInventory(this, GUI_SIZE, 
+            Component.text("§8交易 - §e" + session.getOtherPlayerName(playerUuid)));
         
         initializeGUI();
     }
@@ -127,12 +126,12 @@ public class TradeGUI implements InventoryHolder {
         TradeOffer offer = session.getOffer(playerUuid);
         double money = offer.getMoney();
         
-        ItemStack item = new ItemStack(money > 0 ? Material.GOLD_INGOT : Material.AIR);
+        ItemStack item = new ItemStack(money > 0 ? Material.GOLD_INGOT : Material.BARRIER);
         ItemMeta meta = item.getItemMeta();
         meta.displayName(Component.text("§6金币: §e" + String.format("%.2f", money)));
         List<Component> lore = new ArrayList<>();
         lore.add(Component.text("§7点击输入金币数量"));
-        if (config.isVaultEnabled() && economyManager.hasVault()) {
+        if (config.isVaultEnabled() && economyManager != null && economyManager.hasVault()) {
             double balance = economyManager.getBalance(player);
             lore.add(Component.text("§7当前余额: §e" + String.format("%.2f", balance)));
         }
@@ -221,7 +220,9 @@ public class TradeGUI implements InventoryHolder {
             tradeManager.acknowledgeGuiSwitch(player);
         } else if (session.getState() == TradeState.PENDING) {
             Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                if (tradeManager.isInTrade(playerUuid) && !player.isOnline()) {
+                if (tradeManager.isInTrade(playerUuid) && player.isOnline()) {
+                    player.openInventory(inventory);
+                } else if (tradeManager.isInTrade(playerUuid)) {
                     tradeManager.cancelTrade(playerUuid, "玩家关闭界面");
                 }
             }, 1L);
@@ -231,8 +232,7 @@ public class TradeGUI implements InventoryHolder {
     private void openMoneyInput() {
         player.closeInventory();
         messageManager.send(player, "trade.money-input-hint");
-        
-        new com.oolonghoo.woosocial.module.trade.gui.MoneyInputGUI(plugin, player, session, this).open();
+        new MoneyInputGUI(plugin, player, session, this, economyManager).open();
     }
     
     private boolean isMySlot(int slot) {
