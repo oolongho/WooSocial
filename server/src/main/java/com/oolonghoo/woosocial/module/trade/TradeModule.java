@@ -5,21 +5,16 @@ import com.oolonghoo.woosocial.module.Module;
 import com.oolonghoo.woosocial.module.trade.command.TradeCommand;
 import com.oolonghoo.woosocial.module.trade.listener.TradeListener;
 import com.oolonghoo.woosocial.module.trade.listener.TradeSecurityListener;
+import com.oolonghoo.woosocial.sync.SyncMessage;
 import org.bukkit.Bukkit;
 
-/**
- * 交易模块
- * 提供玩家之间的物品和经济货币交易功能
- * 
- * @author oolongho
- * @since 1.0.0
- */
 public class TradeModule extends Module {
     
     private TradeConfig tradeConfig;
     private TradeManager tradeManager;
     private TradeEconomyManager economyManager;
     private TradeRequestManager requestManager;
+    private CrossServerTradeHandler crossServerHandler;
     private TradeCommand tradeCommand;
     private TradeListener tradeListener;
     private TradeSecurityListener securityListener;
@@ -39,6 +34,8 @@ public class TradeModule extends Module {
         
         requestManager = new TradeRequestManager(plugin, tradeConfig);
         
+        crossServerHandler = new CrossServerTradeHandler(plugin, tradeManager, tradeConfig);
+        
         tradeCommand = new TradeCommand(plugin, tradeManager, requestManager, tradeConfig, economyManager);
         try {
             plugin.getCommand("trade").setExecutor(tradeCommand);
@@ -47,8 +44,8 @@ public class TradeModule extends Module {
             logWarning("命令处理器注册失败: " + e.getMessage());
         }
         
-        tradeListener = new TradeListener(plugin, tradeManager, requestManager);
-        securityListener = new TradeSecurityListener(plugin, tradeManager, tradeConfig);
+        tradeListener = new TradeListener(tradeManager, requestManager);
+        securityListener = new TradeSecurityListener(tradeManager, tradeConfig);
         
         plugin.getServer().getPluginManager().registerEvents(tradeListener, plugin);
         plugin.getServer().getPluginManager().registerEvents(securityListener, plugin);
@@ -64,6 +61,10 @@ public class TradeModule extends Module {
         
         if (requestManager != null) {
             requestManager.clearAllRequests();
+        }
+        
+        if (crossServerHandler != null) {
+            crossServerHandler.cleanup();
         }
         
         if (tradeListener != null) {
@@ -87,6 +88,12 @@ public class TradeModule extends Module {
     public void saveAll() {
     }
     
+    public void handleCrossServerMessage(SyncMessage message) {
+        if (crossServerHandler != null) {
+            crossServerHandler.handleSyncMessage(message);
+        }
+    }
+    
     public TradeConfig getTradeConfig() {
         return tradeConfig;
     }
@@ -97,5 +104,9 @@ public class TradeModule extends Module {
     
     public TradeRequestManager getRequestManager() {
         return requestManager;
+    }
+    
+    public CrossServerTradeHandler getCrossServerHandler() {
+        return crossServerHandler;
     }
 }

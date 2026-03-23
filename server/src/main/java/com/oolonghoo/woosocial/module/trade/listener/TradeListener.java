@@ -1,6 +1,5 @@
 package com.oolonghoo.woosocial.module.trade.listener;
 
-import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.module.trade.TradeManager;
 import com.oolonghoo.woosocial.module.trade.TradeRequestManager;
 import com.oolonghoo.woosocial.module.trade.gui.TradeGUI;
@@ -16,31 +15,23 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.InventoryHolder;
 
-/**
- * 交易监听器
- * 处理交易GUI的交互事件
- */
 public class TradeListener implements Listener {
     
-    private final WooSocial plugin;
     private final TradeManager tradeManager;
     private final TradeRequestManager requestManager;
     
-    public TradeListener(WooSocial plugin, TradeManager tradeManager, TradeRequestManager requestManager) {
-        this.plugin = plugin;
+    public TradeListener(TradeManager tradeManager, TradeRequestManager requestManager) {
         this.tradeManager = tradeManager;
         this.requestManager = requestManager;
     }
     
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)) return;
+        if (!(event.getWhoClicked() instanceof Player player)) return;
         
-        Player player = (Player) event.getWhoClicked();
         InventoryHolder holder = event.getInventory().getHolder();
         
-        if (holder instanceof TradeGUI) {
-            TradeGUI tradeGUI = (TradeGUI) holder;
+        if (holder instanceof TradeGUI tradeGUI) {
             tradeGUI.handleClick(event);
         }
     }
@@ -51,8 +42,7 @@ public class TradeListener implements Listener {
         
         InventoryHolder holder = event.getInventory().getHolder();
         
-        if (holder instanceof TradeGUI) {
-            TradeGUI tradeGUI = (TradeGUI) holder;
+        if (holder instanceof TradeGUI tradeGUI) {
             TradeSession session = tradeGUI.getSession();
             
             if (session.getState() == TradeState.COUNTDOWN) {
@@ -61,7 +51,7 @@ public class TradeListener implements Listener {
             }
             
             for (int slot : event.getRawSlots()) {
-                if (isOtherSlot(tradeGUI, slot)) {
+                if (isOtherSlot(slot)) {
                     event.setCancelled(true);
                     return;
                 }
@@ -71,13 +61,11 @@ public class TradeListener implements Listener {
     
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onInventoryClose(InventoryCloseEvent event) {
-        if (!(event.getPlayer() instanceof Player)) return;
+        if (!(event.getPlayer() instanceof Player player)) return;
         
-        Player player = (Player) event.getPlayer();
         InventoryHolder holder = event.getInventory().getHolder();
         
-        if (holder instanceof TradeGUI) {
-            TradeGUI tradeGUI = (TradeGUI) holder;
+        if (holder instanceof TradeGUI tradeGUI) {
             tradeGUI.handleClose(event);
         }
     }
@@ -93,7 +81,7 @@ public class TradeListener implements Listener {
         }
     }
     
-    private boolean isOtherSlot(TradeGUI gui, int slot) {
+    private boolean isOtherSlot(int slot) {
         for (int s : TradeGUI.getOtherSlots()) {
             if (s == slot) return true;
         }

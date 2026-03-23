@@ -3,26 +3,24 @@ package com.oolonghoo.woosocial.module.trade.model;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-/**
- * 交易报价
- * 表示玩家在交易中提供的物品和经济货币
- */
 public class TradeOffer {
     
     private final UUID playerUuid;
     private final List<ItemStack> items;
-    private double money;
-    private int points;
-    private long updateTime;
+    private volatile double money;
+    private volatile int points;
+    private volatile long updateTime;
     
     public TradeOffer(UUID playerUuid) {
         this.playerUuid = playerUuid;
-        this.items = new ArrayList<>();
+        this.items = new CopyOnWriteArrayList<>();
         this.money = 0;
         this.points = 0;
         this.updateTime = System.currentTimeMillis();
@@ -33,7 +31,7 @@ public class TradeOffer {
     }
     
     public List<ItemStack> getItems() {
-        return items;
+        return Collections.unmodifiableList(new ArrayList<>(items));
     }
     
     public void addItem(ItemStack item) {
@@ -134,6 +132,12 @@ public class TradeOffer {
     }
     
     public int getTotalItemAmount() {
-        return items.stream().mapToInt(ItemStack::getAmount).sum();
+        int total = 0;
+        for (ItemStack item : items) {
+            if (item != null) {
+                total += item.getAmount();
+            }
+        }
+        return total;
     }
 }

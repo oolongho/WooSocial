@@ -1,16 +1,11 @@
 package com.oolonghoo.woosocial.module.trade.model;
 
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * 交易会话
- * 表示一次正在进行的交易
- */
 public class TradeSession {
     
     private final UUID sessionId;
@@ -26,7 +21,7 @@ public class TradeSession {
     private boolean player2Ready = false;
     
     private TradeState state = TradeState.PENDING;
-    private long startTime;
+    private final long startTime;
     private long countdownEndTime;
     
     private boolean isCrossServer = false;

@@ -1,6 +1,5 @@
 package com.oolonghoo.woosocial.module.trade.listener;
 
-import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.module.trade.TradeConfig;
 import com.oolonghoo.woosocial.module.trade.TradeManager;
 import com.oolonghoo.woosocial.module.trade.model.TradeSession;
@@ -19,20 +18,14 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * 交易安全监听器
- * 处理交易过程中的各种安全事件
- */
 public class TradeSecurityListener implements Listener {
     
-    private final WooSocial plugin;
     private final TradeManager tradeManager;
     private final TradeConfig config;
     
     private final Map<UUID, Location> initialLocations = new ConcurrentHashMap<>();
     
-    public TradeSecurityListener(WooSocial plugin, TradeManager tradeManager, TradeConfig config) {
-        this.plugin = plugin;
+    public TradeSecurityListener(TradeManager tradeManager, TradeConfig config) {
         this.tradeManager = tradeManager;
         this.config = config;
     }

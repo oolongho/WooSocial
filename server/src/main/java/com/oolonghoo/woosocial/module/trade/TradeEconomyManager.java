@@ -1,15 +1,10 @@
 package com.oolonghoo.woosocial.module.trade;
 
 import com.oolonghoo.woosocial.WooSocial;
-import com.oolonghoo.woosocial.hook.EconomyHook;
 import com.oolonghoo.woosocial.hook.PlayerPointsHook;
 import com.oolonghoo.woosocial.hook.VaultHook;
 import org.bukkit.entity.Player;
 
-/**
- * 交易经济管理器
- * 管理金币和点券的交易操作
- */
 public class TradeEconomyManager {
     
     private final WooSocial plugin;
@@ -27,7 +22,7 @@ public class TradeEconomyManager {
                 vaultHook = new VaultHook(plugin);
                 plugin.getLogger().info("[Trade] Vault 集成已启用");
             } catch (Exception e) {
-                plugin.getLogger().warning("[Trade] Vault 集成失败: " + e.getMessage());
+                plugin.getLogger().warning(() -> "[Trade] Vault 集成失败: " + e.getMessage());
             }
         }
         
@@ -36,7 +31,7 @@ public class TradeEconomyManager {
                 playerPointsHook = new PlayerPointsHook(plugin);
                 plugin.getLogger().info("[Trade] PlayerPoints 集成已启用");
             } catch (Exception e) {
-                plugin.getLogger().warning("[Trade] PlayerPoints 集成失败: " + e.getMessage());
+                plugin.getLogger().warning(() -> "[Trade] PlayerPoints 集成失败: " + e.getMessage());
             }
         }
     }

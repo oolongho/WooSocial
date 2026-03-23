@@ -24,10 +24,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.UUID;
 
-/**
- * 金币输入界面
- * 使用聊天栏输入金额
- */
 public class MoneyInputGUI implements InventoryHolder, Listener {
     
     private final WooSocial plugin;
@@ -37,7 +33,7 @@ public class MoneyInputGUI implements InventoryHolder, Listener {
     private final TradeEconomyManager economyManager;
     private final MessageManager messageManager;
     
-    private Inventory inventory;
+    private final Inventory inventory;
     private boolean completed = false;
     
     public MoneyInputGUI(WooSocial plugin, Player player, TradeSession session, 
@@ -49,24 +45,30 @@ public class MoneyInputGUI implements InventoryHolder, Listener {
         this.economyManager = economyManager;
         this.messageManager = plugin.getMessageManager();
         
-        createInventory();
-        Bukkit.getPluginManager().registerEvents(this, plugin);
+        this.inventory = createInventory();
+        registerEvents();
     }
     
-    private void createInventory() {
-        inventory = Bukkit.createInventory(this, 9, Component.text("§8输入金币数量"));
+    private Inventory createInventory() {
+        Inventory inv = Bukkit.createInventory(this, 9, Component.text("§8输入金币数量"));
         
         ItemStack hintItem = new ItemStack(Material.PAPER);
         ItemMeta hintMeta = hintItem.getItemMeta();
         hintMeta.displayName(Component.text("§e请在聊天栏输入金额"));
         hintItem.setItemMeta(hintMeta);
-        inventory.setItem(4, hintItem);
+        inv.setItem(4, hintItem);
         
         ItemStack cancelItem = new ItemStack(Material.RED_DYE);
         ItemMeta cancelMeta = cancelItem.getItemMeta();
         cancelMeta.displayName(Component.text("§c取消"));
         cancelItem.setItemMeta(cancelMeta);
-        inventory.setItem(8, cancelItem);
+        inv.setItem(8, cancelItem);
+        
+        return inv;
+    }
+    
+    private void registerEvents() {
+        Bukkit.getPluginManager().registerEvents(this, plugin);
     }
     
     public void open() {

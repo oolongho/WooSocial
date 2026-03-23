@@ -3,7 +3,6 @@ package com.oolonghoo.woosocial.module.trade.command;
 import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.Perms;
 import com.oolonghoo.woosocial.config.MessageManager;
-import com.oolonghoo.woosocial.module.friend.FriendDataManager;
 import com.oolonghoo.woosocial.module.trade.TradeConfig;
 import com.oolonghoo.woosocial.module.trade.TradeEconomyManager;
 import com.oolonghoo.woosocial.module.trade.TradeManager;
@@ -24,9 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * 交易命令处理器
- */
 public class TradeCommand implements CommandExecutor, TabCompleter {
     
     private final WooSocial plugin;
@@ -56,7 +52,6 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
         }
         
         Player player = (Player) sender;
-        UUID playerUuid = player.getUniqueId();
         
         if (config.isRequirePermission() && !player.hasPermission(Perms.TRADE)) {
             messageManager.send(player, "general.no-permission");
@@ -70,23 +65,16 @@ public class TradeCommand implements CommandExecutor, TabCompleter {
         
         String subCommand = args[0].toLowerCase();
         
-        switch (subCommand) {
-            case "accept":
-            case "a":
-                return handleAccept(player);
-            case "deny":
-            case "d":
-                return handleDeny(player);
-            case "toggle":
-            case "t":
-                return handleToggle(player);
-            case "help":
-            case "?":
+        return switch (subCommand) {
+            case "accept", "a" -> handleAccept(player);
+            case "deny", "d" -> handleDeny(player);
+            case "toggle", "t" -> handleToggle(player);
+            case "help", "?" -> {
                 sendHelp(player);
-                return true;
-            default:
-                return handleRequest(player, subCommand);
-        }
+                yield true;
+            }
+            default -> handleRequest(player, subCommand);
+        };
     }
     
     private boolean handleRequest(Player player, String targetName) {

@@ -2,8 +2,8 @@ package com.oolonghoo.woosocial.module.trade;
 
 import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.config.MessageManager;
+import com.oolonghoo.woosocial.module.trade.database.TradeLogDAO;
 import com.oolonghoo.woosocial.module.trade.model.TradeOffer;
-import com.oolonghoo.woosocial.module.trade.model.TradeResult;
 import com.oolonghoo.woosocial.module.trade.model.TradeSession;
 import com.oolonghoo.woosocial.module.trade.model.TradeState;
 import org.bukkit.Bukkit;
@@ -26,15 +26,18 @@ public class TradeManager {
     private final TradeConfig config;
     private final MessageManager messageManager;
     private final TradeEconomyManager economyManager;
+    private final TradeLogDAO tradeLogDAO;
     
     private final Map<UUID, TradeSession> activeSessions = new ConcurrentHashMap<>();
     private final Map<UUID, BukkitTask> countdownTasks = new ConcurrentHashMap<>();
+    private final Map<UUID, Integer> countdownRemaining = new ConcurrentHashMap<>();
     
     public TradeManager(WooSocial plugin, TradeConfig config) {
         this.plugin = plugin;
         this.config = config;
         this.messageManager = plugin.getMessageManager();
         this.economyManager = new TradeEconomyManager(plugin);
+        this.tradeLogDAO = new TradeLogDAO(plugin, plugin.getDatabaseManager());
     }
     
     /**
@@ -117,6 +120,8 @@ public class TradeManager {
             player2.closeInventory();
         }
         
+        logCancelledTrade(session, reason);
+        
         activeSessions.remove(session.getPlayer1Uuid());
         activeSessions.remove(session.getPlayer2Uuid());
     }
@@ -156,34 +161,52 @@ public class TradeManager {
         stopCountdown(session);
         
         session.setState(TradeState.COUNTDOWN);
-        int seconds = config.getCountdownSeconds();
-        session.setCountdownEndTime(System.currentTimeMillis() + (seconds * 1000L));
+        int totalSeconds = config.getCountdownSeconds();
+        session.setCountdownEndTime(System.currentTimeMillis() + (totalSeconds * 1000L));
         
-        BukkitTask task = Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (session.getState() == TradeState.COUNTDOWN && session.isBothReady()) {
-                executeTrade(session);
+        countdownRemaining.put(session.getSessionId(), totalSeconds);
+        
+        sendCountdownTick(session, totalSeconds);
+        
+        BukkitTask task = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            if (session.getState() != TradeState.COUNTDOWN) {
+                stopCountdown(session);
+                return;
             }
-        }, seconds * 20L);
+            
+            Integer remaining = countdownRemaining.get(session.getSessionId());
+            if (remaining == null) {
+                stopCountdown(session);
+                return;
+            }
+            
+            remaining--;
+            countdownRemaining.put(session.getSessionId(), remaining);
+            
+            if (remaining <= 0) {
+                stopCountdown(session);
+                if (session.isBothReady()) {
+                    executeTrade(session);
+                }
+            } else {
+                sendCountdownTick(session, remaining);
+            }
+        }, 20L, 20L);
         
         countdownTasks.put(session.getSessionId(), task);
-        
+    }
+    
+    private void sendCountdownTick(TradeSession session, int seconds) {
         Player player1 = Bukkit.getPlayer(session.getPlayer1Uuid());
         Player player2 = Bukkit.getPlayer(session.getPlayer2Uuid());
         
-        for (int i = seconds; i > 0; i--) {
-            final int count = i;
-            Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                if (session.getState() != TradeState.COUNTDOWN) return;
-                
-                if (player1 != null && player1.isOnline()) {
-                    player1.playSound(player1.getLocation(), config.getSoundCountdownTick(), 1.0f, 1.0f);
-                    messageManager.send(player1, "trade.countdown", "seconds", String.valueOf(count));
-                }
-                if (player2 != null && player2.isOnline()) {
-                    player2.playSound(player2.getLocation(), config.getSoundCountdownTick(), 1.0f, 1.0f);
-                    messageManager.send(player2, "trade.countdown", "seconds", String.valueOf(count));
-                }
-            }, (seconds - i) * 20L);
+        if (player1 != null && player1.isOnline()) {
+            player1.playSound(player1.getLocation(), config.getSoundCountdownTick(), 1.0f, 1.0f);
+            messageManager.send(player1, "trade.countdown", "seconds", String.valueOf(seconds));
+        }
+        if (player2 != null && player2.isOnline()) {
+            player2.playSound(player2.getLocation(), config.getSoundCountdownTick(), 1.0f, 1.0f);
+            messageManager.send(player2, "trade.countdown", "seconds", String.valueOf(seconds));
         }
     }
     
@@ -195,6 +218,7 @@ public class TradeManager {
         if (task != null) {
             task.cancel();
         }
+        countdownRemaining.remove(session.getSessionId());
     }
     
     /**
@@ -232,6 +256,8 @@ public class TradeManager {
             
             player1.closeInventory();
             player2.closeInventory();
+            
+            logCompletedTrade(session);
         } else {
             cancelTrade(session, "交易处理失败");
         }
@@ -421,5 +447,45 @@ public class TradeManager {
             stopCountdown(session);
             session.setState(TradeState.PENDING);
         }
+    }
+    
+    private void logCompletedTrade(TradeSession session) {
+        if (!config.isLogTrades()) return;
+        
+        TradeOffer offer1 = session.getOffer1();
+        TradeOffer offer2 = session.getOffer2();
+        
+        String serverName = getServerName();
+        
+        tradeLogDAO.logCompletedTrade(
+                session.getPlayer1Uuid(), session.getPlayer1Name(),
+                session.getPlayer2Uuid(), session.getPlayer2Name(),
+                offer1.getItems(), offer2.getItems(),
+                offer1.getMoney(), offer2.getMoney(),
+                offer1.getPoints(), offer2.getPoints(),
+                serverName
+        ).exceptionally(e -> {
+            plugin.getLogger().warning("[Trade] 记录交易日志失败: " + e.getMessage());
+            return null;
+        });
+    }
+    
+    private void logCancelledTrade(TradeSession session, String reason) {
+        if (!config.isLogTrades()) return;
+        
+        String serverName = getServerName();
+        
+        tradeLogDAO.logCancelledTrade(
+                session.getPlayer1Uuid(), session.getPlayer1Name(),
+                session.getPlayer2Uuid(), session.getPlayer2Name(),
+                reason, serverName
+        ).exceptionally(e -> {
+            plugin.getLogger().warning("[Trade] 记录取消日志失败: " + e.getMessage());
+            return null;
+        });
+    }
+    
+    private String getServerName() {
+        return plugin.getConfig().getString("server.name", "unknown");
     }
 }

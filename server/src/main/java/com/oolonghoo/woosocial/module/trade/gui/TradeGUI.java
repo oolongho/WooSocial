@@ -23,10 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * 交易界面
- * 左右对称布局，左侧自己的物品，右侧对方的物品
- */
 public class TradeGUI implements InventoryHolder {
     
     private static final int GUI_SIZE = 54;
@@ -46,7 +42,7 @@ public class TradeGUI implements InventoryHolder {
     private final UUID playerUuid;
     private final TradeSession session;
     
-    private Inventory inventory;
+    private final Inventory inventory;
     
     public TradeGUI(WooSocial plugin, TradeManager tradeManager, TradeConfig config, 
                     TradeEconomyManager economyManager, Player player, TradeSession session) {
