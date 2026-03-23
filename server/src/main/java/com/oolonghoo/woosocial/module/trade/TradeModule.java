@@ -18,6 +18,7 @@ public class TradeModule extends Module {
     
     private TradeConfig tradeConfig;
     private TradeManager tradeManager;
+    private TradeEconomyManager economyManager;
     private TradeRequestManager requestManager;
     private TradeCommand tradeCommand;
     private TradeListener tradeListener;
@@ -34,9 +35,11 @@ public class TradeModule extends Module {
         
         tradeManager = new TradeManager(plugin, tradeConfig);
         
+        economyManager = new TradeEconomyManager(plugin);
+        
         requestManager = new TradeRequestManager(plugin, tradeConfig);
         
-        tradeCommand = new TradeCommand(plugin, tradeManager, requestManager, tradeConfig);
+        tradeCommand = new TradeCommand(plugin, tradeManager, requestManager, tradeConfig, economyManager);
         try {
             plugin.getCommand("trade").setExecutor(tradeCommand);
             plugin.getCommand("trade").setTabCompleter(tradeCommand);
