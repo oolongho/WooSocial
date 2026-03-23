@@ -46,6 +46,10 @@ commands:
     description: Gift system commands
     usage: /gift [coins|send|shop|list]
     permission: woosocial.gift
+  trade:
+    description: Trade system commands
+    usage: /trade [player|accept|deny|toggle]
+    permission: woosocial.trade
 
 permissions:
   woosocial.use:
@@ -182,6 +186,24 @@ permissions:
   woosocial.gift.unlimited:
     description: Unlimited gifting
     default: op
+  
+  # Trade permissions
+  woosocial.trade:
+    description: Trade base permission
+    default: true
+  woosocial.trade.initiate:
+    description: Initiate trade
+    default: true
+  woosocial.trade.accept:
+    description: Accept trade
+    default: true
+  woosocial.trade.remote:
+    description: Remote trade (cross-server)
+    default: true
+  woosocial.trade.cooldown.bypass:
+    description: Bypass trade cooldown
+    default: op
+  
   woosocial.gui.friend:
     description: Open friend GUI
     default: true
