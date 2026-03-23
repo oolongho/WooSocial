@@ -163,6 +163,7 @@ public class WooSocial extends JavaPlugin {
                 case PLAYER_OFFLINE -> handlePlayerOfflineSync(message);
                 case BLOCK_PLAYER -> handleBlockPlayerSync(message);
                 case UNBLOCK_PLAYER -> handleUnblockPlayerSync(message);
+                case TRADE_REQUEST, TRADE_ACCEPT, TRADE_DENY, TRADE_CANCEL -> handleTradeSync(message);
                 default -> {}
             }
         });
@@ -252,6 +253,13 @@ public class WooSocial extends JavaPlugin {
         
         if (playerUuid != null && unblockedUuid != null) {
             friendDAO.unblockPlayer(playerUuid, unblockedUuid);
+        }
+    }
+    
+    private void handleTradeSync(SyncMessage message) {
+        var tradeModule = moduleManager.getModule("trade", com.oolonghoo.woosocial.module.trade.TradeModule.class);
+        if (tradeModule != null) {
+            tradeModule.handleCrossServerMessage(message);
         }
     }
     
