@@ -43,6 +43,25 @@ public class TradeOffer {
         }
     }
     
+    public void addItem(ItemStack item, int slot) {
+        if (item != null && !item.getType().isAir()) {
+            while (items.size() <= slot) {
+                items.add(null);
+            }
+            items.set(slot, item.clone());
+            updateTime = System.currentTimeMillis();
+        }
+    }
+    
+    public ItemStack removeItem(int slot) {
+        if (slot >= 0 && slot < items.size()) {
+            ItemStack removed = items.remove(slot);
+            updateTime = System.currentTimeMillis();
+            return removed;
+        }
+        return null;
+    }
+    
     public void removeItem(int index) {
         if (index >= 0 && index < items.size()) {
             items.remove(index);
