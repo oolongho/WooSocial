@@ -37,6 +37,23 @@ economy:
     enabled: true
   playerpoints:
     enabled: true
+  
+  # Tax settings
+  # 税收设置
+  tax:
+    enabled: false
+    rate: 0.05  # 5% 税率
+    max-tax: 1000.0  # 最高税额
+    exempt-amount: 100.0  # 免税额度
+  
+  # Trade limits
+  # 交易限额
+  limits:
+    max-money-per-trade: 1000000.0  # 单次交易最大金额
+    max-points-per-trade: 10000000  # 单次交易最大点数
+    max-items-per-trade: 54  # 单次交易最大物品数量
+    daily-trade-count: 100  # 每日交易次数限制
+    cooldown-seconds: 0  # 交易冷却时间（秒）
 
 # Logging settings
 # 日志设置
