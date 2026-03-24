@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.Objects;
 
 /**
  * 交易历史查询命令
@@ -39,7 +38,6 @@ public class TradeHistoryCommand implements CommandExecutor, TabCompleter {
     
     @Override
     public boolean onCommand(@NotNull CommandSender sender, Command command, String label, String[] args) {
-        Objects.requireNonNull(sender, "CommandSender cannot be null");
         if (!(sender instanceof Player player)) {
             sender.sendMessage(Component.text("§c 只有玩家可以使用此命令！"));
             return true;
