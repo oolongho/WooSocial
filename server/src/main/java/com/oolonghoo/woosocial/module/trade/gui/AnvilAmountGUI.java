@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.AnvilInventory;
@@ -106,6 +107,17 @@ public class AnvilAmountGUI implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         if (event.getPlayer().equals(player)) {
+            close();
+        }
+    }
+    
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if (!event.getPlayer().equals(player)) return;
+        if (!event.getInventory().equals(inventory)) return;
+        
+        // 如果未完成，取消回调
+        if (!completed) {
             close();
         }
     }

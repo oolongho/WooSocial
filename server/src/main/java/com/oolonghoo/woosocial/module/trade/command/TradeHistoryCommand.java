@@ -39,12 +39,12 @@ public class TradeHistoryCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("§c 只有玩家可以使用此命令！"));
+            messageManager.send(sender, "general.player-only");
             return true;
         }
         
         if (!player.hasPermission(Perms.TRADE_HISTORY)) {
-            messageManager.send(player, "messages.no-permission");
+            messageManager.send(player, "general.no-permission");
             return true;
         }
         
@@ -65,10 +65,10 @@ public class TradeHistoryCommand implements CommandExecutor, TabCompleter {
                 if (target != null) {
                     showHistory(player, target.getUniqueId(), 1);
                 } else {
-                    messageManager.send(player, "messages.player-offline");
+                    messageManager.send(player, "general.player-not-found");
                 }
             } else {
-                messageManager.send(player, "messages.no-permission");
+                messageManager.send(player, "general.no-permission");
             }
             return true;
         }
@@ -80,10 +80,10 @@ public class TradeHistoryCommand implements CommandExecutor, TabCompleter {
                     int page = Integer.parseInt(args[1]);
                     showHistory(player, target.getUniqueId(), page);
                 } catch (NumberFormatException e) {
-                    messageManager.send(player, "messages.invalid-number");
+                    messageManager.send(player, "general.invalid-number");
                 }
             } else {
-                messageManager.send(player, "messages.player-offline");
+                messageManager.send(player, "general.player-not-found");
             }
             return true;
         }

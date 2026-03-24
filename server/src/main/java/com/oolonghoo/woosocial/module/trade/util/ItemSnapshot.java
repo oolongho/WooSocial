@@ -187,7 +187,16 @@ public class ItemSnapshot implements ConfigurationSerializable {
         Material material = Material.valueOf((String) data.get("material"));
         int amount = (Integer) data.get("amount");
         int durability = ((Number) data.get("durability")).intValue();
-        Map<String, Object> nbtData = (Map<String, Object>) data.get("nbt_data");
+        
+        // 安全的类型检查和转换
+        Map<String, Object> nbtData;
+        Object nbtDataObj = data.get("nbt_data");
+        if (nbtDataObj instanceof Map) {
+            nbtData = (Map<String, Object>) nbtDataObj;
+        } else {
+            nbtData = new HashMap<>();
+        }
+        
         long timestamp = ((Number) data.get("timestamp")).longValue();
         
         return new ItemSnapshot(material, amount, durability, nbtData, timestamp);
