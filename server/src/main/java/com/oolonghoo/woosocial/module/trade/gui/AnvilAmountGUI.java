@@ -25,7 +25,6 @@ import java.util.function.Consumer;
  */
 public class AnvilAmountGUI implements Listener {
     
-    private final WooSocial plugin;
     private final Player player;
     private final Consumer<Long> callback;
     private final MessageManager messageManager;
@@ -34,23 +33,22 @@ public class AnvilAmountGUI implements Listener {
     private long maxAmount = Long.MAX_VALUE;
     private boolean completed = false;
     
-    public AnvilAmountGUI(WooSocial plugin, Player player, String title, Consumer<Long> callback) {
-        this.plugin = plugin;
+    private AnvilAmountGUI(Player player, String title, Consumer<Long> callback, MessageManager messageManager) {
         this.player = player;
         this.callback = callback;
-        this.messageManager = plugin.getMessageManager();
+        this.messageManager = messageManager;
         
-        // 创建铁砧界面
         this.inventory = Bukkit.createInventory(null, 3, Component.text(title));
         
-        // 放置提示物品
         setupInventory();
         
-        // 注册监听器
-        Bukkit.getPluginManager().registerEvents(this, plugin);
-        
-        // 打开界面
         player.openInventory(inventory);
+    }
+    
+    public static AnvilAmountGUI create(WooSocial plugin, Player player, String title, Consumer<Long> callback) {
+        AnvilAmountGUI gui = new AnvilAmountGUI(player, title, callback, plugin.getMessageManager());
+        Bukkit.getPluginManager().registerEvents(gui, plugin);
+        return gui;
     }
     
     private void setupInventory() {

@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import net.kyori.adventure.text.Component;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,8 +19,6 @@ import java.util.Map;
  * 提供完全可自定义的 GUI 配置支持
  */
 public class TradeGUIConfig {
-    
-    private static final String LEGACY_COLOR_CHAR = "§";
     
     private final WooSocial plugin;
     private FileConfiguration config;
@@ -36,10 +35,14 @@ public class TradeGUIConfig {
     private ItemStack readyButton;
     private ItemStack cancelButton;
     private ItemStack moneyButton;
-    private Map<Integer, ItemStack> decorations = new HashMap<>();
+    private final Map<Integer, ItemStack> decorations = new HashMap<>();
     
     public TradeGUIConfig(WooSocial plugin) {
         this.plugin = plugin;
+        init();
+    }
+    
+    private void init() {
         loadConfig();
     }
     
@@ -129,12 +132,12 @@ public class TradeGUIConfig {
     /**
      * 加载装饰物品
      */
+    @SuppressWarnings({"DataFlowIssue", "ConstantConditions", "NullableProblems"})
     private void loadDecorations(ConfigurationSection itemsSection) {
         decorations.clear();
         
         ConfigurationSection decorationSection = itemsSection.getConfigurationSection("decoration");
         if (decorationSection == null) {
-            // 默认装饰
             List<Integer> defaultSlots = List.of(46, 48, 50, 51, 52, 53);
             ItemStack decoration = createItem(Material.GRAY_STAINED_GLASS_PANE, " ");
             for (int slot : defaultSlots) {
@@ -143,7 +146,11 @@ public class TradeGUIConfig {
             return;
         }
         
-        Material material = Material.valueOf(decorationSection.getString("material", "GRAY_STAINED_GLASS_PANE").toUpperCase());
+        String materialStr = decorationSection.getString("material", "GRAY_STAINED_GLASS_PANE");
+        Material material = Material.matchMaterial(materialStr);
+        if (material == null) {
+            material = Material.GRAY_STAINED_GLASS_PANE;
+        }
         String name = decorationSection.getString("name", " ");
         List<String> lore = decorationSection.getStringList("lore");
         List<Integer> slots = decorationSection.getIntegerList("slots");
@@ -157,6 +164,7 @@ public class TradeGUIConfig {
     /**
      * 从配置加载物品
      */
+    @SuppressWarnings({"DataFlowIssue", "ConstantConditions", "NullableProblems"})
     private ItemStack loadItemStack(ConfigurationSection section, String path, 
                                    Material defaultMaterial, String defaultName, List<String> defaultLore) {
         ConfigurationSection itemSection = section.getConfigurationSection(path);
@@ -165,7 +173,10 @@ public class TradeGUIConfig {
         }
         
         String materialStr = itemSection.getString("material", defaultMaterial.name());
-        Material material = Material.valueOf(materialStr.toUpperCase());
+        Material material = Material.matchMaterial(materialStr);
+        if (material == null) {
+            material = defaultMaterial;
+        }
         String name = itemSection.getString("name", defaultName);
         List<String> lore = itemSection.getStringList("lore");
         if (lore.isEmpty()) {
@@ -178,13 +189,13 @@ public class TradeGUIConfig {
     /**
      * 创建物品
      */
-    private ItemStack createItem(Material material, String name, List<String> lore) {
+    private ItemStack createItem(Material material, String name, @NotNull List<String> lore) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
         
         if (meta != null) {
             meta.displayName(parseComponent(name));
-            if (lore != null && !lore.isEmpty()) {
+            if (!lore.isEmpty()) {
                 List<Component> loreComponents = new ArrayList<>();
                 for (String line : lore) {
                     loreComponents.add(parseComponent(line));

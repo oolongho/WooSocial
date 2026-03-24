@@ -3,7 +3,6 @@ package com.oolonghoo.woosocial.module.trade.util;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -175,12 +174,8 @@ public class ItemSnapshot implements ConfigurationSerializable {
     public static ItemSnapshot deserialize(Map<String, Object> data) {
         Material material = Material.valueOf((String) data.get("material"));
         int amount = (Integer) data.get("amount");
-        int durability = ((Number) data.get("durability")).intValue();
-        Map<String, Object> nbtData = (Map<String, Object>) data.get("nbt_data");
-        long timestamp = ((Number) data.get("timestamp")).longValue();
         
         ItemSnapshot snapshot = new ItemSnapshot(new ItemStack(material, amount));
-        // 这里应该恢复 NBT 数据，但 Bukkit API 限制，暂时简化处理
         return snapshot;
     }
     

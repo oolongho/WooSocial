@@ -6,7 +6,6 @@ import com.oolonghoo.woosocial.module.trade.gui.TradeGUI;
 import com.oolonghoo.woosocial.module.trade.model.TradeSession;
 import com.oolonghoo.woosocial.sync.SyncManager;
 import com.oolonghoo.woosocial.sync.SyncMessage;
-import com.oolonghoo.woosocial.sync.SyncMessageType;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 

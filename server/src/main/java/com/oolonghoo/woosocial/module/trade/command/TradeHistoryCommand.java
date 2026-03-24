@@ -14,10 +14,12 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.Objects;
 
 /**
  * 交易历史查询命令
@@ -27,20 +29,19 @@ public class TradeHistoryCommand implements CommandExecutor, TabCompleter {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final int PAGE_SIZE = 10;
     
-    private final WooSocial plugin;
     private final MessageManager messageManager;
     private final TradeLogDAO tradeLogDAO;
     
     public TradeHistoryCommand(WooSocial plugin) {
-        this.plugin = plugin;
         this.messageManager = plugin.getMessageManager();
         this.tradeLogDAO = new TradeLogDAO(plugin, plugin.getDatabaseManager());
     }
     
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, Command command, String label, String[] args) {
+        Objects.requireNonNull(sender, "CommandSender cannot be null");
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("§c只有玩家可以使用此命令！");
+            sender.sendMessage(Component.text("§c 只有玩家可以使用此命令！"));
             return true;
         }
         

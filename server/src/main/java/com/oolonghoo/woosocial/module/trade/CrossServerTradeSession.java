@@ -4,7 +4,6 @@ import com.oolonghoo.woosocial.module.trade.model.TradeOffer;
 import com.oolonghoo.woosocial.module.trade.model.TradeSession;
 
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 /**
