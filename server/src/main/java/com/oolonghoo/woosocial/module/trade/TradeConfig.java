@@ -36,6 +36,18 @@ public class TradeConfig {
     private boolean vaultEnabled;
     private boolean playerPointsEnabled;
     
+    // 税收和限额配置
+    private boolean taxEnabled;
+    private double taxRate;
+    private double maxTax;
+    private double taxExemptAmount;
+    
+    private double maxMoneyPerTrade;
+    private int maxPointsPerTrade;
+    private int maxItemsPerTrade;
+    private int dailyTradeCount;
+    private int cooldownSeconds;
+    
     private boolean logTrades;
     private int logRetentionDays;
     
@@ -79,6 +91,7 @@ public class TradeConfig {
         logRetentionDays = config.getInt("logging.retention-days", 30);
         
         loadSounds();
+        loadEconomySettings();
     }
     
     private void loadBlacklist() {
@@ -106,6 +119,21 @@ public class TradeConfig {
         soundTradeCancel = parseSound(config.getString("sounds.trade-cancel", "ENTITY_ITEM_BREAK"));
         soundCountdownTick = parseSound(config.getString("sounds.countdown-tick", "BLOCK_NOTE_BLOCK_PLING"));
         soundBlockedItem = parseSound(config.getString("sounds.blocked-item", "ENTITY_ITEM_BREAK"));
+    }
+    
+    private void loadEconomySettings() {
+        // 加载税收配置
+        taxEnabled = config.getBoolean("economy.tax.enabled", false);
+        taxRate = config.getDouble("economy.tax.rate", 0.05);
+        maxTax = config.getDouble("economy.tax.max-tax", 1000.0);
+        taxExemptAmount = config.getDouble("economy.tax.exempt-amount", 100.0);
+        
+        // 加载限额配置
+        maxMoneyPerTrade = config.getDouble("economy.limits.max-money-per-trade", 1000000.0);
+        maxPointsPerTrade = config.getInt("economy.limits.max-points-per-trade", 10000000);
+        maxItemsPerTrade = config.getInt("economy.limits.max-items-per-trade", 54);
+        dailyTradeCount = config.getInt("economy.limits.daily-trade-count", 100);
+        cooldownSeconds = config.getInt("economy.limits.cooldown-seconds", 0);
     }
     
     private Sound parseSound(String soundStr) {
@@ -202,5 +230,43 @@ public class TradeConfig {
     
     public Sound getSoundBlockedItem() {
         return soundBlockedItem;
+    }
+    
+    // 税收和限额相关 getter
+    
+    public boolean isTaxEnabled() {
+        return taxEnabled;
+    }
+    
+    public double getTaxRate() {
+        return taxRate;
+    }
+    
+    public double getMaxTax() {
+        return maxTax;
+    }
+    
+    public double getTaxExemptAmount() {
+        return taxExemptAmount;
+    }
+    
+    public double getMaxMoneyPerTrade() {
+        return maxMoneyPerTrade;
+    }
+    
+    public int getMaxPointsPerTrade() {
+        return maxPointsPerTrade;
+    }
+    
+    public int getMaxItemsPerTrade() {
+        return maxItemsPerTrade;
+    }
+    
+    public int getDailyTradeCount() {
+        return dailyTradeCount;
+    }
+    
+    public int getCooldownSeconds() {
+        return cooldownSeconds;
     }
 }
