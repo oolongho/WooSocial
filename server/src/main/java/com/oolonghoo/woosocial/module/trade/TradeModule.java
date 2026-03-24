@@ -3,6 +3,7 @@ package com.oolonghoo.woosocial.module.trade;
 import com.oolonghoo.woosocial.WooSocial;
 import com.oolonghoo.woosocial.module.Module;
 import com.oolonghoo.woosocial.module.trade.command.TradeCommand;
+import com.oolonghoo.woosocial.module.trade.command.TradeHistoryCommand;
 import com.oolonghoo.woosocial.module.trade.listener.TradeListener;
 import com.oolonghoo.woosocial.module.trade.listener.TradeSecurityListener;
 import com.oolonghoo.woosocial.sync.SyncMessage;
@@ -39,8 +40,13 @@ public class TradeModule extends Module {
         try {
             plugin.getCommand("trade").setExecutor(tradeCommand);
             plugin.getCommand("trade").setTabCompleter(tradeCommand);
+            
+            // 注册交易历史命令
+            TradeHistoryCommand historyCommand = new TradeHistoryCommand(plugin);
+            plugin.getCommand("tradehistory").setExecutor(historyCommand);
+            plugin.getCommand("tradehistory").setTabCompleter(historyCommand);
         } catch (Exception e) {
-            logWarning("命令处理器注册失败: " + e.getMessage());
+            logWarning("命令处理器注册失败：" + e.getMessage());
         }
         
         tradeListener = new TradeListener(tradeManager, requestManager);

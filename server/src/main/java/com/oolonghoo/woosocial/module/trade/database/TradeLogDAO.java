@@ -201,6 +201,153 @@ public class TradeLogDAO {
     }
     
     /**
+     * 获取玩家的交易历史记录
+     */
+    public CompletableFuture<List<TradeRecord>> getPlayerTradeHistory(UUID playerUuid, int limit, int offset) {
+        return CompletableFuture.supplyAsync(() -> {
+            List<TradeRecord> records = new ArrayList<>();
+            String sql = "SELECT * FROM `" + tablePrefix + "trade_log` " +
+                    "WHERE player1_uuid = ? OR player2_uuid = ? " +
+                    "ORDER BY timestamp DESC LIMIT ? OFFSET ?";
+            
+            try (Connection connection = databaseManager.getConnection();
+                 PreparedStatement statement = connection.prepareStatement(sql)) {
+                
+                statement.setString(1, playerUuid.toString());
+                statement.setString(2, playerUuid.toString());
+                statement.setInt(3, limit);
+                statement.setInt(4, offset);
+                
+                try (ResultSet rs = statement.executeQuery()) {
+                    while (rs.next()) {
+                        records.add(TradeRecord.fromResultSet(rs, this));
+                    }
+                }
+                
+            } catch (SQLException e) {
+                plugin.getLogger().log(Level.WARNING, "[TradeLog] 查询交易历史失败", e);
+            }
+            
+            return records;
+        });
+    }
+    
+    /**
+     * 获取交易总数
+     */
+    public CompletableFuture<Integer> getPlayerTradeCount(UUID playerUuid) {
+        return CompletableFuture.supplyAsync(() -> {
+            String sql = "SELECT COUNT(*) FROM `" + tablePrefix + "trade_log` " +
+                    "WHERE player1_uuid = ? OR player2_uuid = ?";
+            
+            try (Connection connection = databaseManager.getConnection();
+                 PreparedStatement statement = connection.prepareStatement(sql)) {
+                
+                statement.setString(1, playerUuid.toString());
+                statement.setString(2, playerUuid.toString());
+                
+                try (ResultSet rs = statement.executeQuery()) {
+                    if (rs.next()) {
+                        return rs.getInt(1);
+                    }
+                }
+                
+            } catch (SQLException e) {
+                plugin.getLogger().log(Level.WARNING, "[TradeLog] 查询交易数量失败", e);
+            }
+            
+            return 0;
+        });
+    }
+    
+    /**
+     * 交易记录类
+     */
+    public static class TradeRecord {
+        private final long id;
+        private final UUID player1Uuid;
+        private final String player1Name;
+        private final UUID player2Uuid;
+        private final String player2Name;
+        private final List<ItemStack> player1Items;
+        private final List<ItemStack> player2Items;
+        private final double player1Money;
+        private final double player2Money;
+        private final int player1Points;
+        private final int player2Points;
+        private final String status;
+        private final String cancelReason;
+        private final String serverName;
+        private final long timestamp;
+        
+        private TradeRecord(long id, UUID player1Uuid, String player1Name, UUID player2Uuid, String player2Name,
+                           List<ItemStack> player1Items, List<ItemStack> player2Items,
+                           double player1Money, double player2Money, int player1Points, int player2Points,
+                           String status, String cancelReason, String serverName, long timestamp) {
+            this.id = id;
+            this.player1Uuid = player1Uuid;
+            this.player1Name = player1Name;
+            this.player2Uuid = player2Uuid;
+            this.player2Name = player2Name;
+            this.player1Items = player1Items;
+            this.player2Items = player2Items;
+            this.player1Money = player1Money;
+            this.player2Money = player2Money;
+            this.player1Points = player1Points;
+            this.player2Points = player2Points;
+            this.status = status;
+            this.cancelReason = cancelReason;
+            this.serverName = serverName;
+            this.timestamp = timestamp;
+        }
+        
+        public static TradeRecord fromResultSet(ResultSet rs, TradeLogDAO dao) throws SQLException {
+            return new TradeRecord(
+                    rs.getLong("id"),
+                    UUID.fromString(rs.getString("player1_uuid")),
+                    rs.getString("player1_name"),
+                    UUID.fromString(rs.getString("player2_uuid")),
+                    rs.getString("player2_name"),
+                    dao.deserializeItems(rs.getString("player1_items")),
+                    dao.deserializeItems(rs.getString("player2_items")),
+                    rs.getDouble("player1_money"),
+                    rs.getDouble("player2_money"),
+                    rs.getInt("player1_points"),
+                    rs.getInt("player2_points"),
+                    rs.getString("status"),
+                    rs.getString("cancel_reason"),
+                    rs.getString("server"),
+                    rs.getLong("timestamp")
+            );
+        }
+        
+        // Getters
+        public long getId() { return id; }
+        public UUID getPlayer1Uuid() { return player1Uuid; }
+        public String getPlayer1Name() { return player1Name; }
+        public UUID getPlayer2Uuid() { return player2Uuid; }
+        public String getPlayer2Name() { return player2Name; }
+        public List<ItemStack> getPlayer1Items() { return player1Items; }
+        public List<ItemStack> getPlayer2Items() { return player2Items; }
+        public double getPlayer1Money() { return player1Money; }
+        public double getPlayer2Money() { return player2Money; }
+        public int getPlayer1Points() { return player1Points; }
+        public int getPlayer2Points() { return player2Points; }
+        public String getStatus() { return status; }
+        public String getCancelReason() { return cancelReason; }
+        public String getServerName() { return serverName; }
+        public long getTimestamp() { return timestamp; }
+        
+        public boolean isCompleted() {
+            return "completed".equals(status);
+        }
+        
+        public boolean isCancelled() {
+            return "cancelled".equals(status);
+        }
+    }
+    
+    /**
      * 序列化物品列表
      */
     private String serializeItems(List<ItemStack> items) {

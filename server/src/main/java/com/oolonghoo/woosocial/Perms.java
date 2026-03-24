@@ -257,6 +257,16 @@ public class Perms {
      */
     public static final String TRADE_COOLDOWN_BYPASS = "woosocial.trade.cooldown.bypass";
     
+    /**
+     * 查看交易历史权限
+     */
+    public static final String TRADE_HISTORY = "woosocial.trade.history";
+    
+    /**
+     * 查看他人交易历史权限
+     */
+    public static final String TRADE_HISTORY_OTHERS = "woosocial.trade.history.others";
+    
     // ==================== 私有构造函数 ====================
     
     private Perms() {

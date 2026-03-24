@@ -50,6 +50,10 @@ commands:
     description: Trade system commands
     usage: /trade [player|accept|deny|toggle]
     permission: woosocial.trade
+  tradehistory:
+    description: View trade history
+    usage: /tradehistory [player|page]
+    permission: woosocial.trade.history
 
 permissions:
   woosocial.use:
@@ -202,6 +206,12 @@ permissions:
     default: true
   woosocial.trade.cooldown.bypass:
     description: Bypass trade cooldown
+    default: op
+  woosocial.trade.history:
+    description: View trade history
+    default: true
+  woosocial.trade.history.others:
+    description: View others' trade history
     default: op
   
   woosocial.gui.friend:
