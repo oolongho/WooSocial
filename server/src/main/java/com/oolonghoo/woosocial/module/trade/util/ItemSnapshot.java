@@ -36,6 +36,17 @@ public class ItemSnapshot implements ConfigurationSerializable {
     }
     
     /**
+     * 私有构造函数，用于反序列化
+     */
+    private ItemSnapshot(Material material, int amount, int durability, Map<String, Object> nbtData, long timestamp) {
+        this.material = material;
+        this.amount = amount;
+        this.durability = durability;
+        this.nbtData = nbtData != null ? nbtData : new HashMap<>();
+        this.timestamp = timestamp;
+    }
+    
+    /**
      * 序列化物品 NBT 数据
      */
     private Map<String, Object> serializeNBT(ItemStack item) {
@@ -171,12 +182,15 @@ public class ItemSnapshot implements ConfigurationSerializable {
     /**
      * 从序列化数据创建快照
      */
+    @SuppressWarnings("unchecked")
     public static ItemSnapshot deserialize(Map<String, Object> data) {
         Material material = Material.valueOf((String) data.get("material"));
         int amount = (Integer) data.get("amount");
+        int durability = ((Number) data.get("durability")).intValue();
+        Map<String, Object> nbtData = (Map<String, Object>) data.get("nbt_data");
+        long timestamp = ((Number) data.get("timestamp")).longValue();
         
-        ItemSnapshot snapshot = new ItemSnapshot(new ItemStack(material, amount));
-        return snapshot;
+        return new ItemSnapshot(material, amount, durability, nbtData, timestamp);
     }
     
     @Override

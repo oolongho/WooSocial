@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class TradeStatistics {
     
     private final AtomicLong totalTrades = new AtomicLong(0);
-    private final AtomicLong totalMoneyTraded = new AtomicLong(0);
+    private final AtomicLong totalMoneyTraded = new AtomicLong(0); // 以分为单位存储，避免精度丢失
     private final AtomicLong totalPointsTraded = new AtomicLong(0);
     private final AtomicLong cancelledTrades = new AtomicLong(0);
     private final AtomicLong todayTrades = new AtomicLong(0);
@@ -23,13 +23,18 @@ public class TradeStatistics {
     
     /**
      * 记录完成的交易
+     * @param money 金额（元，支持小数）
+     * @param points 点数
+     * @param itemCount 物品数量
      */
     public void recordTrade(double money, int points, int itemCount) {
         totalTrades.incrementAndGet();
         todayTrades.incrementAndGet();
         
         if (money > 0) {
-            totalMoneyTraded.addAndGet((long) money);
+            // 将元转换为分存储，避免精度丢失
+            long moneyInCents = Math.round(money * 100);
+            totalMoneyTraded.addAndGet(moneyInCents);
         }
         
         if (points > 0) {
@@ -68,7 +73,21 @@ public class TradeStatistics {
     
     // Getters
     public long getTotalTrades() { return totalTrades.get(); }
+    
+    /**
+     * 获取总交易金额（分）
+     * @return 总金额（分），如需转换为元请除以 100.0
+     */
     public long getTotalMoneyTraded() { return totalMoneyTraded.get(); }
+    
+    /**
+     * 获取总交易金额（元）
+     * @return 总金额（元）
+     */
+    public double getTotalMoneyTradedInYuan() { 
+        return totalMoneyTraded.get() / 100.0; 
+    }
+    
     public long getTotalPointsTraded() { return totalPointsTraded.get(); }
     public long getCancelledTrades() { return cancelledTrades.get(); }
     public long getTodayTrades() { return todayTrades.get(); }
